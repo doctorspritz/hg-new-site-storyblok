@@ -3,15 +3,29 @@ import { useStoryblokApi } from '@storyblok/astro';
 import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-// This page is specifically for Storyblok preview
-export const prerender = false;
+// Remove SSR requirement - use static generation
+export async function getStaticPaths() {
+  const storyblokApi = useStoryblokApi();
+  const { data } = await storyblokApi.get('cdn/stories', {
+    version: 'published',
+  });
+  
+  const paths = data.stories.map(story => ({
+    params: { slug: story.full_slug || story.slug }
+  }));
+  
+  // Add home page
+  paths.push({ params: { slug: undefined } });
+  
+  return paths;
+}
 
 const { slug } = Astro.params;
 const storyblokApi = useStoryblokApi();
 
-// Get the story - use draft version for preview
+// Get the story
 const { data } = await storyblokApi.get(`cdn/stories/${slug || 'home'}`, {
-  version: 'draft',
+  version: 'published', // Use published for static generation
 });
 
 const story = data.story;
