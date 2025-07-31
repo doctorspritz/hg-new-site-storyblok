@@ -4,7 +4,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwind from '@astrojs/tailwind';
 import react from '@astrojs/react';
-import storyblok from '@storyblok/astro';
+import { storyblok } from '@storyblok/astro';
 import { defineConfig } from 'astro/config';
 import { loadEnv } from 'vite';
 
@@ -21,27 +21,18 @@ export default defineConfig({
 		}),
 		react(),
 		storyblok({
-			accessToken: env.STORYBLOK_TOKEN,
+			accessToken: env.STORYBLOK_DELIVERY_API_TOKEN,
+			// No region specified = defaults to EU region (which is correct)
 			components: {
-				// Map Storyblok components to Astro components
-				'page': 'storyblok/Page',
-				'hero': 'storyblok/Hero',
-				'text': 'storyblok/Text',
-				'image': 'storyblok/Image',
-				'cta': 'storyblok/CTA',
-				'lead-form': 'storyblok/LeadForm',
-				'awards': 'storyblok/Awards',
-				'rating': 'storyblok/Rating',
-				'stats': 'storyblok/Stats',
-				'reviews': 'storyblok/Reviews',
-				'calculator': 'storyblok/Calculator',
-				'service-grid': 'storyblok/ServiceGrid',
-				'testimonials': 'storyblok/Testimonials',
-				'why-choose': 'storyblok/WhyChoose',
-				'contact-form': 'storyblok/ContactForm'
-			},
-			apiOptions: {
-				region: 'us'
+				'page': 'components/storyblok/Page',
+				'hero': 'components/storyblok/Hero',
+				'text': 'components/storyblok/Text',
+				'image': 'components/storyblok/Image',
+				'cta': 'components/storyblok/CTA',
+				'lead-form': 'components/storyblok/LeadForm',
+				'awards': 'components/storyblok/Awards',
+				'rating': 'components/storyblok/Rating',
+				'service-grid': 'components/storyblok/ServiceGrid'
 			}
 		})
 	],
