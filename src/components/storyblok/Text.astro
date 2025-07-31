@@ -1,25 +1,46 @@
 ---
-import { storyblokEditable } from '@storyblok/astro';
+import { storyblokEditable, renderRichText } from '@storyblok/astro';
 
 const { blok } = Astro.props;
 
-// Handle both rich text and plain HTML content
+// Handle different content field types
 let content = '';
-if (blok.text) {
-  // If it's already HTML string, use it directly
-  if (typeof blok.text === 'string') {
-    content = blok.text;
-  } else {
-    // If it's rich text object, we'd need to render it
-    // For now, just convert to string
-    content = JSON.stringify(blok.text);
+
+try {
+  if (blok.text) {
+    if (typeof blok.text === 'string') {
+      // Plain HTML string - render directly
+      content = blok.text;
+    } else if (blok.text.type === 'doc') {
+      // Rich text object - render with Storyblok renderer
+      content = renderRichText(blok.text);
+    } else {
+      // Other rich text format
+      content = JSON.stringify(blok.text);
+    }
+  } else if (blok.content) {
+    // Alternative field name
+    if (typeof blok.content === 'string') {
+      content = blok.content;
+    } else {
+      content = renderRichText(blok.content);
+    }
   }
-} else if (blok.content) {
-  // Alternative field name
-  content = blok.content;
+} catch (error) {
+  console.error('Error rendering text content:', error);
+  // Fallback to displaying the raw content
+  content = blok.text || blok.content || '';
+  if (typeof content === 'object') {
+    content = JSON.stringify(content);
+  }
 }
 ---
 
-<div {...storyblokEditable(blok)} class={blok.class_name || ''}>
-  <Fragment set:html={content} />
+<div {...storyblokEditable(blok)} class={`prose prose-lg max-w-none ${blok.class_name || ''}`}>
+  {content && (
+    <Fragment set:html={content} />
+  )}
+  {!content && (
+    <p class="text-gray-500 italic">No content available</p>
+  )}
 </div>
