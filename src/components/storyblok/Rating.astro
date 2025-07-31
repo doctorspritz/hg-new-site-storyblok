@@ -1,0 +1,15 @@
+---
+import { storyblokEditable } from '@storyblok/astro';
+import Rating from '../Rating.astro';
+
+const { blok } = Astro.props;
+---
+
+<div {...storyblokEditable(blok)}>
+  <Rating 
+    rating={blok.rating || 5}
+    reviewCount={blok.review_count}
+    source={blok.source || 'Google'}
+    showStars={blok.show_stars !== false}
+  />
+</div>

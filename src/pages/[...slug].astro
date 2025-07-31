@@ -1,0 +1,53 @@
+---
+import { useStoryblokApi } from '@storyblok/astro';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+
+export async function getStaticPaths() {
+  const storyblokApi = useStoryblokApi();
+  
+  // Fetch all stories from Storyblok
+  const { data } = await storyblokApi.get('cdn/stories', {
+    version: 'draft', // or 'published' for production
+    starts_with: '',
+    is_startpage: false,
+  });
+
+  const paths = data.stories.map((story) => {
+    return {
+      params: { slug: story.slug === 'home' ? undefined : story.slug },
+      props: { story },
+    };
+  });
+
+  return paths;
+}
+
+const { story } = Astro.props;
+const { slug } = Astro.params;
+
+// Fetch the specific story content
+const storyblokApi = useStoryblokApi();
+let storyData;
+
+try {
+  const { data } = await storyblokApi.get(`cdn/stories/${slug || 'home'}`, {
+    version: 'draft',
+  });
+  storyData = data.story;
+} catch (error) {
+  console.error('Error fetching story:', error);
+  return Astro.redirect('/404');
+}
+---
+
+<StoryblokComponent blok={storyData.content} />
+
+<script>
+  import { useStoryblokBridge } from '@storyblok/js';
+  
+  // Enable live editing in Storyblok visual editor
+  useStoryblokBridge(window.storyData?.story?.id, (newStory) => {
+    // Reload the page when content changes in the visual editor
+    location.reload();
+  });
+</script>

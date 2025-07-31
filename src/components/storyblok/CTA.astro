@@ -1,0 +1,17 @@
+---
+import { storyblokEditable } from '@storyblok/astro';
+import CTASection from '../CTASection.astro';
+
+const { blok } = Astro.props;
+---
+
+<div {...storyblokEditable(blok)}>
+  <CTASection 
+    title={blok.title}
+    subtitle={blok.subtitle}
+    buttonText={blok.button_text}
+    buttonLink={blok.button_link?.url}
+    variant={blok.variant || 'primary'}
+    backgroundColor={blok.background_color}
+  />
+</div>

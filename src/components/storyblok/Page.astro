@@ -1,0 +1,19 @@
+---
+import { storyblokEditable } from '@storyblok/astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+
+const { blok } = Astro.props;
+---
+
+<BaseLayout 
+  title={blok.seo_title || blok.title || 'Hunter Galloway'}
+  description={blok.seo_description || blok.description || ''}
+  image={blok.seo_image?.filename}
+>
+  <main {...storyblokEditable(blok)}>
+    {blok.body?.map((nestedBlok) => (
+      <StoryblokComponent blok={nestedBlok} />
+    ))}
+  </main>
+</BaseLayout>

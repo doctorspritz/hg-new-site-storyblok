@@ -1,0 +1,35 @@
+---
+import { useStoryblokApi } from '@storyblok/astro';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+
+// Try to fetch homepage content from Storyblok
+const storyblokApi = useStoryblokApi();
+let storyData = null;
+
+try {
+  const { data } = await storyblokApi.get('cdn/stories/home', {
+    version: 'draft',
+  });
+  storyData = data.story;
+} catch (error) {
+  console.log('Storyblok content not found, using static homepage');
+}
+
+// If no Storyblok content, redirect to static homepage
+if (!storyData) {
+  return Astro.redirect('/');
+}
+---
+
+<StoryblokComponent blok={storyData.content} />
+
+<script>
+  import { useStoryblokBridge } from '@storyblok/js';
+  
+  // Enable live editing in Storyblok visual editor
+  if (typeof window !== 'undefined' && window.storyblokData) {
+    useStoryblokBridge(window.storyblokData.story.id, (newStory) => {
+      location.reload();
+    });
+  }
+</script>

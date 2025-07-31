@@ -1,0 +1,15 @@
+---
+import { storyblokEditable } from '@storyblok/astro';
+import ServiceGrid from '../ServiceGrid.astro';
+
+const { blok } = Astro.props;
+---
+
+<div {...storyblokEditable(blok)}>
+  <ServiceGrid 
+    title={blok.title}
+    services={blok.services}
+    columns={blok.columns || 3}
+    showIcons={blok.show_icons !== false}
+  />
+</div>

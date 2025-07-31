@@ -1,0 +1,15 @@
+---
+import { storyblokEditable } from '@storyblok/astro';
+import LeadForm from '../LeadForm.astro';
+
+const { blok } = Astro.props;
+---
+
+<div {...storyblokEditable(blok)}>
+  <LeadForm 
+    title={blok.title}
+    subtitle={blok.subtitle}
+    buttonText={blok.button_text || 'Get Free Assessment'}
+    variant={blok.variant || 'default'}
+  />
+</div>

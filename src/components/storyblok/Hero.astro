@@ -1,0 +1,16 @@
+---
+import { storyblokEditable } from '@storyblok/astro';
+import Hero from '../Hero.astro';
+
+const { blok } = Astro.props;
+---
+
+<div {...storyblokEditable(blok)}>
+  <Hero 
+    title={blok.title}
+    subtitle={blok.subtitle}
+    backgroundImage={blok.background_image?.filename}
+    ctaText={blok.cta_text}
+    ctaLink={blok.cta_link?.url}
+  />
+</div>

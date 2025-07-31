@@ -1,0 +1,17 @@
+---
+import { storyblokEditable } from '@storyblok/astro';
+import OptimizedImage from '../OptimizedImage.astro';
+
+const { blok } = Astro.props;
+---
+
+<div {...storyblokEditable(blok)} class={blok.class_name || ''}>
+  <OptimizedImage 
+    src={blok.image?.filename}
+    alt={blok.alt_text || blok.image?.alt || ''}
+    width={blok.width}
+    height={blok.height}
+    loading={blok.loading || 'lazy'}
+    class={blok.image_class}
+  />
+</div>
