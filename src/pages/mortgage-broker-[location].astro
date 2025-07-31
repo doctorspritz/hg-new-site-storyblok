@@ -52,7 +52,7 @@ const description = hero?.subtitle || `Award-winning mortgage broker services in
               </p>
             )}
             {hero.cta_text && (
-              <a href={hero.cta_link || '#contact'} class="inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-3 rounded-lg transition-colors">
+              <a href={hero.cta_link?.url || hero.cta_link || '#contact'} class="inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-3 rounded-lg transition-colors">
                 {hero.cta_text}
               </a>
             )}
@@ -72,8 +72,8 @@ const description = hero?.subtitle || `Award-winning mortgage broker services in
                   {block.title}
                 </h2>
               )}
-              {block.content && (
-                <div class="prose prose-lg max-w-none text-gray-700" set:html={block.content} />
+              {(block.text || block.content) && (
+                <div class="prose prose-lg max-w-none text-gray-700" set:html={block.text || block.content} />
               )}
             </section>
           ))}
@@ -91,13 +91,13 @@ const description = hero?.subtitle || `Award-winning mortgage broker services in
                 {cta.title}
               </h2>
             )}
-            {cta.description && (
+            {(cta.subtitle || cta.description) && (
               <p class="text-xl text-gray-600 mb-8">
-                {cta.description}
+                {cta.subtitle || cta.description}
               </p>
             )}
             {cta.button_text && (
-              <a href={cta.button_link || '#contact'} class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors">
+              <a href={cta.button_link?.url || cta.button_link || '#contact'} class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors">
                 {cta.button_text}
               </a>
             )}
