@@ -1,0 +1,22 @@
+---
+import { useStoryblokApi } from '@storyblok/astro';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// This page is specifically for Storyblok preview
+export const prerender = false;
+
+const { slug } = Astro.params;
+const storyblokApi = useStoryblokApi();
+
+// Get the story - use draft version for preview
+const { data } = await storyblokApi.get(`cdn/stories/${slug || 'home'}`, {
+  version: 'draft',
+});
+
+const story = data.story;
+---
+
+<BaseLayout title={story.name}>
+  <StoryblokComponent blok={story.content} />
+</BaseLayout>
