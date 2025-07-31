@@ -32,7 +32,10 @@ export default defineConfig({
 				'lead-form': 'components/storyblok/LeadForm',
 				'awards': 'components/storyblok/Awards',
 				'rating': 'components/storyblok/Rating',
-				'service-grid': 'components/storyblok/ServiceGrid'
+				'service-grid': 'components/storyblok/ServiceGrid',
+				'teaser': 'components/storyblok/Teaser',
+				'grid': 'components/storyblok/Grid',
+				'feature': 'components/storyblok/Feature'
 			}
 		})
 	],

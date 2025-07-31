@@ -6,7 +6,11 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "audit:pages": "node scripts/audit-pages.js",
+    "validate:sync": "node scripts/validate-sync.js",
+    "storyblok:create": "node scripts/create-storyblok-pages.js",
+    "storyblok:publish": "node scripts/publish-storyblok-pages.js"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.1",
