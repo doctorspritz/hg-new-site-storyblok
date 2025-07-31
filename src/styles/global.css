@@ -8,16 +8,23 @@
 /* brand fonts – keep in /public/fonts/  */
 @font-face{
   font-family:"Gotham Pro";
-  src:url("/fonts/GothamPro.woff2") format("woff2"),
+  src:url("/fonts/GothamPro.woff") format("woff"),
       url("/fonts/GothamPro.ttf")   format("truetype");
   font-weight:400;
   font-display:swap;
 }
 @font-face{
-  font-family:"Gotham Pro Bold";
-  src:url("/fonts/GothamPro-Bold.woff2") format("woff2"),
+  font-family:"Gotham Pro";
+  src:url("/fonts/GothamPro-Bold.woff") format("woff"),
       url("/fonts/GothamPro-Bold.ttf")   format("truetype");
   font-weight:700;
+  font-display:swap;
+}
+@font-face{
+  font-family:"Gotham Pro";
+  src:url("/fonts/GothamPro-Black.woff") format("woff"),
+      url("/fonts/GothamPro-Black.ttf")   format("truetype");
+  font-weight:900;
   font-display:swap;
 }
 
@@ -25,4 +32,56 @@
 @layer components{
   .btn-primary{@apply bg-accent text-black font-bold px-6 py-3 rounded-pill shadow hover:bg-accent/90;}
   .btn-secondary{@apply bg-accent2 text-white px-6 py-3 rounded-pill hover:bg-accent2/90;}
+  
+  /* Hunter Galloway original button styles */
+  .btn_yellow{
+    @apply inline-block bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold px-8 py-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl;
+    transform: translateY(0);
+  }
+  .btn_yellow:hover{
+    transform: translateY(-2px);
+  }
+  
+  /* Enhanced prose styling for mortgage broker pages */
+  .prose h2{
+    @apply text-2xl lg:text-3xl font-bold text-gray-900 mb-6 mt-8;
+    font-family: 'Gotham Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  .prose h3{
+    @apply text-xl lg:text-2xl font-bold text-gray-800 mb-4 mt-6;
+    font-family: 'Gotham Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  .prose p{
+    @apply text-gray-700 leading-relaxed mb-4;
+  }
+  .prose ul{
+    @apply space-y-2 mb-6;
+  }
+  .prose li{
+    @apply text-gray-700;
+  }
+  .prose strong{
+    @apply font-bold text-gray-900;
+  }
+  
+  /* Widget styling to match original */
+  .widget{
+    @apply mb-8;
+  }
+  .inner_widget{
+    @apply w-full;
+  }
+  .hero_title{
+    font-family: 'Gotham Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 900;
+  }
+  .hero_subtitle{
+    @apply leading-relaxed;
+  }
+  .hero_points{
+    @apply text-left;
+  }
+  .hero_text{
+    @apply text-gray-600;
+  }
 }
