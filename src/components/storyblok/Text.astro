@@ -1,10 +1,25 @@
 ---
-import { storyblokEditable, renderRichText } from '@storyblok/astro';
+import { storyblokEditable } from '@storyblok/astro';
 
 const { blok } = Astro.props;
-const renderedRichText = renderRichText(blok.text);
+
+// Handle both rich text and plain HTML content
+let content = '';
+if (blok.text) {
+  // If it's already HTML string, use it directly
+  if (typeof blok.text === 'string') {
+    content = blok.text;
+  } else {
+    // If it's rich text object, we'd need to render it
+    // For now, just convert to string
+    content = JSON.stringify(blok.text);
+  }
+} else if (blok.content) {
+  // Alternative field name
+  content = blok.content;
+}
 ---
 
 <div {...storyblokEditable(blok)} class={blok.class_name || ''}>
-  <Fragment set:html={renderedRichText} />
+  <Fragment set:html={content} />
 </div>
