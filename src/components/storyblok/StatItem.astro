@@ -1,5 +1,5 @@
 ---
-import { storyblokEditable, renderRichText } from '@storyblok/astro';
+import { storyblokEditable } from '@storyblok/astro';
 
 const { blok } = Astro.props;
 
@@ -8,10 +8,14 @@ let iconContent = '';
 if (blok.icon_or_number) {
   if (typeof blok.icon_or_number === 'string') {
     iconContent = blok.icon_or_number;
-  } else if (blok.icon_or_number.type === 'doc') {
-    iconContent = renderRichText(blok.icon_or_number);
+  } else if (blok.icon_or_number.type === 'doc' && blok.icon_or_number.content) {
+    // Extract text from rich text structure
+    const firstParagraph = blok.icon_or_number.content[0];
+    if (firstParagraph && firstParagraph.content && firstParagraph.content[0]) {
+      iconContent = firstParagraph.content[0].text || '';
+    }
   } else {
-    iconContent = JSON.stringify(blok.icon_or_number);
+    iconContent = ''; // Default to empty if structure is unexpected
   }
 }
 ---
