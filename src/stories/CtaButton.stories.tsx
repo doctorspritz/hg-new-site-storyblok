@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 
 // Since we're using Astro components, we'll create a React wrapper
-const CtaButton = ({ label, href, style = 'yellow' }: {
+export const CtaButton = ({ label, href, style = 'yellow' }: {
   label: string;
   href: string;
   style?: 'primary' | 'secondary' | 'yellow';

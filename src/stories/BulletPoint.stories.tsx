@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
 
 // React wrapper for the BulletPoint component
-const BulletPoint = ({ prefixBold, body, tooltip }: {
+export const BulletPoint = ({ prefixBold, body, tooltip }: {
   prefixBold?: string;
   body: string;
   tooltip?: string;

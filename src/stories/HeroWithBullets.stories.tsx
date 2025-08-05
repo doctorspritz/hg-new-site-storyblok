@@ -177,5 +177,3 @@ export const MultipleCTAs: Story = {
   },
 };
 
-// Re-export the sub-components for use in this file
-export { CtaButton, BulletPoint };
