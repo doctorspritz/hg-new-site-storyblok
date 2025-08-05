@@ -22,7 +22,7 @@ const styleClasses = {
   yellow: 'bg-yellow hover:bg-accent text-gray-900'
 };
 
-const buttonClass = `${styleClasses[blok.style || 'yellow']} inline-block font-bold px-8 py-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5`;
+const buttonClass = `${styleClasses[blok.style || 'yellow']} inline-block font-bold px-8 py-4 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5`;
 ---
 
 <a {...storyblokEditable(blok)} href={href} class={buttonClass}>

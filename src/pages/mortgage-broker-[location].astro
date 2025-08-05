@@ -78,7 +78,7 @@ const description = hero?.subtitle || `Award-winning mortgage broker services in
                 </ul>
                 {hero.cta_text && (
                   <div class="btn_wrap mb-6">
-                    <a href={hero.cta_link?.url || hero.cta_link || '#contact'} class="btn_yellow inline-block bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold px-8 py-4 rounded-lg transition-colors text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+                    <a href={hero.cta_link?.url || hero.cta_link || '#contact'} class="btn_yellow inline-block bg-yellow hover:bg-accent text-gray-900 font-bold px-8 py-4 rounded-full transition-colors text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
                       {hero.cta_text}
                     </a>
                   </div>
@@ -134,7 +134,7 @@ const description = hero?.subtitle || `Award-winning mortgage broker services in
               </p>
             )}
             {cta.button_text && (
-              <a href={cta.button_link?.url || cta.button_link || '#contact'} class="btn_yellow inline-block bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold px-10 py-4 rounded-lg transition-colors text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+              <a href={cta.button_link?.url || cta.button_link || '#contact'} class="btn_yellow inline-block bg-yellow hover:bg-accent text-gray-900 font-bold px-10 py-4 rounded-full transition-colors text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
                 {cta.button_text}
               </a>
             )}
