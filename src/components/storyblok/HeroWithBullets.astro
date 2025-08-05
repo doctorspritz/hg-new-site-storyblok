@@ -1,0 +1,73 @@
+---
+import { storyblokEditable } from '@storyblok/astro';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+
+const { blok } = Astro.props;
+---
+
+<section {...storyblokEditable(blok)} class="hero_widget widget bg-gradient-to-br from-gray-50 to-gray-100 py-16 lg:py-24">
+  <div class="container mx-auto px-4">
+    <div class="inner_widget max-w-6xl mx-auto">
+      <div class={`grid lg:grid-cols-2 gap-12 items-center ${blok.layout === 'left' ? 'lg:flex-row-reverse' : ''}`}>
+        <div class="text-center lg:text-left">
+          {(blok.headline_bold || blok.headline) && (
+            <h1 class="hero_title text-4xl lg:text-5xl xl:text-6xl font-black text-gray-900 mb-6 leading-tight">
+              {blok.headline_bold && (
+                <span class="font-black">{blok.headline_bold} </span>
+              )}
+              {blok.headline && (
+                <span class="font-normal">{blok.headline}</span>
+              )}
+            </h1>
+          )}
+          
+          {blok.bullet_items && blok.bullet_items.length > 0 && (
+            <ul class="hero_points text-left mb-8 space-y-3">
+              {blok.bullet_items.map((item) => (
+                <StoryblokComponent blok={item} key={item._uid} />
+              ))}
+            </ul>
+          )}
+          
+          {blok.cta && blok.cta.length > 0 && (
+            <div class="btn_wrap mb-6 flex flex-wrap gap-4 justify-center lg:justify-start">
+              {blok.cta.map((button) => (
+                <StoryblokComponent blok={button} key={button._uid} />
+              ))}
+            </div>
+          )}
+          
+          {blok.stats && blok.stats.length > 0 && (
+            <div class="stats_wrap flex gap-8 justify-center lg:justify-start mt-8">
+              {blok.stats.map((stat) => (
+                <StoryblokComponent blok={stat} key={stat._uid} />
+              ))}
+            </div>
+          )}
+        </div>
+        
+        <div class="hidden lg:block">
+          {blok.image_desktop && (
+            <img 
+              class="hero_img rounded-lg shadow-2xl w-full" 
+              src={blok.image_desktop.filename || '/images/img_new/what-you-see-when-you-look-up-full-length-shot-affectionate-family-four-holding-cardboard-roof-their-heads-while-sitting-living-room-home.jpg'} 
+              alt={blok.image_desktop.alt || 'Hero image'} 
+              loading="lazy" 
+            />
+          )}
+        </div>
+        
+        <div class="lg:hidden">
+          {(blok.image_mobile || blok.image_desktop) && (
+            <img 
+              class="hero_img_mob rounded-lg shadow-xl w-full" 
+              src={(blok.image_mobile?.filename || blok.image_desktop?.filename) || '/images/img_new/what-you-see-when-you-look-up-full-length-shot-affectionate-family-four-holding-cardboard-roof-their-heads-while-sitting-living-room-home.jpg'} 
+              alt={(blok.image_mobile?.alt || blok.image_desktop?.alt) || 'Hero image'} 
+              loading="lazy" 
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

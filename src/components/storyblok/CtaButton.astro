@@ -1,0 +1,30 @@
+---
+import { storyblokEditable } from '@storyblok/astro';
+
+const { blok } = Astro.props;
+
+// Handle different link types
+let href = '#';
+if (blok.url) {
+  if (typeof blok.url === 'string') {
+    href = blok.url;
+  } else if (blok.url.url) {
+    href = blok.url.url;
+  } else if (blok.url.cached_url) {
+    href = '/' + blok.url.cached_url;
+  }
+}
+
+// Button style classes
+const styleClasses = {
+  primary: 'bg-blue-600 hover:bg-blue-700 text-white',
+  secondary: 'bg-gray-600 hover:bg-gray-700 text-white',
+  yellow: 'bg-yellow-400 hover:bg-yellow-500 text-gray-900'
+};
+
+const buttonClass = `${styleClasses[blok.style || 'yellow']} inline-block font-bold px-8 py-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5`;
+---
+
+<a {...storyblokEditable(blok)} href={href} class={buttonClass}>
+  {blok.label}
+</a>

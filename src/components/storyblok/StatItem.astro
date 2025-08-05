@@ -1,0 +1,25 @@
+---
+import { storyblokEditable, renderRichText } from '@storyblok/astro';
+
+const { blok } = Astro.props;
+
+// Handle icon_or_number content
+let iconContent = '';
+if (blok.icon_or_number) {
+  if (typeof blok.icon_or_number === 'string') {
+    iconContent = blok.icon_or_number;
+  } else if (blok.icon_or_number.type === 'doc') {
+    iconContent = renderRichText(blok.icon_or_number);
+  } else {
+    iconContent = JSON.stringify(blok.icon_or_number);
+  }
+}
+---
+
+<div {...storyblokEditable(blok)} class="stat_item text-center lg:text-left">
+  <div class="icon_or_number text-3xl font-black text-gray-900 mb-2" set:html={iconContent} />
+  <div class="stat_lines">
+    <p class="line_1 text-sm font-semibold text-gray-700">{blok.line_1}</p>
+    <p class="line_2 text-sm text-gray-600">{blok.line_2}</p>
+  </div>
+</div>

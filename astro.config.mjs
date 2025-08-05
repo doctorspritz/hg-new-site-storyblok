@@ -35,7 +35,11 @@ export default defineConfig({
 				'service-grid': 'components/storyblok/ServiceGrid',
 				'teaser': 'components/storyblok/Teaser',
 				'grid': 'components/storyblok/Grid',
-				'feature': 'components/storyblok/Feature'
+				'feature': 'components/storyblok/Feature',
+				'hero_with_bullets': 'components/storyblok/HeroWithBullets',
+				'bullet_point': 'components/storyblok/BulletPoint',
+				'cta_button': 'components/storyblok/CtaButton',
+				'stat_item': 'components/storyblok/StatItem'
 			}
 		})
 	],
