@@ -165,338 +165,503 @@ const loanPurposeData = [
     </head>
     <body>
         <SiteHeader />
-        <main>
-            <div class="bg-gray-100 py-8 text-center">
-                <h1 class="text-4xl font-bold mb-4">Component Library Demo</h1>
-                <p class="text-xl text-gray-600">
-                    Showcasing the specific design components requested
-                </p>
-            </div>
+        <div class="demo-layout">
+            <aside class="demo-sidebar">
+                <nav>
+                    <h3>Specific Widgets</h3>
+                    <ul>
+                        <li><a href="#hero-wp">Hero (WP Parity)</a></li>
+                        <li><a href="#risk-widget">Risk Widget</a></li>
+                        <li>
+                            <a href="#reputation-widget">Reputation Widget</a>
+                        </li>
+                    </ul>
 
-            <div class="py-8 border-b">
-                <h2
-                    class="text-2xl font-bold text-center mb-4 text-gray-400 uppercase tracking-widest"
-                >
-                    Hero Component (WP Parity)
-                </h2>
-                <HeroWPParity
-                    label={heroData.label}
-                    title={heroData.title}
-                    subtitle={heroData.subtitle}
-                    features={heroData.features}
-                    cta={heroData.cta}
-                    note={heroData.note}
-                    bgDesktop={heroData.bgDesktop}
-                    bgMobile={heroData.bgMobile}
-                />
-            </div>
+                    <h3>Atomic Components</h3>
+                    <ul>
+                        <li><a href="#atoms-buttons">Buttons</a></li>
+                        <li><a href="#atoms-inputs">Inputs</a></li>
+                        <li><a href="#atoms-typography">Typography</a></li>
+                    </ul>
 
-            <div class="py-8 border-b">
-                <h2
-                    class="text-2xl font-bold text-center mb-4 text-gray-400 uppercase tracking-widest"
-                >
-                    Risk Widget
-                </h2>
-                <RiskWidget copy={riskCopy} />
-            </div>
+                    <h3>Calculators & Forms</h3>
+                    <ul>
+                        <li><a href="#calc-borrowing">Borrowing Calc</a></li>
+                        <li>
+                            <a href="#calc-mortgage-rent">Mortgage vs Rent</a>
+                        </li>
+                        <li><a href="#calc-rent">Rent Calc</a></li>
+                        <li><a href="#form-capacity">Capacity Form</a></li>
+                        <li><a href="#form-assessment">Assessment Form</a></li>
+                    </ul>
 
-            <div class="py-8 border-b">
-                <h2
-                    class="text-2xl font-bold text-center mb-4 text-gray-400 uppercase tracking-widest"
-                >
-                    Reputation Widget
-                </h2>
-                <ReputationWidget copy={reputationCopy} />
-            </div>
+                    <h3>Content Sections</h3>
+                    <ul>
+                        <li><a href="#sec-awards">Awards</a></li>
+                        <li><a href="#sec-banks">Banks</a></li>
+                        <li><a href="#sec-blog">Blog</a></li>
+                        <li><a href="#sec-faq">FAQ</a></li>
+                        <li><a href="#sec-loan-purpose">Loan Purpose</a></li>
+                        <li><a href="#sec-reviews">Reviews</a></li>
+                        <li><a href="#sec-why-choose">Why Choose</a></li>
+                    </ul>
 
-            <div class="py-8 border-b bg-white">
-                <h2
-                    class="text-2xl font-bold text-center mb-8 text-gray-400 uppercase tracking-widest"
-                >
-                    Atomic Components
-                </h2>
-                <div class="container mx-auto px-4 max-w-4xl space-y-12">
-                    <!-- Buttons -->
-                    <div class="space-y-4">
-                        <Heading level={3} size="xl">Buttons</Heading>
-                        <div class="flex flex-wrap gap-4 items-center">
-                            <Button text="Primary Button" variant="primary" />
-                            <Button
-                                text="Secondary Button"
-                                variant="secondary"
-                            />
-                            <Button text="Outline Button" variant="outline" />
-                            <Button text="Ghost Button" variant="ghost" />
-                            <Button text="Small" size="sm" />
-                            <Button text="Large" size="lg" />
-                        </div>
-                    </div>
+                    <h3>Widgets</h3>
+                    <ul>
+                        <li><a href="#widget-map">Property Map</a></li>
+                        <li><a href="#widget-stats">Statistics</a></li>
+                        <li><a href="#widget-wphero">WP Hero</a></li>
+                    </ul>
+                </nav>
+            </aside>
 
-                    <!-- Inputs -->
-                    <div class="space-y-4">
-                        <Heading level={3} size="xl">Inputs</Heading>
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div class="space-y-2">
-                                <label
-                                    class="block text-sm font-medium text-gray-700"
-                                    >Default Input</label
-                                >
-                                <Input placeholder="Enter text..." />
-                            </div>
-                            <div class="space-y-2">
-                                <label
-                                    class="block text-sm font-medium text-gray-700"
-                                    >Filled Input</label
-                                >
-                                <Input
-                                    variant="filled"
-                                    placeholder="Filled variant"
+            <main class="demo-content">
+                <div class="bg-gray-100 py-8 text-center mb-8 rounded-lg">
+                    <h1 class="text-4xl font-bold mb-4">Component Library</h1>
+                    <p class="text-xl text-gray-600">
+                        Visual reference for the Hunter Galloway Design System
+                    </p>
+                </div>
+
+                <div id="hero-wp" class="py-8 border-b">
+                    <h2
+                        class="text-2xl font-bold text-center mb-4 text-gray-400 uppercase tracking-widest"
+                    >
+                        Hero Component (WP Parity)
+                    </h2>
+                    <HeroWPParity
+                        label={heroData.label}
+                        title={heroData.title}
+                        subtitle={heroData.subtitle}
+                        features={heroData.features}
+                        cta={heroData.cta}
+                        note={heroData.note}
+                        bgDesktop={heroData.bgDesktop}
+                        bgMobile={heroData.bgMobile}
+                    />
+                </div>
+
+                <div id="risk-widget" class="py-8 border-b">
+                    <h2
+                        class="text-2xl font-bold text-center mb-4 text-gray-400 uppercase tracking-widest"
+                    >
+                        Risk Widget
+                    </h2>
+                    <RiskWidget copy={riskCopy} />
+                </div>
+
+                <div id="reputation-widget" class="py-8 border-b">
+                    <h2
+                        class="text-2xl font-bold text-center mb-4 text-gray-400 uppercase tracking-widest"
+                    >
+                        Reputation Widget
+                    </h2>
+                    <ReputationWidget copy={reputationCopy} />
+                </div>
+
+                <div class="py-8 border-b bg-white">
+                    <h2
+                        class="text-2xl font-bold text-center mb-8 text-gray-400 uppercase tracking-widest"
+                    >
+                        Atomic Components
+                    </h2>
+                    <div class="container mx-auto px-4 max-w-4xl space-y-12">
+                        <!-- Buttons -->
+                        <div id="atoms-buttons" class="space-y-4 scroll-mt-20">
+                            <Heading level={3} size="xl">Buttons</Heading>
+                            <div class="flex flex-wrap gap-4 items-center">
+                                <Button
+                                    text="Primary Button"
+                                    variant="primary"
                                 />
+                                <Button
+                                    text="Secondary Button"
+                                    variant="secondary"
+                                />
+                                <Button
+                                    text="Outline Button"
+                                    variant="outline"
+                                />
+                                <Button text="Ghost Button" variant="ghost" />
+                                <Button text="Small" size="sm" />
+                                <Button text="Large" size="lg" />
                             </div>
-                            <div class="space-y-2">
-                                <label
-                                    class="block text-sm font-medium text-gray-700"
-                                    >Error State</label
-                                >
-                                <Input state="error" value="Invalid input" />
+                        </div>
+
+                        <!-- Inputs -->
+                        <div id="atoms-inputs" class="space-y-4 scroll-mt-20">
+                            <Heading level={3} size="xl">Inputs</Heading>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label
+                                        class="block text-sm font-medium text-gray-700"
+                                        >Default Input</label
+                                    >
+                                    <Input placeholder="Enter text..." />
+                                </div>
+                                <div class="space-y-2">
+                                    <label
+                                        class="block text-sm font-medium text-gray-700"
+                                        >Filled Input</label
+                                    >
+                                    <Input
+                                        variant="filled"
+                                        placeholder="Filled variant"
+                                    />
+                                </div>
+                                <div class="space-y-2">
+                                    <label
+                                        class="block text-sm font-medium text-gray-700"
+                                        >Error State</label
+                                    >
+                                    <Input
+                                        state="error"
+                                        value="Invalid input"
+                                    />
+                                </div>
+                                <div class="space-y-2">
+                                    <label
+                                        class="block text-sm font-medium text-gray-700"
+                                        >Success State</label
+                                    >
+                                    <Input
+                                        state="success"
+                                        value="Valid input"
+                                    />
+                                </div>
                             </div>
-                            <div class="space-y-2">
-                                <label
-                                    class="block text-sm font-medium text-gray-700"
-                                    >Success State</label
+                        </div>
+
+                        <!-- Typography -->
+                        <div
+                            id="atoms-typography"
+                            class="space-y-4 scroll-mt-20"
+                        >
+                            <Heading level={3} size="xl">Typography</Heading>
+                            <div class="space-y-4 border p-6 rounded-lg">
+                                <Heading level={1} size="4xl"
+                                    >Heading 1 (4xl)</Heading
                                 >
-                                <Input state="success" value="Valid input" />
+                                <Heading level={2} size="3xl"
+                                    >Heading 2 (3xl)</Heading
+                                >
+                                <Heading level={3} size="2xl"
+                                    >Heading 3 (2xl)</Heading
+                                >
+                                <Heading level={4} size="xl"
+                                    >Heading 4 (xl)</Heading
+                                >
+                                <Heading level={5} size="lg"
+                                    >Heading 5 (lg)</Heading
+                                >
+                                <Heading level={6} size="md"
+                                    >Heading 6 (md)</Heading
+                                >
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Typography -->
-                    <div class="space-y-4">
-                        <Heading level={3} size="xl">Typography</Heading>
-                        <div class="space-y-4 border p-6 rounded-lg">
-                            <Heading level={1} size="4xl"
-                                >Heading 1 (4xl)</Heading
+                <div class="py-8 border-b bg-white">
+                    <h2
+                        class="text-2xl font-bold text-center mb-8 text-gray-400 uppercase tracking-widest"
+                    >
+                        Calculators & Forms
+                    </h2>
+                    <div class="space-y-16">
+                        <!-- Borrowing Calculator -->
+                        <div
+                            id="calc-borrowing"
+                            class="py-8 bg-gray-50 scroll-mt-20"
+                        >
+                            <Heading
+                                level={3}
+                                size="xl"
+                                align="center"
+                                marginBottom="lg">Borrowing Calculator</Heading
                             >
-                            <Heading level={2} size="3xl"
-                                >Heading 2 (3xl)</Heading
+                            <BorrowingCalculator showResults={true} />
+                        </div>
+
+                        <!-- Mortgage vs Rent -->
+                        <div id="calc-mortgage-rent" class="py-8 scroll-mt-20">
+                            <Heading
+                                level={3}
+                                size="xl"
+                                align="center"
+                                marginBottom="lg">Mortgage vs Rent</Heading
                             >
-                            <Heading level={3} size="2xl"
-                                >Heading 3 (2xl)</Heading
+                            <MortgageVsRentSection
+                                variant="centered"
+                                background="gray"
+                            />
+                        </div>
+
+                        <!-- Rent Calculator -->
+                        <div
+                            id="calc-rent"
+                            class="py-8 bg-gray-50 scroll-mt-20"
+                        >
+                            <Heading
+                                level={3}
+                                size="xl"
+                                align="center"
+                                marginBottom="lg">Rent Calculator</Heading
                             >
-                            <Heading level={4} size="xl">Heading 4 (xl)</Heading
+                            <RentCalculatorSection />
+                        </div>
+
+                        <!-- Borrowing Capacity Form -->
+                        <div id="form-capacity" class="py-8 scroll-mt-20">
+                            <Heading
+                                level={3}
+                                size="xl"
+                                align="center"
+                                marginBottom="lg"
+                                >Borrowing Capacity Form</Heading
                             >
-                            <Heading level={5} size="lg">Heading 5 (lg)</Heading
+                            <BorrowingCapacityForm />
+                        </div>
+
+                        <!-- Assessment Form -->
+                        <div
+                            id="form-assessment"
+                            class="py-8 bg-gray-50 scroll-mt-20"
+                        >
+                            <Heading
+                                level={3}
+                                size="xl"
+                                align="center"
+                                marginBottom="lg">Assessment Form</Heading
                             >
-                            <Heading level={6} size="md">Heading 6 (md)</Heading
-                            >
+                            <AssessmentForm />
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="py-8 border-b bg-white">
-                <h2
-                    class="text-2xl font-bold text-center mb-8 text-gray-400 uppercase tracking-widest"
-                >
-                    Calculators & Forms
-                </h2>
-                <div class="space-y-16">
-                    <!-- Borrowing Calculator -->
-                    <div class="py-8 bg-gray-50">
-                        <Heading
-                            level={3}
-                            size="xl"
-                            align="center"
-                            marginBottom="lg">Borrowing Calculator</Heading
-                        >
-                        <BorrowingCalculator showResults={true} />
-                    </div>
 
-                    <!-- Mortgage vs Rent -->
-                    <div class="py-8">
-                        <Heading
-                            level={3}
-                            size="xl"
-                            align="center"
-                            marginBottom="lg">Mortgage vs Rent</Heading
-                        >
-                        <MortgageVsRentSection
-                            variant="centered"
-                            background="gray"
-                        />
-                    </div>
+                <div class="py-8 border-b bg-white">
+                    <h2
+                        class="text-2xl font-bold text-center mb-8 text-gray-400 uppercase tracking-widest"
+                    >
+                        Content Sections
+                    </h2>
+                    <div class="space-y-16">
+                        <!-- Awards Section -->
+                        <div id="sec-awards" class="py-8 scroll-mt-20">
+                            <Heading
+                                level={3}
+                                size="xl"
+                                align="center"
+                                marginBottom="lg">Awards Section</Heading
+                            >
+                            <AwardsSection awards={awardsData} />
+                        </div>
 
-                    <!-- Rent Calculator -->
-                    <div class="py-8 bg-gray-50">
-                        <Heading
-                            level={3}
-                            size="xl"
-                            align="center"
-                            marginBottom="lg">Rent Calculator</Heading
+                        <!-- Banks Section -->
+                        <div
+                            id="sec-banks"
+                            class="py-8 bg-gray-50 scroll-mt-20"
                         >
-                        <RentCalculatorSection />
-                    </div>
+                            <Heading
+                                level={3}
+                                size="xl"
+                                align="center"
+                                marginBottom="lg">Banks Section</Heading
+                            >
+                            <BanksSection banks={banksData} />
+                        </div>
 
-                    <!-- Borrowing Capacity Form -->
-                    <div class="py-8">
-                        <Heading
-                            level={3}
-                            size="xl"
-                            align="center"
-                            marginBottom="lg">Borrowing Capacity Form</Heading
-                        >
-                        <BorrowingCapacityForm />
-                    </div>
+                        <!-- Blog Section -->
+                        <div id="sec-blog" class="py-8 scroll-mt-20">
+                            <Heading
+                                level={3}
+                                size="xl"
+                                align="center"
+                                marginBottom="lg">Blog Section</Heading
+                            >
+                            <BlogSection />
+                        </div>
 
-                    <!-- Assessment Form -->
-                    <div class="py-8 bg-gray-50">
-                        <Heading
-                            level={3}
-                            size="xl"
-                            align="center"
-                            marginBottom="lg">Assessment Form</Heading
+                        <!-- FAQ Section -->
+                        <div id="sec-faq" class="py-8 bg-gray-50 scroll-mt-20">
+                            <Heading
+                                level={3}
+                                size="xl"
+                                align="center"
+                                marginBottom="lg">FAQ Section</Heading
+                            >
+                            <FAQSection />
+                        </div>
+
+                        <!-- Loan Purpose Section -->
+                        <div id="sec-loan-purpose" class="py-8 scroll-mt-20">
+                            <Heading
+                                level={3}
+                                size="xl"
+                                align="center"
+                                marginBottom="lg">Loan Purpose Section</Heading
+                            >
+                            <LoanPurposeSection
+                                title="How can we help?"
+                                purposeCards={loanPurposeData}
+                            />
+                        </div>
+
+                        <!-- Reviews Section -->
+                        <div
+                            id="sec-reviews"
+                            class="py-8 bg-gray-50 scroll-mt-20"
                         >
-                        <AssessmentForm />
+                            <Heading
+                                level={3}
+                                size="xl"
+                                align="center"
+                                marginBottom="lg">Reviews Section</Heading
+                            >
+                            <ReviewsSection />
+                        </div>
+
+                        <!-- Why Choose Section -->
+                        <div id="sec-why-choose" class="py-8 scroll-mt-20">
+                            <Heading
+                                level={3}
+                                size="xl"
+                                align="center"
+                                marginBottom="lg">Why Choose Section</Heading
+                            >
+                            <WhyChoose />
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="py-8 border-b bg-white">
-                <h2
-                    class="text-2xl font-bold text-center mb-8 text-gray-400 uppercase tracking-widest"
-                >
-                    Content Sections
-                </h2>
-                <div class="space-y-16">
-                    <!-- Awards Section -->
-                    <div class="py-8">
-                        <Heading
-                            level={3}
-                            size="xl"
-                            align="center"
-                            marginBottom="lg">Awards Section</Heading
-                        >
-                        <AwardsSection awards={awardsData} />
-                    </div>
+                <div class="py-8 border-b bg-white">
+                    <h2
+                        class="text-2xl font-bold text-center mb-8 text-gray-400 uppercase tracking-widest"
+                    >
+                        Widgets
+                    </h2>
+                    <div class="space-y-16">
+                        <!-- Property Map -->
+                        <div id="widget-map" class="py-8 scroll-mt-20">
+                            <Heading
+                                level={3}
+                                size="xl"
+                                align="center"
+                                marginBottom="lg">Property Map</Heading
+                            >
+                            <PropertyMap />
+                        </div>
 
-                    <!-- Banks Section -->
-                    <div class="py-8 bg-gray-50">
-                        <Heading
-                            level={3}
-                            size="xl"
-                            align="center"
-                            marginBottom="lg">Banks Section</Heading
+                        <!-- Statistics -->
+                        <div
+                            id="widget-stats"
+                            class="py-8 bg-gray-50 scroll-mt-20"
                         >
-                        <BanksSection banks={banksData} />
-                    </div>
+                            <Heading
+                                level={3}
+                                size="xl"
+                                align="center"
+                                marginBottom="lg">Statistics</Heading
+                            >
+                            <Statistics />
+                        </div>
 
-                    <!-- Blog Section -->
-                    <div class="py-8">
-                        <Heading
-                            level={3}
-                            size="xl"
-                            align="center"
-                            marginBottom="lg">Blog Section</Heading
-                        >
-                        <BlogSection />
-                    </div>
-
-                    <!-- FAQ Section -->
-                    <div class="py-8 bg-gray-50">
-                        <Heading
-                            level={3}
-                            size="xl"
-                            align="center"
-                            marginBottom="lg">FAQ Section</Heading
-                        >
-                        <FAQSection />
-                    </div>
-
-                    <!-- Loan Purpose Section -->
-                    <div class="py-8">
-                        <Heading
-                            level={3}
-                            size="xl"
-                            align="center"
-                            marginBottom="lg">Loan Purpose Section</Heading
-                        >
-                        <LoanPurposeSection
-                            title="How can we help?"
-                            purposeCards={loanPurposeData}
-                        />
-                    </div>
-
-                    <!-- Reviews Section -->
-                    <div class="py-8 bg-gray-50">
-                        <Heading
-                            level={3}
-                            size="xl"
-                            align="center"
-                            marginBottom="lg">Reviews Section</Heading
-                        >
-                        <ReviewsSection />
-                    </div>
-
-                    <!-- Why Choose Section -->
-                    <div class="py-8">
-                        <Heading
-                            level={3}
-                            size="xl"
-                            align="center"
-                            marginBottom="lg">Why Choose Section</Heading
-                        >
-                        <WhyChoose />
+                        <!-- WP Hero -->
+                        <div id="widget-wphero" class="py-8 scroll-mt-20">
+                            <Heading
+                                level={3}
+                                size="xl"
+                                align="center"
+                                marginBottom="lg">WP Hero</Heading
+                            >
+                            <WPHero
+                                title="Award Winning Mortgage Broker"
+                                subtitle="We help you get the best loan."
+                                cta={{ label: "Get Started", href: "#" }}
+                                background="https://conversionratestore.github.io/projects/hantergalloway/img/bg_banner_new.jpg"
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="py-8 border-b bg-white">
-                <h2
-                    class="text-2xl font-bold text-center mb-8 text-gray-400 uppercase tracking-widest"
-                >
-                    Widgets
-                </h2>
-                <div class="space-y-16">
-                    <!-- Property Map -->
-                    <div class="py-8">
-                        <Heading
-                            level={3}
-                            size="xl"
-                            align="center"
-                            marginBottom="lg">Property Map</Heading
-                        >
-                        <PropertyMap />
-                    </div>
-
-                    <!-- Statistics -->
-                    <div class="py-8 bg-gray-50">
-                        <Heading
-                            level={3}
-                            size="xl"
-                            align="center"
-                            marginBottom="lg">Statistics</Heading
-                        >
-                        <Statistics />
-                    </div>
-
-                    <!-- WP Hero -->
-                    <div class="py-8">
-                        <Heading
-                            level={3}
-                            size="xl"
-                            align="center"
-                            marginBottom="lg">WP Hero</Heading
-                        >
-                        <WPHero
-                            title="Award Winning Mortgage Broker"
-                            subtitle="We help you get the best loan."
-                            cta={{ label: "Get Started", href: "#" }}
-                            background="https://conversionratestore.github.io/projects/hantergalloway/img/bg_banner_new.jpg"
-                        />
-                    </div>
-                </div>
-            </div>
-        </main>
+            </main>
+        </div>
         <SiteFooter />
+
+        <style>
+            .demo-layout {
+                display: flex;
+                min-height: 100vh;
+            }
+
+            .demo-sidebar {
+                width: 250px;
+                background: #f8f9fa;
+                border-right: 1px solid #e9ecef;
+                padding: 2rem 1rem;
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                overflow-y: auto;
+                flex-shrink: 0;
+            }
+
+            .demo-sidebar h3 {
+                font-size: 0.875rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #6c757d;
+                margin-top: 1.5rem;
+                margin-bottom: 0.5rem;
+                font-weight: bold;
+            }
+
+            .demo-sidebar h3:first-child {
+                margin-top: 0;
+            }
+
+            .demo-sidebar ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .demo-sidebar li {
+                margin-bottom: 0.25rem;
+            }
+
+            .demo-sidebar a {
+                display: block;
+                padding: 0.25rem 0.5rem;
+                color: #212529;
+                text-decoration: none;
+                border-radius: 0.25rem;
+                font-size: 0.9rem;
+            }
+
+            .demo-sidebar a:hover {
+                background: #e9ecef;
+                color: #000;
+            }
+
+            .demo-content {
+                flex: 1;
+                padding: 2rem;
+                min-width: 0; /* Prevent flex item from overflowing */
+            }
+
+            @media (max-width: 1024px) {
+                .demo-layout {
+                    flex-direction: column;
+                }
+                .demo-sidebar {
+                    width: 100%;
+                    height: auto;
+                    position: static;
+                    border-right: none;
+                    border-bottom: 1px solid #e9ecef;
+                }
+            }
+        </style>
     </body>
 </html>
 ```
