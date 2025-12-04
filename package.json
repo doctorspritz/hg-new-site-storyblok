@@ -12,7 +12,13 @@
     "storyblok:create": "node scripts/create-storyblok-pages.js",
     "storyblok:publish": "node scripts/publish-storyblok-pages.js",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "sync": "node scripts/sync-pipeline/cli.js sync",
+    "sync:components": "node scripts/sync-pipeline/cli.js storyblok generate",
+    "sync:figma": "node scripts/sync-pipeline/cli.js figma tokens",
+    "sync:validate": "node scripts/sync-pipeline/cli.js monitor validate",
+    "sync:health": "node scripts/sync-pipeline/cli.js monitor health",
+    "deploy:storybook": "node scripts/sync-pipeline/cli.js deploy storybook"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.1",
@@ -23,10 +29,12 @@
     "@storyblok/astro": "^6.2.0",
     "@storyblok/js": "^4.2.1",
     "astro": "^5.12.5",
+    "commander": "^14.0.0",
     "node-fetch": "^3.3.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "sharp": "^0.34.2"
+    "sharp": "^0.34.2",
+    "storyblok-js-client": "^7.1.1"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.1.0",

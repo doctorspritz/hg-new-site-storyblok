@@ -1,0 +1,283 @@
+---
+/**
+ * RiskWidget Component
+ * Hunter Galloway Design System - Section Component
+ * 
+ * A comprehensive risk mitigation widget with horizontal layout.
+ * Used across 7+ pages for trust-building and risk explanation content.
+ * Built to match the WordPress risk_widget pattern exactly.
+ */
+
+import type { RiskWidgetProps } from './RiskWidget.types';
+import RiskCard from '../../molecules/RiskCard/RiskCard.astro';
+import { semantic } from '../../../tokens/semantic';
+
+interface Props extends RiskWidgetProps {}
+
+const {
+  title,
+  description,
+  marketStatistic,
+  riskItems,
+  backgroundImage = '/images/manager_new.png',
+  backgroundImageAlt = 'manager',
+  variant = 'default',
+  class: additionalClasses = '',
+  id = 'risk_widget',
+} = Astro.props;
+
+// Build CSS classes based on props and variant
+const sectionClasses = [
+  'risk_widget',
+  'widget',
+  'box_list',
+  `risk-widget--${variant}`,
+  additionalClasses,
+].filter(Boolean).join(' ');
+
+// Process description with market statistic if provided
+const processDescription = (desc: string | undefined, stat?: typeof marketStatistic) => {
+  if (!desc || !stat) return desc;
+  
+  // Replace placeholder with market statistic markup
+  return desc.replace(
+    /over\s*\{([^}]+)\}/i,
+    `over
+    <div class="market_text">
+      <span>${stat.value}</span>
+      <div class="market_dd">
+        <div class="inner">
+          ${stat.tooltip.content}
+          ${stat.tooltip.link ? `<a href="${stat.tooltip.link.url}" alt="">'${stat.tooltip.link.text}'</a>` : ''}
+        </div>
+      </div>
+    </div>`
+  );
+};
+
+const processedDescription = processDescription(description, marketStatistic);
+---
+
+<section class={sectionClasses} id={id}>
+  <div class="container">
+    <div class="inner_widget">
+      <h2 class="inner_title" set:html={title} />
+      
+      <div class="risk_holder">
+        <div class="risk_inner-left">
+          {processedDescription && (
+            <div set:html={processedDescription} />
+          )}
+          
+          <ul class="risk_list">
+            {(riskItems || []).map((item) => (
+              <RiskCard
+                id={item.id}
+                title={item.title}
+                content={item.content}
+                icon={item.icon}
+                customIcon={item.customIcon}
+                variant="default"
+              />
+            ))}
+          </ul>
+        </div>
+        
+        <div class="risk_imgwrap">
+          <img src={backgroundImage} alt={backgroundImageAlt} />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style define:vars={{
+  // Mapped to semantic tokens while matching WP visuals
+  widgetBackground: semantic.color.surface.propertyMap,
+  widgetBorderRadius: '10px',
+  widgetPadding: '60px 70px',
+  widgetPaddingMobile: '40px 20px',
+  innerTitlePaddingBottom: '20px',
+  riskLeftWidth: '45%',
+  riskLeftFontSize: '17px',
+  riskLeftFontSizeMobile: '13px',
+  riskImgWidth: '55%',
+  riskImgMaxWidth: '720px',
+  riskListPadding: '45px 0 0 0',
+  riskListPaddingMobile: '25px 0 0 0',
+  surfacePrimary: semantic.color.surface.primary,
+  borderPrimary: semantic.color.border.primary,
+  shadowCard: semantic.shadow.card,
+}}>
+/* RiskWidget - WordPress Exact Implementation */
+.risk_widget .inner_widget {
+  border-radius: var(--widgetBorderRadius);
+  background-color: var(--widgetBackground);
+  justify-content: space-between;
+  padding: var(--widgetPadding);
+  position: relative;
+  overflow: hidden;
+}
+
+.risk_widget .inner_title {
+  padding-bottom: var(--innerTitlePaddingBottom);
+  margin: 0;
+}
+
+.risk_widget .risk_holder {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.risk_widget .risk_inner-left {
+  width: var(--riskLeftWidth);
+  position: relative;
+  font-size: var(--riskLeftFontSize);
+}
+
+.risk_widget .risk_imgwrap {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  max-width: var(--riskImgMaxWidth);
+  width: var(--riskImgWidth);
+}
+
+.risk_widget .risk_imgwrap img {
+  vertical-align: middle;
+  max-width: 100%;
+  height: auto;
+}
+
+.risk_widget .market_text {
+  display: inline-block;
+  position: relative;
+}
+
+.risk_widget .market_text span {
+  font-weight: bold;
+  cursor: pointer;
+  border-bottom: 1px dotted currentColor;
+}
+
+.risk_widget .market_dd {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--surfacePrimary);
+  border: 1px solid var(--borderPrimary);
+  border-radius: 4px;
+  padding: 12px;
+  max-width: 300px;
+  z-index: 1000;
+  box-shadow: var(--shadowCard);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.risk_widget .market_text:hover .market_dd {
+  display: block;
+}
+
+.risk_widget .risk_list {
+  padding: var(--riskListPadding);
+  margin: 0;
+  list-style: none;
+}
+
+/* Variant styles */
+.risk-widget--light .inner_widget { background-color: var(--surfacePrimary); }
+
+.risk-widget--reversed .risk_holder {
+  flex-direction: row-reverse;
+}
+
+.risk-widget--reversed .risk_imgwrap {
+  left: 0;
+  right: auto;
+}
+
+.risk-widget--refinance .risk_inner-left {
+  width: 60%;
+  z-index: 1;
+}
+
+/* Tablet responsive */
+@media screen and (max-width: 991px) {
+  .risk_widget .inner_widget {
+    padding: var(--widgetPaddingMobile);
+  }
+}
+
+/* Mobile responsive */
+@media screen and (max-width: 767px) {
+  .risk_widget .inner_widget {
+    padding: 40px 20px 0;
+  }
+  
+  .risk_widget .risk_inner-left {
+    width: 100%;
+    font-size: var(--riskLeftFontSizeMobile);
+  }
+  
+  .risk_widget .risk_imgwrap {
+    position: relative;
+    width: calc(100% + 20px);
+    margin-right: -20px;
+    margin-top: 30px;
+  }
+  
+  .risk_widget .risk_list {
+    padding: var(--riskListPaddingMobile);
+  }
+}
+
+/* Doctor page specific styles */
+.doctor_right_risk_widget .inner_title {
+  font-size: 38px;
+  padding-bottom: 28px;
+}
+
+.doctor_right_risk_widget .risk_inner-left {
+  width: 58%;
+}
+
+.doctor_left_risk_widget .inner_title {
+  font-size: 38px;
+  width: 70%;
+  text-align: right;
+  margin: 0 0 0 auto;
+}
+
+.doctor_left_risk_widget .risk_inner-left {
+  width: 65%;
+}
+
+.doctor_left_risk_widget .risk_imgwrap {
+  left: 0;
+}
+
+/* Nurse page specific styles */
+.nurse-main-content .risk_widget {
+  margin-bottom: 80px;
+}
+
+/* Mobile adjustments for doctor pages */
+@media screen and (max-width: 767px) {
+  .doctor_right_risk_widget .inner_title,
+  .doctor_left_risk_widget .inner_title {
+    font-size: 28px;
+  }
+  
+  .doctor_right_risk_widget .risk_inner-left,
+  .doctor_left_risk_widget .risk_inner-left {
+    width: 100%;
+  }
+  
+  .doctor_left_risk_widget .inner_title {
+    width: 100%;
+    text-align: left;
+  }
+}
+</style>

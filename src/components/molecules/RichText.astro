@@ -1,0 +1,27 @@
+---
+export interface Props {
+  html?: string;
+}
+const { html } = Astro.props as Props;
+---
+
+<section class="richtext" set:html={html} />
+
+<style>
+  .richtext {
+    color: var(--text);
+  }
+
+  .richtext :where(h1, h2, h3) {
+    color: var(--heading);
+  }
+
+  .richtext :where(p + p) {
+    margin-top: var(--space-sm);
+  }
+
+  .richtext a {
+    color: var(--link);
+    text-decoration: underline;
+  }
+</style>

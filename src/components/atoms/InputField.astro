@@ -1,0 +1,325 @@
+---
+/**
+ * Atom: InputField
+ * Accessible text input with size and state variants.
+ */
+import Icon from './Icon.astro';
+import FieldMessage from './FieldMessage.astro';
+interface Props {
+  id?: string;
+  name?: string;
+  type?: 'text' | 'email' | 'password' | 'tel' | 'url' | 'search' | 'number';
+  value?: string;
+  placeholder?: string;
+  label?: string;
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'border' | 'no-border';
+  disabled?: boolean;
+  required?: boolean;
+  invalid?: boolean;
+  error?: string;
+  helper?: string;
+  autocomplete?: string;
+  min?: string | number;
+  max?: string | number;
+  step?: string | number;
+  pattern?: string;
+  prefixIcon?: string;
+  suffixIcon?: string;
+  prefixText?: string;
+  suffixText?: string;
+}
+
+const {
+  id,
+  name,
+  type = 'text',
+  value = '',
+  placeholder,
+  label,
+  size = 'md',
+  variant = 'border',
+  disabled = false,
+  required = false,
+  invalid = false,
+  error,
+  helper,
+  autocomplete,
+  min,
+  max,
+  step,
+  pattern,
+  prefixIcon,
+  suffixIcon,
+  prefixText,
+  suffixText,
+} = Astro.props as Props;
+
+const computedId = id ?? name ?? `input-${type}`;
+const describedBy =
+  [helper ? `${computedId}-helper` : null, error ? `${computedId}-error` : null]
+    .filter(Boolean)
+    .join(' ') || undefined;
+const slotHasPrefix = Astro.slots.has?.('prefix') ?? false;
+const slotHasSuffix = Astro.slots.has?.('suffix') ?? false;
+const hasProvidedPrefix = !!(prefixIcon || prefixText);
+const hasProvidedSuffix = !!(suffixIcon || suffixText);
+const hasPrefix = slotHasPrefix || hasProvidedPrefix;
+const hasSuffix = slotHasSuffix || hasProvidedSuffix;
+const useControlWrapper = hasPrefix || hasSuffix;
+---
+
+<div
+  class:list={[
+    'hg-InputField',
+    `size-${size}`,
+    `variant-${variant}`,
+    { 'is-disabled': disabled, 'is-invalid': invalid || !!error },
+  ]}
+>
+  {
+    label && (
+      <label for={computedId} class="label">
+        {label}
+        {required ? ' *' : ''}
+      </label>
+    )
+  }
+  {
+    useControlWrapper ? (
+      <div class="control" aria-invalid={invalid || !!error}>
+        {hasPrefix && (
+          <span class="adornment prefix">
+            {slotHasPrefix ? (
+              <slot name="prefix" />
+            ) : (
+              <>
+                {prefixIcon && <Icon name={prefixIcon} size="sm" />}
+                {prefixText && <span class="adornment-text">{prefixText}</span>}
+              </>
+            )}
+          </span>
+        )}
+        <input
+          id={computedId}
+          name={name}
+          type={type}
+          value={value}
+          placeholder={placeholder}
+          disabled={disabled}
+          required={required}
+          aria-invalid={invalid || !!error}
+          aria-describedby={describedBy}
+          autocomplete={autocomplete}
+          min={min as any}
+          max={max as any}
+          step={step as any}
+          pattern={pattern}
+          class="input-bare"
+        />
+        {hasSuffix && (
+          <span class="adornment suffix">
+            {slotHasSuffix ? (
+              <slot name="suffix" />
+            ) : (
+              <>
+                {suffixIcon && <Icon name={suffixIcon} size="sm" />}
+                {suffixText && <span class="adornment-text">{suffixText}</span>}
+              </>
+            )}
+          </span>
+        )}
+      </div>
+    ) : (
+      <input
+        id={computedId}
+        name={name}
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        disabled={disabled}
+        required={required}
+        aria-invalid={invalid || !!error}
+        aria-describedby={describedBy}
+        autocomplete={autocomplete}
+        min={min as any}
+        max={max as any}
+        step={step as any}
+        pattern={pattern}
+        class="input"
+      />
+    )
+  }
+  {
+    helper && (
+      <FieldMessage id={`${computedId}-helper`} variant="helper">
+        {helper}
+      </FieldMessage>
+    )
+  }
+  {
+    error && (
+      <FieldMessage id={`${computedId}-error`} variant="error">
+        {error}
+      </FieldMessage>
+    )
+  }
+  <slot name="hint" />
+</div>
+
+<style>
+  .hg-InputField {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .label {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+    font-size: var(--font-size-sm);
+  }
+
+  .input {
+    width: 100%;
+    color: var(--color-text-body);
+    background-color: var(--color-surface);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-form);
+    border-radius: var(--radius-md);
+    outline: none;
+    transition: border-color var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+    padding: var(--space-sm);
+  }
+
+  .input:focus {
+    border-color: var(--color-border-focus);
+  }
+
+  .input::placeholder {
+    color: var(--color-text-subtle);
+  }
+
+  /* Control wrapper when prefix/suffix adornments are used */
+  .control {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background-color: var(--color-surface);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-form);
+    border-radius: var(--radius-md);
+    transition: border-color var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+    padding: 0 var(--space-sm);
+  }
+
+  .control:focus-within {
+    border-color: var(--color-border-focus);
+  }
+
+  .adornment {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--color-text-subtle);
+    padding: var(--space-sm) var(--space-sm);
+    white-space: nowrap;
+  }
+
+  .adornment-text {
+    font-size: var(--font-size-sm);
+  }
+
+  .adornment.prefix {
+    border-right: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+  }
+
+  .adornment.suffix {
+    border-left: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+  }
+
+  .input-bare {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+    color: var(--color-text-body);
+    background: transparent;
+    border: none;
+    outline: none;
+  }
+
+  /* Variant: no-border (underline-only) */
+  .variant-no-border .input {
+    border: none;
+    background-color: var(--color-background-body);
+    color: var(--color-text-body);
+    border-radius: var(--radius-md);
+  }
+
+  /* Sizes - maintaining HG consistent padding */
+  .size-sm .input {
+    font-size: var(--font-size-sm);
+
+    /* Use HG form padding for consistency */
+    padding: var(--space-sm);
+  }
+
+  .size-md .input {
+    font-size: var(--font-size-md);
+
+    /* Use HG form padding for consistency */
+    padding: var(--space-sm);
+  }
+
+  .size-lg .input {
+    font-size: var(--font-size-lg);
+
+    /* Use HG form padding for consistency */
+    padding: var(--space-sm);
+  }
+
+  .size-sm .input-bare {
+    font-size: var(--font-size-sm);
+    padding: var(--space-sm) 0;
+  }
+
+  .size-md .input-bare {
+    font-size: var(--font-size-md);
+    padding: var(--space-sm) 0;
+  }
+
+  .size-lg .input-bare {
+    font-size: var(--font-size-lg);
+    padding: var(--space-sm) 0;
+  }
+
+  /* Disabled */
+  .is-disabled .input {
+    background-color: var(--color-interactive-disabled);
+    border-color: var(--color-border-form);
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+  }
+
+  .is-disabled .control {
+    background-color: var(--color-interactive-disabled);
+    border-color: var(--color-border-form);
+  }
+
+  /* Invalid */
+  .is-invalid .input {
+    border-color: var(--color-feedback-error);
+  }
+
+  .is-invalid .control {
+    border-color: var(--color-feedback-error);
+  }
+
+  .variant-no-border.is-invalid .input {
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-feedback-error);
+  }
+</style>

@@ -1,0 +1,272 @@
+---
+/**
+ * Atom: Link
+ * Accessible anchor with token-driven styles.
+ */
+interface Props {
+  href?: string;
+  label?: string;
+  variant?: 'default' | 'subtle' | 'navigation' | 'menu';
+  underline?: 'always' | 'hover' | 'none' | 'dashed' | 'dashed-text';
+  tone?: 'default' | 'inverse';
+  external?: boolean;
+  rel?: string;
+  target?: '_self' | '_blank' | '_parent' | '_top';
+  ariaLabel?: string;
+  class?: string;
+}
+
+const {
+  href = '#',
+  label = '',
+  variant = 'default',
+  underline = 'always',
+  tone = 'default',
+  external = false,
+  rel,
+  target,
+  ariaLabel,
+  class: className = '',
+} = Astro.props as Props;
+
+const computedRel = rel ?? (external ? 'noopener noreferrer' : undefined);
+const computedTarget = target ?? (external ? '_blank' : undefined);
+---
+
+<a
+  href={href}
+  rel={computedRel}
+  target={computedTarget}
+  aria-label={ariaLabel}
+  class:list={[
+    'hg-Link',
+    `variant-${variant}`,
+    `underline-${underline}`,
+    `tone-${tone}`,
+    className,
+  ].filter(Boolean)}
+>
+  <span class="link-label"><slot>{label}</slot></span>
+</a>
+
+<style>
+  .hg-Link {
+    color: var(--color-text-link);
+    text-decoration: underline;
+    transition: color var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .hg-Link:hover {
+    color: var(--color-text-link-hover);
+  }
+
+  .hg-Link:focus-visible {
+    color: var(--color-text-link-hover);
+    outline: var(--border-width-md) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--border-width-sm);
+    border-radius: var(--radius-sm);
+  }
+
+  /* Variant: subtle starts subdued, elevates on hover */
+  .variant-subtle {
+    color: var(--color-text-subtle);
+  }
+
+  .variant-subtle:hover {
+    color: var(--color-text-link);
+  }
+
+  .variant-subtle:focus-visible {
+    color: var(--color-text-link);
+  }
+
+  /* Underline behavior */
+  .underline-always {
+    text-decoration: underline;
+  }
+
+  .underline-hover {
+    text-decoration: none;
+  }
+
+  .underline-hover:hover {
+    text-decoration: underline;
+  }
+
+  .underline-none {
+    text-decoration: none;
+  }
+
+  .underline-dashed {
+    text-decoration: none;
+    position: relative;
+  }
+
+  .underline-dashed::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: var(--border-width-sm);
+    background-image: repeating-linear-gradient(
+      to right,
+      currentcolor 0,
+      currentcolor 2px,
+      transparent 2px,
+      transparent 6px
+    );
+    background-size: 8px var(--border-width-sm);
+    opacity: 0.6;
+    transition: opacity var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .underline-dashed:hover::after {
+    opacity: 1;
+  }
+
+  /* Text-only dashed underline: applies underline only under text content */
+  .underline-dashed-text {
+    text-decoration: none;
+    position: relative; /* ensure positioning context for ::after */
+  }
+
+  /* wrap slot content in a span to scope underline */
+  .underline-dashed-text > .link-label {
+    position: relative;
+    display: inline-block;
+  }
+
+  .underline-dashed-text > .link-label::after {
+    content: '';
+    position: absolute;
+    left: var(--link-underline-inset, var(--space-2xs));
+    right: var(--link-underline-inset, var(--space-2xs));
+    bottom: calc(-1 * (var(--border-width-md) + var(--border-width-sm)));
+    height: var(--link-underline-thickness, var(--border-width-md));
+    background-image: repeating-linear-gradient(
+      to right,
+      currentcolor 0 calc(var(--link-underline-dash, var(--border-width-md))),
+      transparent calc(var(--link-underline-dash, var(--border-width-md)))
+        calc(
+          var(--link-underline-dash, var(--border-width-md)) +
+            var(--link-underline-gap, var(--border-width-md))
+        )
+    );
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .underline-dashed-text:hover > .link-label::after,
+  .underline-dashed-text:focus-visible > .link-label::after {
+    opacity: 1;
+  }
+
+  /* If a consumer provides an inner `.link-text`, prefer underlining that only */
+  .underline-dashed-text:has(.link-text) > .link-label::after {
+    content: none;
+  }
+
+  /* Use :global to style slotted `.link-text` descendants */
+  .underline-dashed-text :global(.link-text) {
+    position: relative;
+    display: inline-block;
+  }
+
+  .underline-dashed-text :global(.link-text)::after {
+    content: '';
+    position: absolute;
+    left: var(--link-underline-inset, var(--space-2xs));
+    right: var(--link-underline-inset, var(--space-2xs));
+    bottom: calc(-1 * (var(--border-width-md) + var(--border-width-sm)));
+    height: var(--link-underline-thickness, var(--border-width-md));
+    background-image: repeating-linear-gradient(
+      to right,
+      currentcolor 0 calc(var(--link-underline-dash, var(--border-width-md))),
+      transparent calc(var(--link-underline-dash, var(--border-width-md)))
+        calc(
+          var(--link-underline-dash, var(--border-width-md)) +
+            var(--link-underline-gap, var(--border-width-md))
+        )
+    );
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .underline-dashed-text:hover :global(.link-text)::after,
+  .underline-dashed-text:focus-visible :global(.link-text)::after {
+    opacity: 1;
+  }
+
+  /* Navigation variant */
+  .variant-navigation {
+    color: var(--color-text-heading);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-md);
+    padding: var(--space-sm) var(--space-md);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    text-decoration: none;
+    transition: all var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .variant-navigation:hover {
+    color: var(--color-text-heading);
+  }
+
+  .variant-navigation:focus-visible {
+    color: var(--color-text-heading);
+    outline: var(--border-width-md) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--border-width-sm);
+    border-radius: var(--radius-sm);
+  }
+
+  /* Navigation default dashed-text underline variables */
+  .variant-navigation.underline-dashed-text {
+    --link-underline-inset: 0; /* match text width exactly */
+    --link-underline-thickness: var(--border-width-sm);
+
+    /* 3/2 rhythm using tokens */
+    --link-underline-dash: calc(
+      var(--border-width-md) + var(--border-width-sm)
+    );
+    --link-underline-gap: var(--border-width-md);
+  }
+
+  /* Tone modifiers (placed after variants to override color) */
+  .tone-inverse {
+    color: var(--color-text-inverse);
+  }
+
+  .tone-inverse:hover,
+  .tone-inverse:focus-visible {
+    color: var(--color-text-inverse);
+  }
+
+  /* Variant: menu (for dropdown lists) */
+  .hg-Link.variant-menu {
+    color: var(--color-text-heading);
+    font-weight: var(--font-weight-bold);
+    text-decoration: none; /* underline handled by `underline` prop */
+    padding: 0; /* layout controlled by parent */
+    background: transparent;
+  }
+
+  .hg-Link.variant-menu:hover {
+    color: var(--color-interactive-primary);
+  }
+
+  .hg-Link.variant-menu:focus-visible {
+    color: var(--color-text-heading);
+  }
+
+  .hg-Link.variant-menu:visited {
+    color: var(--color-text-heading);
+  }
+</style>

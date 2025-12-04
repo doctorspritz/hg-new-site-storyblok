@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hunter Galloway Design System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <style>
+      /* Design System Documentation Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Open Sans', system-ui, sans-serif;
+        line-height: 1.5;
+        background: white;
+        color: #262626;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+
+      .header {
+        text-align: center;
+        padding: 3rem 0;
+        border-bottom: 2px solid #f0f8ff;
+        margin-bottom: 3rem;
+      }
+
+      .header h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #262626;
+        margin-bottom: 1rem;
+      }
+
+      .header p {
+        font-size: 1.25rem;
+        color: #444444;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .section {
+        margin-bottom: 4rem;
+      }
+
+      .section h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: #262626;
+      }
+
+      .section h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: #262626;
+      }
+
+      /* Color swatches */
+      .color-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .color-swatch {
+        text-align: center;
+      }
+
+      .color-box {
+        width: 100%;
+        height: 80px;
+        border-radius: 8px;
+        border: 1px solid rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
+      }
+
+      .color-info {
+        font-size: 0.875rem;
+      }
+
+      .color-info strong {
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+
+      .color-info code {
+        background: #f1f1f1;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: monospace;
+        font-size: 0.8rem;
+      }
+
+      /* Typography examples */
+      .type-examples {
+        space-y: 1rem;
+      }
+
+      .type-example {
+        padding: 1rem 0;
+        border-bottom: 1px solid #eee;
+      }
+
+      .type-example:last-child {
+        border-bottom: none;
+      }
+
+      /* Button examples */
+      .button-grid {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+        background: #FDB948;
+        color: #262626;
+      }
+
+      .btn-primary:hover {
+        background: #E5A43F;
+      }
+
+      .btn-secondary {
+        background: #f8f9fa;
+        color: #262626;
+      }
+
+      .btn-ghost {
+        background: transparent;
+        color: #FDB948;
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: #FDB948;
+        border-color: #FDB948;
+      }
+
+      /* Card examples */
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: #f0f8ff;
+        padding: 2rem 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        transition: transform 0.3s ease;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-4px);
+      }
+
+      .stat-number {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #262626;
+        margin-bottom: 0.5rem;
+        line-height: 1;
+      }
+
+      .stat-description {
+        font-size: 1rem;
+        color: #444444;
+        font-weight: 500;
+      }
+
+      .purpose-card {
+        background: #f4f4f4;
+        padding: 2rem;
+        border-radius: 24px;
+        border: 1px solid #e8e8e8;
+        transition: transform 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .purpose-card.peach {
+        background: #fdf5e4;
+      }
+
+      .purpose-card:hover {
+        transform: translateY(-4px);
+      }
+
+      .purpose-card h4 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .purpose-card p {
+        color: #444444;
+        margin-bottom: 1.5rem;
+      }
+
+      .badge {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: rgba(253, 185, 72, 0.5);
+        color: #000;
+        padding: 8px 16px;
+        border-radius: 0 24px;
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+
+      /* Spacing showcase */
+      .spacing-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .spacing-example {
+        text-align: center;
+      }
+
+      .spacing-box {
+        background: #FDB948;
+        margin: 0 auto 0.5rem;
+        border-radius: 4px;
+      }
+
+      .code-block {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        font-family: monospace;
+        font-size: 0.875rem;
+        color: #495057;
+        margin: 1rem 0;
+      }
+
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 2rem;
+        }
+        
+        .container {
+          padding: 0 1rem;
+        }
+
+        .color-grid {
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+
+        .button-grid {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .btn {
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="design-system-docs">
+      <div class="container">
+        
+        <!-- Header -->
+        <header class="header">
+          <h1>Hunter Galloway Design System</h1>
+          <p>A comprehensive design system built with atomic design principles for consistent, maintainable, and scalable UI components.</p>
+        </header>
+
+        <!-- Design Tokens -->
+        <section class="section">
+          <h2>Design Tokens</h2>
+          
+          <h3>Colors</h3>
+          <div class="color-grid">
+            <div class="color-swatch">
+              <div class="color-box" style="background: #FDB948;"></div>
+              <div class="color-info">
+                <strong>Primary Yellow</strong>
+                <code>#FDB948</code>
+              </div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-box" style="background: #E5A43F;"></div>
+              <div class="color-info">
+                <strong>Yellow Dark</strong>
+                <code>#E5A43F</code>
+              </div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-box" style="background: #f0f8ff;"></div>
+              <div class="color-info">
+                <strong>Light Blue</strong>
+                <code>#f0f8ff</code>
+              </div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-box" style="background: #fdf5e4;"></div>
+              <div class="color-info">
+                <strong>Light Peach</strong>
+                <code>#fdf5e4</code>
+              </div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-box" style="background: #262626;"></div>
+              <div class="color-info">
+                <strong>Dark Gray</strong>
+                <code>#262626</code>
+              </div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-box" style="background: #444444;"></div>
+              <div class="color-info">
+                <strong>Text Gray</strong>
+                <code>#444444</code>
+              </div>
+            </div>
+          </div>
+
+          <h3>Typography Scale</h3>
+          <div class="type-examples">
+            <div class="type-example">
+              <h1 style="font-size: 40px; font-weight: 700; line-height: 48px; margin: 0;">Heading 1 - Open Sans Bold 40px</h1>
+            </div>
+            <div class="type-example">
+              <h2 style="font-size: 32px; font-weight: 700; line-height: 40px; margin: 0;">Heading 2 - Open Sans Bold 32px</h2>
+            </div>
+            <div class="type-example">
+              <h3 style="font-size: 24px; font-weight: 700; line-height: 32px; margin: 0;">Heading 3 - Open Sans Bold 24px</h3>
+            </div>
+            <div class="type-example">
+              <p style="font-size: 16px; font-weight: 400; line-height: 24px; margin: 0;">Body Text - Open Sans Regular 16px</p>
+            </div>
+            <div class="type-example">
+              <p style="font-size: 14px; font-weight: 400; line-height: 20px; margin: 0;">Small Text - Open Sans Regular 14px</p>
+            </div>
+          </div>
+
+          <h3>Spacing Scale</h3>
+          <div class="spacing-grid">
+            <div class="spacing-example">
+              <div class="spacing-box" style="width: 8px; height: 8px;"></div>
+              <code>2px</code>
+            </div>
+            <div class="spacing-example">
+              <div class="spacing-box" style="width: 16px; height: 16px;"></div>
+              <code>4px</code>
+            </div>
+            <div class="spacing-example">
+              <div class="spacing-box" style="width: 24px; height: 24px;"></div>
+              <code>6px</code>
+            </div>
+            <div class="spacing-example">
+              <div class="spacing-box" style="width: 32px; height: 32px;"></div>
+              <code>8px</code>
+            </div>
+            <div class="spacing-example">
+              <div class="spacing-box" style="width: 48px; height: 48px;"></div>
+              <code>12px</code>
+            </div>
+            <div class="spacing-example">
+              <div class="spacing-box" style="width: 64px; height: 64px;"></div>
+              <code>16px</code>
+            </div>
+          </div>
+        </section>
+
+        <!-- Components -->
+        <section class="section">
+          <h2>Components</h2>
+          <p>Our components follow atomic design principles: Atoms → Molecules → Organisms</p>
+          
+          <h3>Atoms</h3>
+          <h4>Container</h4>
+          <div class="component-example">
+            <div style="border: 2px dashed #FDB948; padding: 1rem; max-width: 400px; margin: 0 auto;">
+              <p>Content inside Container atom</p>
+              <p>Max-width: 1272px (WordPress standard)</p>
+              <p>Responsive padding using semantic tokens</p>
+            </div>
+          </div>
+          
+          <h4>Buttons</h4>
+          <div class="button-grid">
+            <button class="btn btn-primary">Primary Button</button>
+            <button class="btn btn-secondary">Secondary Button</button>
+            <button class="btn btn-ghost">Ghost Button</button>
+            <button class="btn btn-outline">Outline Button</button>
+          </div>
+
+          <h3>Molecules</h3>
+          <h4>StatCard (General)</h4>
+          <div class="card-grid">
+            <div class="stat-card">
+              <div class="stat-number">97%</div>
+              <div class="stat-description">Loan approval rate</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">14</div>
+              <div class="stat-description">Years of experience</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">2,000+</div>
+              <div class="stat-description">Happy customers</div>
+            </div>
+          </div>
+          
+          <h4>FooterStatCard (Specialized)</h4>
+          <div style="background: #262626; padding: 2rem; border-radius: 8px; margin: 1rem 0;">
+            <div style="display: flex; gap: 4rem; justify-content: flex-start;">
+              <div style="text-align: left;">
+                <div style="color: white; font-size: 2.5rem; font-weight: 800; line-height: 1.25; margin-bottom: 0.5rem;">60%</div>
+                <div style="color: white; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em;">average loan approval rate</div>
+              </div>
+              <div style="text-align: left;">
+                <div style="color: white; font-size: 2.5rem; font-weight: 800; line-height: 1.25; margin-bottom: 0.5rem;">97%</div>
+                <div style="color: white; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em;">our loan approval rate</div>
+              </div>
+              <div style="text-align: left;">
+                <div style="color: white; font-size: 2.5rem; font-weight: 800; line-height: 1.25; margin-bottom: 0.5rem;">2,000+</div>
+                <div style="color: white; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em;">5 star reviews on google</div>
+              </div>
+            </div>
+          </div>
+
+          <h4>Purpose Cards</h4>
+          <div class="card-grid">
+            <div class="purpose-card peach">
+              <div class="badge">Most Popular</div>
+              <h4>🏠 Buy My First Home</h4>
+              <p>Navigate your first home purchase confidently and stress-free with full guidance on each step.</p>
+              <button class="btn btn-primary">Learn More</button>
+            </div>
+            <div class="purpose-card">
+              <h4>🔄 Refinance My Loan</h4>
+              <p>Reduce your home loan repayments and achieve financial flexibility.</p>
+              <button class="btn btn-primary">Learn More</button>
+            </div>
+          </div>
+          
+          <h3>Organisms</h3>
+          <h4>Footer Section</h4>
+          <div class="component-example">
+            <p>Complex organism composed of:</p>
+            <ul style="margin: 1rem 0; padding-left: 2rem;">
+              <li><strong>Container atoms</strong> for layout structure</li>
+              <li><strong>FooterStatCard molecules</strong> for statistics</li>
+              <li><strong>Button atoms</strong> for call-to-action</li>
+              <li><strong>Typography atoms</strong> for text content</li>
+            </ul>
+            <p>Demonstrates atomic design principles in practice</p>
+          </div>
+        </section>
+
+        <!-- Usage -->
+        <section class="section">
+          <h2>Usage Guidelines</h2>
+          
+          <h3>Import Components</h3>
+          <div class="code-block">
+// Atomic Design Components<br>
+import Container from '@/components/atoms/Container/Container.astro';<br>
+import Button from '@/components/atoms/Button/Button.astro';<br>
+import StatCard from '@/components/molecules/StatCard/StatCard.astro';<br>
+import FooterStatCard from '@/components/molecules/FooterStatCard/FooterStatCard.astro';<br>
+import Footer from '@/components/sections/Footer.astro';<br><br>
+// Design Tokens<br>
+import { semantic } from '@/tokens/semantic';
+          </div>
+
+          <h3>Design Tokens in CSS</h3>
+          <div class="code-block">
+/* Use CSS custom properties */<br>
+background: var(--hg-yellow-primary);<br>
+color: var(--hg-gray-dark);<br>
+padding: var(--hg-section-padding);
+          </div>
+
+          <h3>Component Usage</h3>
+          <div class="code-block">
+&lt;!-- Atomic Design in Practice --&gt;<br>
+&lt;Container&gt;<br>
+&nbsp;&nbsp;&lt;FooterStatCard number="97%" description="loan approval rate" /&gt;<br>
+&nbsp;&nbsp;&lt;Button variant="primary" size="lg" href="/contact"&gt;Get Started&lt;/Button&gt;<br>
+&lt;/Container&gt;<br><br>
+&lt;!-- Astro Tokens --&gt;<br>
+&lt;style define:vars={{ brandPrimary: semantic.color.brand.primary }}&gt;<br>
+&nbsp;&nbsp;.footer { background: var(--brandPrimary); }<br>
+&lt;/style&gt;
+          </div>
+        </section>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 2rem 0; border-top: 1px solid #eee; margin-top: 4rem;">
+          <p style="color: #666; font-size: 0.875rem;">
+            Hunter Galloway Design System v1.0.0 • 
+            Built with Astro & TypeScript • 
+            <a href="/" style="color: #FDB948;">← Back to Site</a>
+          </p>
+        </footer>
+      </div>
+    </main>
+  </body>
+</html>

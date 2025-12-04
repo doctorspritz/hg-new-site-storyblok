@@ -1,0 +1,176 @@
+---
+/**
+ * Molecule: FeatureItem
+ * Icon + text with optional tooltip. Suitable for use inside lists.
+ */
+import Icon from '../atoms/Icon.astro';
+
+interface Props {
+  text: string;
+  tooltip?: string;
+  icon?: string;
+  iconSrc?: string;
+  iconAlt?: string;
+  /** Optional substring to emphasize (and attach tooltip to) */
+  highlightText?: string;
+  class?: string;
+  /** Visual style: default or badge (green circle with tick) */
+  styleVariant?: 'default' | 'badge';
+}
+
+const {
+  text,
+  tooltip,
+  icon = 'checkmark',
+  iconSrc,
+  iconAlt = '',
+  highlightText,
+  class: className = '',
+  styleVariant = 'default',
+} = Astro.props as Props;
+
+// Prepare optional highlighted split
+let before = '';
+let highlight = '';
+let after = '';
+if (highlightText && text.includes(highlightText)) {
+  const i = text.indexOf(highlightText);
+  before = text.slice(0, i);
+  highlight = text.slice(i, i + highlightText.length);
+  after = text.slice(i + highlightText.length);
+}
+---
+
+<div class:list={['hg-FeatureItem', className]}>
+  {
+    styleVariant === 'badge' ? (
+      <span class="bullet-icon" aria-hidden="true">
+        <Icon name="checkmark" size="md" class="icon" />
+      </span>
+    ) : iconSrc ? (
+      <img
+        src={iconSrc}
+        alt={iconAlt}
+        class="icon-img"
+        width="16"
+        height="16"
+      />
+    ) : (
+      <Icon name={icon} size="sm" color="primary" class="icon" />
+    )
+  }
+  <span class="content">
+    {
+      highlight ? (
+        <>
+          {before}
+          <span
+            class:list={[tooltip ? 'with-tooltip' : '', 'highlight']}
+            {...(tooltip ? { 'data-tooltip': tooltip, tabindex: '0' } : {})}
+          >
+            {highlight}
+          </span>
+          {after}
+        </>
+      ) : tooltip ? (
+        <span class="with-tooltip" data-tooltip={tooltip} tabindex="0">
+          {text}
+        </span>
+      ) : (
+        text
+      )
+    }
+  </span>
+  <slot />
+</div>
+
+<style>
+  .hg-FeatureItem {
+    display: flex;
+    align-items: center; /* middle-align icon to text */
+    gap: var(--space-sm);
+  }
+
+  .hg-FeatureItem .icon {
+    width: var(--feature-icon-size, var(--space-lg));
+    height: var(--feature-icon-size, var(--space-lg));
+    color: var(--color-interactive-primary);
+    flex-shrink: 0;
+    margin-top: 0;
+  }
+
+  .hg-FeatureItem .icon-img {
+    width: var(--feature-icon-size, var(--space-lg));
+    height: var(--feature-icon-size, var(--space-lg));
+    object-fit: contain;
+    flex-shrink: 0;
+    margin-top: 0;
+  }
+
+  .hg-FeatureItem .bullet-icon {
+    width: var(--feature-icon-size, var(--space-lg));
+    height: var(--feature-icon-size, var(--space-lg));
+    background: var(--color-feedback-success); /* HG green */
+    color: var(--color-text-inverse); /* white */
+    border-radius: var(--radius-pill); /* fully round */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 0;
+  }
+
+  .hg-FeatureItem .content {
+    color: var(--color-text-body);
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-normal);
+  }
+
+  .hg-FeatureItem .with-tooltip {
+    cursor: help;
+    border-bottom: 1px dotted var(--color-text-subtle);
+    position: relative;
+  }
+
+  .hg-FeatureItem .highlight {
+    font-weight: var(--font-weight-bold);
+    text-decoration: underline;
+    text-underline-offset: var(--space-2xs);
+  }
+
+  /* Tokenized tooltip bubble on hover/focus */
+  .hg-FeatureItem .with-tooltip:hover::after,
+  .hg-FeatureItem .with-tooltip:focus-visible::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    transform: translateY(var(--space-xs));
+    background: var(--color-background-body);
+    color: var(--color-text-body);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-xs) var(--space-sm);
+    box-shadow: var(--shadow-sm);
+    z-index: var(--z-index-tooltip);
+    white-space: normal;
+    max-width: var(--size-content-max-width-md);
+  }
+
+  @media (width <= 48rem) {
+    .hg-FeatureItem .icon {
+      width: var(--space-md);
+      height: var(--space-md);
+    }
+
+    .hg-FeatureItem .content {
+      font-size: var(--font-size-sm);
+    }
+
+    .hg-FeatureItem .icon-img {
+      width: var(--space-md);
+      height: var(--space-md);
+    }
+  }
+</style>

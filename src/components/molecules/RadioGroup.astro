@@ -1,0 +1,144 @@
+---
+/**
+ * Molecule: RadioGroup
+ * Renders a labelled group of RadioButton atoms with helper/error text.
+ */
+import RadioButton from '../atoms/RadioButton.astro';
+
+interface Option {
+  label: string;
+  value: string;
+  disabled?: boolean;
+}
+
+interface Props {
+  name: string;
+  label?: string;
+  options: Option[];
+  value?: string;
+  required?: boolean;
+  disabled?: boolean;
+  helper?: string;
+  error?: string;
+  orientation?: 'horizontal' | 'vertical';
+  variant?: 'button' | 'plain';
+}
+
+const {
+  name,
+  label,
+  options = [],
+  value,
+  required = false,
+  disabled = false,
+  helper,
+  error,
+  orientation = 'horizontal',
+  variant = 'button',
+} = Astro.props as Props;
+
+const describedById = helper
+  ? `${name}-helper`
+  : error
+    ? `${name}-error`
+    : undefined;
+---
+
+<fieldset
+  class:list={[
+    'hg-RadioGroup',
+    `orientation-${orientation}`,
+    { 'is-disabled': disabled, 'is-invalid': !!error },
+  ]}
+>
+  {
+    label && (
+      <legend id={`${name}-legend`} class="group-label">
+        {label}
+        {required ? ' *' : ''}
+      </legend>
+    )
+  }
+
+  <div
+    class="options"
+    role="radiogroup"
+    aria-labelledby={label ? `${name}-legend` : undefined}
+    aria-describedby={describedById}
+  >
+    {
+      options.map((opt) => (
+        <RadioButton
+          name={name}
+          value={opt.value}
+          label={opt.label}
+          checked={value === opt.value}
+          disabled={disabled || opt.disabled}
+          required={required}
+          variant={variant}
+        />
+      ))
+    }
+  </div>
+
+  {
+    helper && !error && (
+      <div id={`${name}-helper`} class="helper" role="note">
+        {helper}
+      </div>
+    )
+  }
+  {
+    error && (
+      <div id={`${name}-error`} class="error" role="alert">
+        {error}
+      </div>
+    )
+  }
+</fieldset>
+
+<style>
+  .hg-RadioGroup {
+    display: grid;
+    gap: var(--space-sm);
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  .group-label {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+    margin-bottom: var(--space-xs);
+  }
+
+  .options {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .orientation-vertical .options {
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .helper {
+    color: var(--color-text-subtle);
+    font-size: var(--font-size-sm);
+  }
+
+  .error {
+    color: var(--color-feedback-error);
+    font-size: var(--font-size-sm);
+  }
+
+  .is-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .is-invalid .group-label {
+    color: var(--color-feedback-error);
+  }
+</style>

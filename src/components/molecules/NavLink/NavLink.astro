@@ -1,0 +1,102 @@
+---
+/**
+ * NavLink Component
+ * Hunter Galloway Design System - Atomic Component
+ * 
+ * A navigation link component that provides consistent styling and behavior.
+ * Can be used in headers, footers, and other navigation contexts.
+ */
+
+export interface Props {
+  href: string;
+  hasDropdown?: boolean;
+  isActive?: boolean;
+  showChevron?: boolean;
+  chevronDirection?: 'down' | 'right';
+  class?: string;
+}
+
+const {
+  href,
+  hasDropdown = false,
+  isActive = false,
+  showChevron = false,
+  chevronDirection = 'down',
+  class: additionalClasses = '',
+} = Astro.props;
+
+const navLinkClasses = [
+  'hg-nav-link',
+  hasDropdown && 'hg-nav-link--dropdown',
+  isActive && 'hg-nav-link--active',
+  additionalClasses,
+].filter(Boolean).join(' ');
+
+const dataAttributes = {
+  'data-dropdown': hasDropdown ? 'true' : undefined,
+};
+---
+
+<a 
+  href={href} 
+  class={navLinkClasses}
+  {...dataAttributes}
+>
+  <slot />
+  {showChevron && (
+    <svg 
+      class={`hg-nav-link__chevron hg-nav-link__chevron--${chevronDirection}`}
+      width="16" 
+      height="16" 
+      viewBox="0 0 24 24" 
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      {chevronDirection === 'down' ? (
+        <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+      ) : (
+        <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+      )}
+    </svg>
+  )}
+</a>
+
+<style>
+.hg-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 100%;
+  text-decoration: none;
+  letter-spacing: -0.04em;
+  text-transform: capitalize;
+  padding: 5px 0;
+  border-bottom: 1px dashed #828282;
+  white-space: nowrap;
+  color: inherit;
+  line-height: 120%;
+}
+
+.hg-nav-link:hover {
+  color: #ffba3a;
+  border-bottom-color: #ffba3a;
+}
+
+.hg-nav-link--active {
+  color: #ffba3a;
+  border-bottom-color: #ffba3a;
+}
+
+.hg-nav-link__chevron {
+  flex-shrink: 0;
+  margin-left: 4px;
+  transition: transform 0.3s ease;
+  transform-origin: center;
+}
+
+/* Hover effects for chevron rotation */
+.hg-nav-link:hover .hg-nav-link__chevron {
+  transform: rotate(180deg);
+}
+</style>

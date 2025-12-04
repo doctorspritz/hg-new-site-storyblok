@@ -1,0 +1,80 @@
+---
+/**
+ * Atom: SliderCaption
+ * A tooltip-style caption for displaying slider values
+ * Used above sliders to show current value with arrow pointing down
+ */
+
+export interface Props {
+  /** Caption text content */
+  text?: string;
+  /** Size variant */
+  size?: 'sm' | 'md' | 'lg';
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const { text = '', size = 'sm', class: className = '' } = Astro.props;
+
+// Build CSS classes
+const captionClasses = [
+  'hg-slider-caption',
+  `hg-slider-caption--${size}`,
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<div class={captionClasses}>
+  <slot>{text}</slot>
+</div>
+
+<style>
+  .hg-slider-caption {
+    position: relative;
+    display: inline-block;
+    background-color: var(--color-background-body);
+    color: var(--color-text-body);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+    font-family: var(--font-family-base);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-normal);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  /* Size variants using design tokens */
+  .hg-slider-caption--sm {
+    font-size: var(--font-size-sm);
+    padding: var(--space-2xs) var(--space-xs);
+  }
+
+  .hg-slider-caption--md {
+    font-size: var(--font-size-md);
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  .hg-slider-caption--lg {
+    font-size: var(--font-size-lg);
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  /* Tooltip arrow pointing down */
+  .hg-slider-caption::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: calc(-1 * var(--space-sm)); /* Position just below the caption */
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: var(--space-sm) solid transparent;
+    border-right: var(--space-sm) solid transparent;
+    border-top: var(--space-sm) solid var(--color-background-body);
+    filter: drop-shadow(0 2px 1px var(--color-border-subtle));
+  }
+</style>

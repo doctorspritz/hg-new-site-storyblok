@@ -1,0 +1,168 @@
+---
+/**
+ * Atom: Textarea
+ * Accessible multiline input with size and variant options.
+ */
+import FieldMessage from './FieldMessage.astro';
+interface Props {
+  id?: string;
+  name?: string;
+  value?: string;
+  placeholder?: string;
+  label?: string;
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'border' | 'no-border';
+  disabled?: boolean;
+  required?: boolean;
+  invalid?: boolean;
+  error?: string;
+  helper?: string;
+  rows?: number;
+  cols?: number;
+  resize?: 'none' | 'vertical' | 'both';
+}
+
+const {
+  id,
+  name,
+  value = '',
+  placeholder,
+  label,
+  size = 'md',
+  variant = 'border',
+  disabled = false,
+  required = false,
+  invalid = false,
+  error,
+  helper,
+  rows = 4,
+  cols,
+  resize = 'vertical',
+} = Astro.props as Props;
+
+const computedId = id ?? name ?? `textarea`;
+const describedBy =
+  [helper ? `${computedId}-helper` : null, error ? `${computedId}-error` : null]
+    .filter(Boolean)
+    .join(' ') || undefined;
+---
+
+<div
+  class:list={[
+    'hg-Textarea',
+    `size-${size}`,
+    `variant-${variant}`,
+    { 'is-disabled': disabled, 'is-invalid': invalid || !!error },
+  ]}
+>
+  {
+    label && (
+      <label for={computedId} class="label">
+        {label}
+        {required ? ' *' : ''}
+      </label>
+    )
+  }
+  <textarea
+    id={computedId}
+    name={name}
+    placeholder={placeholder}
+    disabled={disabled}
+    required={required}
+    aria-invalid={invalid || !!error}
+    aria-describedby={describedBy}
+    rows={rows}
+    cols={cols}
+    class="textarea"
+    style={{ resize }}>{value}</textarea
+  >
+  {
+    helper && (
+      <FieldMessage id={`${computedId}-helper`} variant="helper">
+        {helper}
+      </FieldMessage>
+    )
+  }
+  {
+    error && (
+      <FieldMessage id={`${computedId}-error`} variant="error">
+        {error}
+      </FieldMessage>
+    )
+  }
+</div>
+
+<style>
+  .hg-Textarea {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .label {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+    font-size: var(--font-size-sm);
+  }
+
+  .textarea {
+    width: 100%;
+    color: var(--color-text-body);
+    background-color: var(--color-surface);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-form);
+    border-radius: var(--radius-md);
+    outline: none;
+    transition: border-color var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+    padding: var(--space-sm);
+  }
+
+  .textarea:focus {
+    border-color: var(--color-border-focus);
+  }
+
+  .textarea::placeholder {
+    color: var(--color-text-subtle);
+  }
+
+  /* Sizes - using consistent HG form padding */
+  .size-sm .textarea {
+    font-size: var(--font-size-sm);
+    padding: var(--space-sm);
+  }
+
+  .size-md .textarea {
+    font-size: var(--font-size-md);
+    padding: var(--space-sm);
+  }
+
+  .size-lg .textarea {
+    font-size: var(--font-size-lg);
+    padding: var(--space-sm);
+  }
+
+  /* Disabled */
+  .is-disabled .textarea {
+    background-color: var(--color-interactive-disabled);
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+  }
+
+  /* Variant: no-border (white fill, no visible border) */
+  .variant-no-border .textarea {
+    border: none;
+    background-color: var(--color-background-body);
+    color: var(--color-text-body);
+    border-radius: var(--radius-md);
+  }
+
+  /* Invalid */
+  .is-invalid .textarea {
+    border-color: var(--color-feedback-error);
+  }
+
+  .variant-no-border.is-invalid .textarea {
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-feedback-error);
+  }
+</style>

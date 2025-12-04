@@ -1,0 +1,122 @@
+---
+/**
+ * BenefitCard Molecule
+ * Hunter Galloway Design System - Molecular Component
+ * 
+ * Composes Icon and Typography atoms to create a benefit display card.
+ * Used by WhyChooseWidget sections across 7+ pages for trust-building.
+ */
+
+import type { BenefitCardProps } from './BenefitCard.types';
+import Icon from '../../atoms/Icon/Icon.astro';
+import Typography from '../../atoms/Typography/Typography.astro';
+import { semantic } from '../../../tokens/semantic';
+import { component } from '../../../tokens/component';
+
+interface Props extends BenefitCardProps {}
+
+const {
+  icon,
+  title,
+  description,
+  variant = 'default',
+  class: additionalClasses = '',
+} = Astro.props;
+
+// Build CSS classes
+const cardClasses = [
+  'hg-benefit-card',
+  `hg-benefit-card--${variant}`,
+  additionalClasses,
+].filter(Boolean).join(' ');
+---
+
+<div class={cardClasses}>
+  <div class="hg-benefit-card__icon">
+    <Icon name={icon} size="lg" />
+  </div>
+  <div class="hg-benefit-card__content">
+    <Typography element="h3" size="xl" weight="heading" class="hg-benefit-card__title">
+      {title}
+    </Typography>
+    <Typography element="p" size="md" color="secondary" class="hg-benefit-card__description">
+      {description}
+    </Typography>
+  </div>
+</div>
+
+<style define:vars={{
+  spaceMd: semantic.space.md,
+  spaceLg: semantic.space.lg,
+  surfaceAccent: semantic.color.surface.accent,
+  surfaceSecondary: semantic.color.surface.secondary,
+  surfacePrimary: semantic.color.surface.primary,
+  borderPrimary: semantic.color.border.primary,
+  radiusMd: semantic.radius.md,
+  shadowCard: semantic.shadow.card,
+  durationNormal: semantic.duration.normal,
+}}>
+.hg-benefit-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spaceMd);
+  padding: var(--spaceLg);
+  border-radius: var(--radiusMd);
+  transition: all var(--durationNormal) ease;
+}
+
+.hg-benefit-card--default {
+  background: var(--surfaceAccent);
+  border: 1px solid var(--borderPrimary);
+}
+
+.hg-benefit-card--light {
+  background: var(--surfacePrimary);
+  border: 1px solid var(--borderPrimary);
+}
+
+.hg-benefit-card--featured {
+  background: var(--surfaceSecondary);
+  box-shadow: var(--shadowCard);
+  border: none;
+}
+
+.hg-benefit-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadowCard);
+}
+
+.hg-benefit-card__icon {
+  flex-shrink: 0;
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hg-benefit-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.hg-benefit-card__title {
+  margin-bottom: var(--spaceMd);
+}
+
+.hg-benefit-card__description {
+  margin: 0;
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+  .hg-benefit-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .hg-benefit-card__icon {
+    align-self: center;
+  }
+}
+</style>

@@ -1,0 +1,95 @@
+---
+/**
+ * Avatar Atom
+ * Hunter Galloway Design System - Atomic Component
+ * 
+ * Self-contained user avatar image component.
+ * Follows atomic design - single responsibility, no slots, uses only primitives.
+ */
+
+import type { AvatarProps } from './Avatar.types';
+import { semantic } from '../../../tokens/semantic';
+
+interface Props extends AvatarProps {}
+
+const {
+  src,
+  alt,
+  size = 'md',
+  bordered = false,
+  class: additionalClasses = '',
+} = Astro.props;
+
+// Size configurations
+const sizeConfig = {
+  sm: { width: '32px', height: '32px' },
+  md: { width: '48px', height: '48px' },
+  lg: { width: '72px', height: '72px' },
+  xl: { width: '96px', height: '96px' },
+};
+
+const currentSize = sizeConfig[size];
+
+// Build CSS classes
+const avatarClasses = [
+  'hg-avatar',
+  `hg-avatar--${size}`,
+  bordered ? 'hg-avatar--bordered' : '',
+  additionalClasses,
+].filter(Boolean).join(' ');
+---
+
+<div class={avatarClasses}>
+  <img 
+    src={src} 
+    alt={alt} 
+    loading="lazy"
+    class="hg-avatar__image"
+  />
+</div>
+
+<style define:vars={{
+  borderColor: semantic.color.brand.primary,
+  borderWidth: '2px',
+}}>
+.hg-avatar {
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.hg-avatar__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hg-avatar--bordered {
+  border: var(--borderWidth) solid var(--borderColor);
+  padding: 2px;
+}
+
+/* Size variants */
+.hg-avatar--sm {
+  width: 32px;
+  height: 32px;
+}
+
+.hg-avatar--md {
+  width: 48px;
+  height: 48px;
+}
+
+.hg-avatar--lg {
+  width: 72px;
+  height: 72px;
+}
+
+.hg-avatar--xl {
+  width: 96px;
+  height: 96px;
+}
+</style>

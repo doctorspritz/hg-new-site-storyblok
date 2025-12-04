@@ -1,0 +1,183 @@
+---
+/**
+ * Molecule: Breadcrumb
+ * Navigation breadcrumb combining multiple Link atoms with separators.
+ *
+ * Layout: Link > separator > Link > separator > Current
+ * Accessibility: Uses nav element with aria-label, current page marked with aria-current
+ * Separator: Configurable character (default: /)
+ */
+import Link from '../atoms/Link.astro';
+import Icon from '../atoms/Icon.astro';
+
+export interface BreadcrumbItem {
+  /** Link text */
+  text: string;
+  /** Link destination (optional for current page) */
+  href?: string;
+  /** Is this the current page? */
+  current?: boolean;
+}
+
+interface Props {
+  /** Array of breadcrumb items */
+  items: BreadcrumbItem[];
+  /** Separator between items (text or icon name) */
+  separator?: string;
+  /** Use icon as separator */
+  useIconSeparator?: boolean;
+  /** Accessibility label for navigation */
+  ariaLabel?: string;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  items = [],
+  separator = '/',
+  useIconSeparator = false,
+  ariaLabel = 'Breadcrumb navigation',
+  class: className = '',
+} = Astro.props as Props;
+
+// Ensure at least one item exists
+if (items.length === 0) {
+  throw new Error('Breadcrumb requires at least one item');
+}
+
+// Build CSS classes
+const breadcrumbClasses = ['hg-breadcrumb', className].filter(Boolean);
+---
+
+<nav aria-label={ariaLabel} class:list={breadcrumbClasses}>
+  <ol class="breadcrumb-list">
+    {
+      items.map((item, index) => {
+        const isLast = index === items.length - 1;
+        const isCurrent = item.current || isLast;
+
+        return (
+          <li class="breadcrumb-item">
+            {isCurrent ? (
+              <span class="breadcrumb-current" aria-current="page">
+                {item.text}
+              </span>
+            ) : (
+              <Link
+                href={item.href || '#'}
+                variant="subtle"
+                underline="hover"
+                class="breadcrumb-link"
+              >
+                {item.text}
+              </Link>
+            )}
+
+            {!isLast && (
+              <span class="breadcrumb-separator" aria-hidden="true">
+                {useIconSeparator ? (
+                  <Icon
+                    name={separator}
+                    size="xs"
+                    color="subtle"
+                    class="breadcrumb-separator-icon"
+                  />
+                ) : (
+                  separator
+                )}
+              </span>
+            )}
+          </li>
+        );
+      })
+    }
+  </ol>
+  <span class="sr-only">You are here</span>
+  <!-- Optional for additional context to screen readers -->
+</nav>
+
+<style>
+  .hg-breadcrumb {
+    display: block;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-tight);
+  }
+
+  .breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: var(--space-xs);
+  }
+
+  .breadcrumb-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .breadcrumb-link {
+    display: inline-block;
+    color: var(--color-text-subtle);
+    font-weight: var(--font-weight-regular);
+    transition: color var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .breadcrumb-link:hover {
+    color: var(--color-text-link);
+  }
+
+  .breadcrumb-link:focus-visible {
+    outline: var(--outline-width-md) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--space-2xs);
+    border-radius: var(--radius-sm);
+  }
+
+  .breadcrumb-current {
+    display: inline-block;
+    color: var(--color-text-heading);
+    font-weight: var(--font-weight-regular);
+    cursor: default;
+  }
+
+  .breadcrumb-separator {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-text-subtle);
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .breadcrumb-separator-icon {
+    display: inline-flex;
+  }
+
+  /* Responsive: On small screens, allow wrapping */
+  @media (width <= 640px) {
+    .breadcrumb-list {
+      gap: var(--space-2xs);
+    }
+
+    .breadcrumb-item {
+      gap: var(--space-2xs);
+    }
+  }
+
+  /* Screen reader only - visually hidden but accessible */
+  .sr-only {
+    position: absolute;
+    width: var(--space-2xs);
+    height: var(--space-2xs);
+    padding: 0;
+    margin: calc(-1 * var(--space-2xs));
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>

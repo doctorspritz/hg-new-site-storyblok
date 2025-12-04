@@ -1,0 +1,56 @@
+---
+/**
+ * Molecule: NavList
+ * Vertical list of navigation items with optional badges.
+ * Presentation only; no keyboard logic.
+ */
+import MenuItem from './MenuItem.astro';
+import type { NavItem } from '../../navigation/types';
+
+interface Props {
+  items: NavItem[];
+  role?: 'menu' | 'list';
+  itemRole?: 'menuitem' | 'listitem';
+  class?: string;
+}
+
+const {
+  items = [],
+  role = 'list',
+  itemRole = 'listitem',
+  class: className = '',
+} = Astro.props as Props;
+---
+
+<ul
+  class:list={['hg-nav-list', className].filter(Boolean)}
+  role={role === 'menu' ? 'menu' : undefined}
+>
+  {
+    items.map((item) => (
+      <li
+        class="hg-nav-list-item"
+        role={itemRole === 'menuitem' ? 'none' : undefined}
+      >
+        <MenuItem item={item} />
+      </li>
+    ))
+  }
+  <slot />
+  <!-- Allow consumers to append custom items (e.g., footer link) -->
+</ul>
+
+<style>
+  .hg-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-sm);
+  }
+
+  .hg-nav-list-item {
+    display: block;
+    padding: var(--space-2xs) 0; /* row spacing only */
+  }
+</style>

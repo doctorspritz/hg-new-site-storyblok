@@ -1,0 +1,28 @@
+---
+import Container from '../../atoms/Container/Container.astro';
+import Input from '../../atoms/Input/Input.astro';
+import Button from '../../atoms/Button/Button.astro';
+
+interface Props { title?: string }
+const { title = 'Get a free assessment' } = Astro.props as Props;
+---
+<section class="hg-assessment">
+  <Container>
+    <h2 class="hg-assessment__title">{title}</h2>
+    <form class="hg-assessment__form" aria-label="Free assessment form">
+      <label for="assess-name" class="visually-hidden">Name</label>
+      <Input id="assess-name" name="name" placeholder="Your name" />
+      <label for="assess-email" class="visually-hidden">Email</label>
+      <Input id="assess-email" name="email" placeholder="Your email" type="email" />
+      <label for="assess-phone" class="visually-hidden">Phone</label>
+      <Input id="assess-phone" name="phone" placeholder="Your phone" type="tel" />
+      <Button text="Request a call" variant="primary" ariaLabel="Request a call" />
+    </form>
+  </Container>
+  <style>
+  .hg-assessment__form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .hg-assessment__title { margin: 0 0 12px; }
+  </style>
+</section>
+
+

@@ -1,0 +1,97 @@
+---
+/**
+ * PhoneLink Component
+ * Hunter Galloway Design System - Molecular Component
+ * 
+ * Phone link component with WordPress-exact styling for header
+ * Features responsive behavior with icon-only display on tablets
+ */
+
+import Icon from '../../atoms/Icon/Icon.astro';
+import { semantic } from '../../../tokens/semantic';
+
+export interface Props {
+  phoneNumber?: string;
+  displayText?: string;
+  showIcon?: boolean;
+  iconOnly?: boolean;
+  class?: string;
+}
+
+const {
+  phoneNumber = '1300088065',
+  displayText = '1300 088 065', 
+  showIcon = true,
+  iconOnly = false,
+  class: additionalClasses = '',
+} = Astro.props;
+
+const phoneLink = `tel:${phoneNumber}`;
+---
+
+<a href={phoneLink} class={`hg-phone-link ${additionalClasses}`} aria-label="Call Hunter Galloway">
+  {showIcon && (
+    <Icon name="phone" size="sm" color="inherit" inline />
+  )}
+  {!iconOnly && (
+    <span class="hg-phone-link__text">{displayText}</span>
+  )}
+</a>
+
+<style define:vars={{
+  interactivePhoneLink: semantic.color.interactive.phoneLink,
+  interactivePhoneLinkHover: semantic.color.interactive.phoneLinkHover,
+  textPrimary: semantic.color.text.primary,
+  durationNormal: semantic.duration.normal,
+  spaceSm: semantic.space.sm,
+  spaceMd: semantic.space.md,
+  spaceLg: semantic.space.lg,
+}}>
+/* PhoneLink component styles - WordPress exact match */
+.hg-phone-link {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* WordPress exact spacing */
+  background: var(--interactivePhoneLink);
+  border-radius: 60px; /* WordPress full rounded */
+  padding: 10px 24px; /* WordPress exact padding */
+  font-weight: 600;
+  font-size: 15px; /* WordPress exact size */
+  color: var(--textPrimary);
+  text-decoration: none;
+  transition: background-color var(--durationNormal) ease, transform var(--durationNormal) ease;
+  white-space: nowrap;
+}
+
+.hg-phone-link:hover {
+  background-color: var(--interactivePhoneLinkHover);
+  transform: translateY(-1px);
+}
+
+.hg-phone-link__text {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Tablet responsive - icon only between 768px-1250px */
+@media (min-width: 768px) and (max-width: 1250px) {
+  .hg-phone-link {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 50%;
+  }
+  
+  .hg-phone-link__text {
+    display: none;
+  }
+}
+
+/* Mobile - hide completely on very small screens if needed */
+@media (max-width: 480px) {
+  .hg-phone-link {
+    display: none;
+  }
+}
+</style>

@@ -1,0 +1,30 @@
+---
+export interface Props {
+  text?: string;
+  href?: string;
+  src?: string;
+  srcset?: string;
+  alt?: string;
+  title?: string;
+  value?: string;
+  placeholder?: string;
+  ariaLabel?: string;
+}
+const {
+  text = '',
+  href = '#',
+  src = '',
+  srcset = '',
+  alt = '',
+  title = '',
+  value = '',
+  placeholder = '',
+  ariaLabel = '',
+} = Astro.props;
+---
+
+<input
+  class="calc-input-second input-price-exact quiz-form__input quiz-form__input_money"
+  name="step-1-1-exact"
+  type="text"
+/>

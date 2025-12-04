@@ -1,0 +1,122 @@
+---
+/**
+ * Molecule: SearchBox
+ * A search input with integrated search button and icon.
+ * Combines InputField, Button, and Icon atoms with specific search behavior.
+ */
+import InputField from '../../atoms/InputField.astro';
+import Button from '../../atoms/Button.astro';
+import Icon from '../../atoms/Icon.astro';
+
+export interface Props {
+  /** Input field id */
+  id?: string;
+  /** Input field name */
+  name?: string;
+  /** Search input value */
+  value?: string;
+  /** Placeholder text */
+  placeholder?: string;
+  /** Size variant */
+  size?: 'sm' | 'md' | 'lg';
+  /** Search button variant */
+  buttonVariant?: 'primary' | 'secondary' | 'ghost';
+  /** Button text (defaults to icon only) */
+  buttonLabel?: string;
+  /** Show icon in input field */
+  showInputIcon?: boolean;
+  /** Disabled state */
+  disabled?: boolean;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  id = 'search',
+  name = 'search',
+  value = '',
+  placeholder = 'Search...',
+  size = 'md',
+  buttonVariant = 'primary',
+  buttonLabel,
+  showInputIcon = true,
+  disabled = false,
+  class: className = '',
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    'hg-SearchBox',
+    `size-${size}`,
+    { 'is-disabled': disabled },
+    className,
+  ]}
+>
+  <div class="input-container">
+    <InputField
+      id={id}
+      name={name}
+      type="search"
+      value={value}
+      placeholder={placeholder}
+      size={size}
+      disabled={disabled}
+      prefixIcon={showInputIcon ? 'search' : undefined}
+    />
+  </div>
+
+  <div class="button-container">
+    <Button
+      variant={buttonVariant}
+      size={size}
+      disabled={disabled}
+      label={buttonLabel}
+      responsive={true}
+    >
+      {
+        !buttonLabel && (
+          <Icon name="search" size={size === 'sm' ? 'sm' : 'md'} />
+        )
+      }
+    </Button>
+  </div>
+</div>
+
+<style>
+  .hg-SearchBox {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    max-width: var(--size-container-wide);
+  }
+
+  .input-container {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .button-container {
+    margin-left: var(--space-xs);
+  }
+
+  /* Focus states */
+  .hg-SearchBox:focus-within {
+    outline: var(--outline-width-sm) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--space-2xs);
+  }
+
+  /* Disabled state */
+  .is-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Responsive adjustments */
+  @media (width <= 48rem) {
+    .hg-SearchBox {
+      max-width: 100%;
+    }
+  }
+</style>

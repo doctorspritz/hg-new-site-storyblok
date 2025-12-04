@@ -1,0 +1,58 @@
+---
+/**
+ * Molecule: PromoCard
+ * Small promo with title, description and CTA.
+ */
+import Button from '../../atoms/Button.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  cta?: { label: string; href: string };
+  class?: string;
+  ctaSize?: 'sm' | 'md';
+}
+
+const {
+  title,
+  description,
+  cta,
+  class: className = '',
+  ctaSize = 'md',
+} = Astro.props as Props;
+---
+
+<aside class:list={['hg-promo-card', className].filter(Boolean)}>
+  <h3 class="title">{title}</h3>
+  {description && <p class="desc">{description}</p>}
+  {
+    cta && (
+      <Button href={cta.href} variant="primary" size={ctaSize} class="cta">
+        {cta.label}
+      </Button>
+    )
+  }
+</aside>
+
+<style>
+  .hg-promo-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-lg);
+    display: grid;
+    gap: var(--space-sm);
+  }
+
+  .title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+    margin: 0;
+  }
+
+  .desc {
+    margin: 0;
+    color: var(--color-text-body);
+  }
+</style>

@@ -1,0 +1,301 @@
+---
+/* eslint-disable no-unused-vars */
+export interface TabItem {
+  id: string;
+  label: string;
+  content: string;
+  disabled?: boolean;
+  icon?: string;
+}
+
+export interface Props {
+  tabs: TabItem[];
+  activeTab?: string;
+  variant?: 'default' | 'pills' | 'underline';
+  size?: 'sm' | 'md' | 'lg';
+  orientation?: 'horizontal' | 'vertical';
+  fullWidth?: boolean;
+  onTabChange?: (tabId: string) => void;
+}
+
+const {
+  tabs,
+  activeTab,
+  variant = 'default',
+  size = 'md',
+  orientation = 'horizontal',
+  fullWidth = false,
+  onTabChange,
+} = Astro.props;
+
+const tabGroupId = `tab-group-${Math.random().toString(36).slice(2, 11)}`;
+const activeTabId = activeTab || tabs[0]?.id || '';
+
+// Helper function to get tab classes
+const getTabClasses = (tab: TabItem, isActive: boolean) => {
+  const baseClasses = 'tab-item';
+  const stateClasses = isActive ? 'active' : tab.disabled ? 'disabled' : '';
+  const variantClasses = `variant-${variant}`;
+  const sizeClasses = `size-${size}`;
+  const orientationClasses = `orientation-${orientation}`;
+  const widthClasses = fullWidth ? 'full-width' : '';
+
+  return [
+    baseClasses,
+    stateClasses,
+    variantClasses,
+    sizeClasses,
+    orientationClasses,
+    widthClasses,
+  ]
+    .filter(Boolean)
+    .join(' ');
+};
+
+// Helper function to get tab panel classes
+const getTabPanelClasses = (isActive: boolean) => {
+  const baseClasses = 'tab-panel';
+  const stateClasses = isActive ? 'active' : '';
+  const orientationClasses = `orientation-${orientation}`;
+
+  return [baseClasses, stateClasses, orientationClasses]
+    .filter(Boolean)
+    .join(' ');
+};
+---
+
+<div
+  class="tab-group"
+  data-variant={variant}
+  data-size={size}
+  data-orientation={orientation}
+  data-full-width={fullWidth}
+>
+  <div class="tab-list" role="tablist" aria-orientation={orientation}>
+    {
+      tabs.map((tab) => {
+        const isActive = tab.id === activeTabId;
+        const isDisabled = tab.disabled;
+
+        return (
+          <button
+            id={`${tabGroupId}-tab-${tab.id}`}
+            class={getTabClasses(tab, isActive)}
+            role="tab"
+            aria-selected={isActive}
+            aria-controls={`${tabGroupId}-panel-${tab.id}`}
+            aria-disabled={isDisabled}
+            tabindex={isActive ? 0 : -1}
+            disabled={isDisabled}
+            onclick={
+              !isDisabled && onTabChange
+                ? `(${onTabChange.toString()})('${tab.id}')`
+                : undefined
+            }
+          >
+            {tab.icon && (
+              <span class="tab-icon" aria-hidden="true">
+                {tab.icon}
+              </span>
+            )}
+            <span class="tab-label">{tab.label}</span>
+          </button>
+        );
+      })
+    }
+  </div>
+
+  <div class="tab-panels">
+    {
+      tabs.map((tab) => {
+        const isActive = tab.id === activeTabId;
+
+        return (
+          <div
+            id={`${tabGroupId}-panel-${tab.id}`}
+            class={getTabPanelClasses(isActive)}
+            role="tabpanel"
+            aria-labelledby={`${tabGroupId}-tab-${tab.id}`}
+            tabindex={isActive ? 0 : -1}
+          >
+            <div class="tab-content">{tab.content}</div>
+          </div>
+        );
+      })
+    }
+  </div>
+</div>
+
+<style>
+  .tab-group {
+    font-family: var(--font-family-base);
+    width: 100%;
+  }
+
+  .tab-list {
+    display: flex;
+    border-bottom: var(--border-width-sm) solid var(--color-border-subtle);
+    gap: var(--space-xs);
+    margin-bottom: var(--space-md);
+  }
+
+  .tab-group[data-orientation='vertical'] .tab-list {
+    flex-direction: column;
+    border-bottom: none;
+    border-right: var(--border-width-sm) solid var(--color-border-subtle);
+    margin-bottom: 0;
+    margin-right: var(--space-md);
+    min-width: var(--size-dropdown-width-md);
+  }
+
+  .tab-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    border: none;
+    background: transparent;
+    color: var(--color-text-subtle);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-regular);
+    cursor: pointer;
+    transition: all var(--transition-duration-fast);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    position: relative;
+    min-height: var(--space-lg);
+  }
+
+  .tab-item:focus-visible {
+    outline: var(--outline-width-sm) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--space-2xs);
+  }
+
+  .tab-item:hover:not(.disabled) {
+    color: var(--color-text-body);
+    background: var(--color-background-accent);
+  }
+
+  .tab-item.active {
+    color: var(--color-text-heading);
+    background: var(--color-background-surface);
+    border-bottom: var(--border-width-sm) var(--border-style-solid)
+      var(--color-interactive-primary);
+  }
+
+  .tab-item.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    color: var(--color-text-subtle);
+  }
+
+  .tab-group[data-orientation='vertical'] .tab-item {
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  .tab-group[data-orientation='vertical'] .tab-item.active {
+    border-bottom: none;
+    border-right: var(--border-width-sm) var(--border-style-solid)
+      var(--color-interactive-primary);
+  }
+
+  .tab-icon {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-subtle);
+    width: var(--space-md);
+    text-align: center;
+  }
+
+  .tab-label {
+    color: inherit;
+  }
+
+  .tab-panels {
+    position: relative;
+  }
+
+  .tab-panel {
+    display: none;
+    padding: var(--space-md);
+    background: var(--color-background-surface);
+    border-radius: var(--radius-md);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-default);
+  }
+
+  .tab-panel.active {
+    display: block;
+  }
+
+  .tab-content {
+    color: var(--color-text-body);
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Size styles */
+  .tab-group[data-size='sm'] .tab-item {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-sm);
+    min-height: var(--space-md);
+  }
+
+  .tab-group[data-size='lg'] .tab-item {
+    padding: var(--space-md) var(--space-lg);
+    font-size: var(--font-size-lg);
+    min-height: var(--space-xl);
+  }
+
+  /* Variant styles */
+  .tab-group[data-variant='pills'] .tab-item {
+    border-radius: var(--radius-pill);
+    border-bottom: none;
+    margin-bottom: var(--space-xs);
+  }
+
+  .tab-group[data-variant='pills'] .tab-item.active {
+    background: var(--color-interactive-primary);
+    color: var(--color-text-on-primary);
+    border-bottom: none;
+  }
+
+  .tab-group[data-variant='underline'] .tab-item {
+    border-radius: 0;
+    border-bottom: var(--border-width-sm) solid transparent;
+  }
+
+  .tab-group[data-variant='underline'] .tab-item.active {
+    border-bottom-color: var(--color-interactive-primary);
+    background: transparent;
+  }
+
+  .tab-group[data-variant='underline'] .tab-item:hover:not(.disabled) {
+    background: transparent;
+    border-bottom-color: var(--color-border-focus);
+  }
+
+  /* Full width styles */
+  .tab-group[data-full-width='true'] .tab-list {
+    display: grid;
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(var(--control-minwidth-button), 1fr)
+    );
+  }
+
+  .tab-group[data-full-width='true'][data-orientation='vertical'] .tab-list {
+    grid-template-columns: 1fr;
+  }
+
+  /* Responsive adjustments */
+  @media (width <= 48rem) {
+    .tab-group[data-orientation='horizontal'] .tab-list {
+      flex-wrap: wrap;
+    }
+
+    .tab-group[data-full-width='true'] .tab-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

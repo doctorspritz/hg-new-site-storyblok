@@ -1,0 +1,161 @@
+---
+/**
+ * Organism: RentCalculatorSection
+ * Complete weekly rent calculator section with heading, subheading, and calculator card
+ * Uses atomic design principles by composing atoms and molecules
+ */
+import Container from '../atoms/Container.astro';
+import Heading from '../atoms/Heading.astro';
+import Paragraph from '../atoms/Paragraph.astro';
+import RentCalculatorCard from '../molecules/Card/RentCalculatorCard.astro';
+
+export interface Props {
+  /** Section heading text */
+  heading?: string;
+  /** Section subheading/description text */
+  subheading?: string;
+  /** Card heading (slider title) */
+  cardHeading?: string;
+  /** Card subheading (slider description) */
+  cardSubheading?: string;
+  /** Initial rent value for calculator */
+  initialRentValue?: number;
+  /** Minimum rent value */
+  minRentValue?: number;
+  /** Maximum rent value */
+  maxRentValue?: number;
+  /** Step size for rent slider */
+  rentStep?: number;
+  /** Currency symbol */
+  currency?: string;
+  /** Card color variant */
+  cardColor?:
+    | 'default'
+    | 'primary'
+    | 'gray'
+    | 'white'
+    | 'pale-yellow'
+    | 'pale-blue'
+    | 'dark'
+    | 'warm-cream';
+  /** Button text label */
+  buttonText?: string;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  heading = 'Compare your current rent with your mortgage payment',
+  subheading = 'Your mortgage payment could be lower than your current rent.',
+  initialRentValue = 100,
+  minRentValue = 100,
+  maxRentValue = 2500,
+  rentStep = 50,
+  currency = '$',
+  cardHeading = 'What is your weekly rent?',
+  cardSubheading = 'The rent you are currently paying for the property you live in.',
+  cardColor = 'gray',
+  buttonText = 'Calculate',
+  class: className = '',
+} = Astro.props;
+---
+
+<section class:list={['rent-calculator-section', className]}>
+  <Container>
+    <div class="section-content">
+      <div class="section-header">
+        <Heading
+          level={2}
+          size="fluid-4xl"
+          align="center"
+          class="section-heading"
+        >
+          {heading}
+        </Heading>
+
+        {
+          subheading && (
+            <Paragraph class="section-subheading">{subheading}</Paragraph>
+          )
+        }
+      </div>
+
+      <div class="calculator-container">
+        <RentCalculatorCard
+          initialValue={initialRentValue}
+          minValue={minRentValue}
+          maxValue={maxRentValue}
+          step={rentStep}
+          currency={currency}
+          sliderTitle={cardHeading}
+          sliderDescription={cardSubheading}
+          colorVariant={cardColor}
+          buttonText={buttonText}
+        />
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .rent-calculator-section {
+    padding: var(--space-xl) 0;
+    background-color: var(--color-background-body);
+  }
+
+  .section-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xl);
+    max-width: var(--size-container-narrow); /* match ~800px from original */
+    margin: 0 auto; /* center like original site */
+  }
+
+  .section-header {
+    text-align: center;
+    max-width: var(--size-container-narrow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+
+  .section-heading {
+    margin-bottom: var(--space-lg);
+  }
+
+  .section-subheading {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-subtle);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+  }
+
+  .calculator-container {
+    width: 100%;
+    max-width: var(--size-container-narrow); /* align with original width */
+    margin: 0 auto;
+  }
+
+  /* Mobile responsive adjustments */
+  @media (width <= 48rem) {
+    .rent-calculator-section {
+      padding: var(--space-lg) 0;
+    }
+
+    .section-content {
+      gap: var(--space-lg);
+      max-width: 100%;
+    }
+
+    .section-header {
+      padding: 0 var(--space-md);
+      gap: var(--space-sm);
+    }
+
+    .section-subheading {
+      font-size: var(--font-size-md);
+    }
+  }
+</style>

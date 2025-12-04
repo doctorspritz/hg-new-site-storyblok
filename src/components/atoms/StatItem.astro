@@ -1,0 +1,192 @@
+---
+/**
+ * Atom: StatItem
+ * Hunter Galloway Design System - Atom Component
+ *
+ * Simple display of a statistic value and label.
+ *
+ * Classification as Atom:
+ * - Single responsibility: displays one statistic
+ * - Cannot be broken down further
+ * - Reusable building block
+ */
+
+export interface Props {
+  /** The statistic value (e.g., "97%", "14", "2,000+") */
+  value: string;
+  /** The statistic label (e.g., "Loan approval rate") */
+  label: string;
+  /** Additional CSS classes */
+  class?: string;
+  /** Visual variant for composition contexts */
+  variant?: 'default' | 'plain';
+  /** Token size for the numeric value */
+  valueSize?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl';
+  /** Token size for the label text */
+  labelSize?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
+  /** Internal padding size */
+  paddingSize?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+}
+
+const {
+  value,
+  label,
+  class: className = '',
+  variant = 'default',
+  valueSize = '2xl',
+  labelSize = 'sm',
+  paddingSize = 'md',
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    'hg-stat-item',
+    variant === 'plain' ? 'hg-stat-item--plain' : null,
+    `hg-stat-item--pad-${paddingSize}`,
+    className,
+  ]}
+>
+  <p class:list={['value', `value--${valueSize}`]}>{value}</p>
+  <p class:list={['label', `label--${labelSize}`]}>{label}</p>
+</div>
+
+<style>
+  .hg-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: var(--color-background-light-blue);
+    border-radius: var(--radius-md);
+    min-width: var(--size-dropdown-width-md);
+    margin: var(--space-sm);
+  }
+
+  /* Padding size modifiers */
+  .hg-stat-item--pad-none {
+    padding: 0;
+  }
+
+  .hg-stat-item--pad-xs {
+    padding: var(--space-xs);
+  }
+
+  .hg-stat-item--pad-sm {
+    padding: var(--space-sm);
+  }
+
+  .hg-stat-item--pad-md {
+    padding: var(--space-md);
+  }
+
+  .hg-stat-item--pad-lg {
+    padding: var(--space-lg);
+  }
+
+  .hg-stat-item--pad-xl {
+    padding: var(--space-xl);
+  }
+
+  .value {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+    margin: 0 0 var(--space-xs) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  /* Value size modifiers (token-driven) */
+  .value--xs {
+    font-size: var(--font-size-xs);
+  }
+
+  .value--sm {
+    font-size: var(--font-size-sm);
+  }
+
+  .value--md {
+    font-size: var(--font-size-md);
+  }
+
+  .value--lg {
+    font-size: var(--font-size-lg);
+  }
+
+  .value--xl {
+    font-size: var(--font-size-xl);
+  }
+
+  .value--2xl {
+    font-size: var(--font-size-2xl);
+  }
+
+  .value--3xl {
+    font-size: var(--font-size-3xl);
+  }
+
+  .value--4xl {
+    font-size: var(--font-size-4xl);
+  }
+
+  .value--5xl {
+    font-size: var(--font-size-5xl);
+  }
+
+  .label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-subtle);
+    margin: 0;
+    line-height: var(--line-height-normal);
+    max-width: var(--control-minwidth-lg);
+  }
+
+  /* Label size modifiers (token-driven) */
+  .label--xs {
+    font-size: var(--font-size-xs);
+  }
+
+  .label--sm {
+    font-size: var(--font-size-sm);
+  }
+
+  .label--md {
+    font-size: var(--font-size-md);
+  }
+
+  .label--lg {
+    font-size: var(--font-size-lg);
+  }
+
+  .label--xl {
+    font-size: var(--font-size-xl);
+  }
+
+  .label--2xl {
+    font-size: var(--font-size-2xl);
+  }
+
+  .label--3xl {
+    font-size: var(--font-size-3xl);
+  }
+
+  /* Plain variant for embedding inside other tiles/containers */
+  .hg-stat-item--plain {
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .hg-stat-item--plain .label {
+    max-width: none;
+  }
+
+  @media (--bp-sm) {
+    /* Respect explicit valueSize props; only shrink default 2xl on small screens */
+    .value.value--2xl {
+      font-size: var(--font-size-xl);
+    }
+  }
+</style>

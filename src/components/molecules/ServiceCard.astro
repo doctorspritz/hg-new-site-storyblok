@@ -1,0 +1,177 @@
+---
+/**
+ * Molecule: ServiceCard
+ * Hunter Galloway Design System - Service-specific card for homepage services
+ *
+ * Composition of existing atoms: Card + Icon + Heading + Paragraph + Button
+ * Follows HG design tokens and atomic design principles
+ */
+import Card from './Card/Card.astro';
+import Icon from '../atoms/Icon.astro';
+import Heading from '../atoms/Heading.astro';
+import Paragraph from '../atoms/Paragraph.astro';
+import Button from '../atoms/Button.astro';
+
+export interface Props {
+  /** Service title */
+  title: string;
+  /** Service description */
+  description: string;
+  /** Service icon name (must match Icon component names) */
+  icon:
+    | 'first-home'
+    | 'investment'
+    | 'refinance'
+    | 'construction'
+    | 'commercial';
+  /** Optional badge text (e.g., "Popular") */
+  badge?: string;
+  /** Card variant */
+  variant?: 'default' | 'bordered' | 'elevated';
+  /** Link URL for the service */
+  href?: string;
+  /** Button label */
+  buttonLabel?: string;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  title,
+  description,
+  icon,
+  badge,
+  variant = 'elevated',
+  href,
+  buttonLabel = 'Learn More',
+  class: className = '',
+} = Astro.props;
+---
+
+<Card
+  badge={badge}
+  variant={variant}
+  class:list={['hg-ServiceCard', className]}
+>
+  <div class="service-content">
+    <div class="service-header">
+      <div class="service-icon">
+        <Icon
+          name={icon}
+          size="xl"
+          color="primary"
+          alt={`${title} service icon`}
+        />
+      </div>
+      <Heading level={3} class="service-title">
+        {title}
+      </Heading>
+    </div>
+
+    <Paragraph class="service-description">
+      {description}
+    </Paragraph>
+
+    <div class="service-actions">
+      <Button
+        variant="secondary"
+        size="md"
+        href={href}
+        label={buttonLabel}
+        target="_self"
+      />
+    </div>
+  </div>
+</Card>
+
+<style>
+  .hg-ServiceCard {
+    /* Ensure consistent card behavior */
+    max-width: none; /* Override Card's max-width for grid layouts */
+    transition: all var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  /* Hover effects for the entire card */
+  .hg-ServiceCard:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .service-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    height: 100%; /* Fill card height */
+  }
+
+  .service-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-sm);
+  }
+
+  .service-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--space-xl);
+    height: var(--space-xl);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface);
+    transition: transform var(--transition-duration-fast);
+  }
+
+  .hg-ServiceCard:hover .service-icon {
+    transform: scale(1.05);
+  }
+
+  .service-title {
+    margin: 0;
+    color: var(--color-text-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .service-description {
+    flex: 1; /* Take remaining space */
+    margin: 0;
+    text-align: center;
+    color: var(--color-text-body);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .service-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: auto; /* Push to bottom */
+  }
+
+  /* Responsive adjustments */
+  @media (width <= 768px) {
+    .service-header {
+      gap: var(--space-xs);
+    }
+
+    .service-content {
+      gap: var(--space-sm);
+    }
+
+    .service-title {
+      font-size: var(--font-size-md);
+    }
+
+    .service-description {
+      font-size: var(--font-size-sm);
+    }
+  }
+
+  /* Ensure consistent heights in grid layouts */
+  @media (width >= 768px) {
+    .hg-ServiceCard {
+      height: 100%;
+    }
+  }
+</style>

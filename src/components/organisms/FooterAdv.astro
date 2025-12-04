@@ -1,0 +1,181 @@
+---
+/**
+ * Organism: FooterAdv
+ * Recreates the bottom promotional element from huntergalloway.com.au.
+ * Top: group of stats; Bottom: CTA card with heading + button + helper text.
+ * Uses atoms (StatItem, Heading, Paragraph, Button) and Card molecule.
+ */
+import Container from '../atoms/Container.astro';
+import StatItem from '../atoms/StatItem.astro';
+import CTACard from '../molecules/Card/CTACard.astro';
+
+export interface StatSpec {
+  value: string;
+  label: string;
+}
+
+export interface CTAConfig {
+  title: string;
+  description?: string;
+  buttonLabel: string;
+  buttonHref: string;
+  helperText?: string;
+}
+
+export interface Props {
+  /** Stats to render in the top row */
+  stats?: StatSpec[];
+  /** CTA configuration for the bottom card */
+  cta?: CTAConfig;
+  /** Background variant */
+  background?: 'dark' | 'white' | 'gray';
+  /** Section ID */
+  id?: string;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  stats = [
+    { value: '60%', label: 'average loan Approval Rate' },
+    { value: '97%', label: 'our loan Approval rate' },
+    { value: '2,000+', label: '5 star Reviews on google' },
+  ],
+  cta = {
+    title: 'We can find you the perfect home loan solution',
+    buttonLabel: 'Request a Call',
+    buttonHref: '/get-free-assessment/',
+    helperText: 'or video call',
+  },
+  background = 'dark',
+  id = 'footer-adv',
+  class: className = '',
+} = Astro.props as Props;
+
+const sectionClasses = [
+  'hg-footer-adv',
+  `hg-footer-adv--bg-${background}`,
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<section id={id} class={sectionClasses}>
+  <Container class="hg-footer-adv-container" maxWidth="xl">
+    <div class="hg-footer-adv-top">
+      <ul class="hg-footer-adv-stats" role="list">
+        {
+          stats.map((s) => (
+            <li class="hg-footer-adv-stat-item">
+              <StatItem
+                variant="plain"
+                valueSize="4xl"
+                labelSize="md"
+                paddingSize="none"
+                value={s.value}
+                label={s.label}
+              />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="hg-footer-adv-bottom">
+      <CTACard
+        title={cta.title}
+        description={cta.description}
+        buttonLabel={cta.buttonLabel}
+        buttonHref={cta.buttonHref}
+        helperText={cta.helperText}
+        colorVariant="dark"
+        density="compact"
+      />
+    </div>
+  </Container>
+</section>
+
+<style>
+  .hg-footer-adv {
+    padding: var(--space-xl) 0;
+  }
+
+  /* Background variants */
+  .hg-footer-adv--bg-dark {
+    /* Brand dark strip using semantic token */
+    background-color: var(--color-background-brand-dark);
+  }
+
+  .hg-footer-adv--bg-white {
+    background-color: var(--color-background-body);
+  }
+
+  .hg-footer-adv--bg-gray {
+    background-color: var(--color-surface);
+  }
+
+  .hg-footer-adv-container {
+    max-width: var(--size-container-content);
+  }
+
+  /* Top stats row */
+  .hg-footer-adv-top {
+    margin-bottom: var(--space-xl);
+  }
+
+  .hg-footer-adv-stats {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+    align-items: stretch;
+  }
+
+  .hg-footer-adv-stat-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg);
+  }
+
+  /* Ensure proper contrast on dark background */
+  .hg-footer-adv--bg-dark :global(.hg-stat-item .value) {
+    color: var(--color-text-inverse);
+  }
+
+  .hg-footer-adv--bg-dark :global(.hg-stat-item .label) {
+    color: var(--color-text-inverse);
+    opacity: 0.85;
+  }
+
+  /* Bottom CTA spacing */
+  .hg-footer-adv-bottom {
+    display: block;
+
+    /* Horizontal padding so the CTA card doesn't touch edges */
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+
+  /* Responsive adjustments */
+  @media (--bp-md) {
+    .hg-footer-adv-stats {
+      grid-template-columns: 1fr;
+      gap: var(--space-md);
+    }
+
+    .hg-footer-adv-stat-item {
+      padding: var(--space-md);
+    }
+  }
+
+  @media (--bp-min-lg) {
+    .hg-footer-adv-bottom {
+      padding-left: var(--space-lg);
+      padding-right: var(--space-lg);
+    }
+  }
+</style>

@@ -1,0 +1,130 @@
+---
+/**
+ * FooterNavigation Component
+ * Hunter Galloway Design System - Molecular Component
+ * 
+ * Navigation links for footer sections
+ * Refactored to use semantic design tokens for consistency
+ */
+
+import { semantic } from '../../../tokens/semantic';
+
+export interface Props {
+  title?: string;
+  links?: Array<{
+    label: string;
+    href: string;
+    external?: boolean;
+  }>;
+  variant?: 'vertical' | 'horizontal';
+  className?: string;
+}
+
+const {
+  title = '',
+  links = [],
+  variant = 'vertical',
+  className = '',
+} = Astro.props;
+---
+
+<div class={`hg-footer-nav hg-footer-nav--${variant} ${className}`}>
+  {title && <h3 class="hg-footer-nav__title">{title}</h3>}
+  <ul class="hg-footer-nav__list">
+    {links.map((link) => (
+      <li class="hg-footer-nav__item">
+        <a 
+          href={link.href}
+          class="hg-footer-nav__link"
+          {...(link.external && { target: '_blank', rel: 'noopener noreferrer' })}
+        >
+          {link.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style define:vars={{
+  brandPrimary: semantic.color.brand.primary,
+  textInverse: semantic.color.text.inverse,
+  textInverseSecondary: 'rgba(255, 255, 255, 0.7)', // WordPress footer link color
+  fontSizeSm: semantic.typography.size.sm,
+  fontSizeLg: semantic.typography.size.lg,
+  fontWeightBold: semantic.typography.weight.bold,
+  spaceSm: semantic.space.sm,
+  spaceMd: semantic.space.md,
+  spaceLg: semantic.space.lg,
+  durationNormal: semantic.duration.normal,
+}}>
+/* FooterNavigation component styles using design tokens */
+.hg-footer-nav__title {
+  color: var(--brandPrimary); /* WordPress footer titles are yellow */
+  font-size: 20px; /* WordPress footer title size */
+  font-weight: var(--fontWeightBold);
+  margin: 0 0 var(--spaceMd) 0;
+  line-height: 1.2;
+}
+
+.hg-footer-nav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hg-footer-nav__item {
+  margin-bottom: var(--spaceSm);
+}
+
+.hg-footer-nav__link {
+  color: var(--textInverseSecondary); /* WordPress footer link color */
+  text-decoration: none;
+  font-size: var(--fontSizeSm);
+  line-height: 1.4;
+  transition: color var(--durationNormal) ease;
+}
+
+.hg-footer-nav__link:hover {
+  color: var(--brandPrimary);
+  text-decoration: none;
+}
+
+/* Horizontal variant for footer navigation bar */
+.hg-footer-nav--horizontal .hg-footer-nav__list {
+  display: flex;
+  gap: 30px; /* WordPress footer nav gap */
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.hg-footer-nav--horizontal .hg-footer-nav__item {
+  margin-bottom: 0;
+}
+
+.hg-footer-nav--horizontal .hg-footer-nav__title {
+  display: none; /* Hide title in horizontal layout */
+}
+
+/* Responsive design using semantic tokens */
+@media (max-width: 768px) {
+  .hg-footer-nav {
+    text-align: center;
+    margin-bottom: var(--spaceLg);
+  }
+  
+  .hg-footer-nav__title {
+    font-size: var(--fontSizeLg);
+    margin-bottom: var(--spaceSm);
+  }
+  
+  .hg-footer-nav__item {
+    margin-bottom: calc(var(--spaceSm) * 0.67);
+  }
+  
+  .hg-footer-nav--horizontal .hg-footer-nav__list {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+}
+</style>

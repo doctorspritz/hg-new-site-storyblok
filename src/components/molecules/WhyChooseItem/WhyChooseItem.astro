@@ -1,0 +1,107 @@
+---
+import { semantic } from '../../../tokens/semantic';
+
+export interface WhyChooseItemProps {
+  icon: string;
+  title: string;
+  description?: string;
+  variant?: 'default' | 'compact';
+}
+
+const { 
+  icon, 
+  title, 
+  description = '',
+  variant = 'default' 
+} = Astro.props as WhyChooseItemProps;
+---
+
+<div class={`why-choose-item ${variant}`}>
+  <div class="img-holder">
+    <img src={icon} alt="" />
+  </div>
+  <div class="why-choose-item-title">
+    <Fragment set:html={title} />
+  </div>
+  {description && (
+    <div class="why-choose-item-text">
+      <Fragment set:html={description} />
+    </div>
+  )}
+</div>
+
+<style define:vars={{
+  textPrimary: semantic.color.text.primary,
+  textSecondary: semantic.color.text.secondary,
+  brandYellow: semantic.color.brand.primary,
+  spacingXs: semantic.space.xs,
+  spacingSm: semantic.space.sm,
+  spacingMd: semantic.space.md,
+  spacingLg: semantic.space.lg,
+  fontSizeMd: semantic.typography.size.md,
+  fontSizeLg: semantic.typography.size.lg,
+  fontSizeXl: semantic.typography.size.xl,
+  fontWeightBold: semantic.typography.weight.heading,
+  lineHeightBody: semantic.typography.lineHeight.body,
+  lineHeightHeading: semantic.typography.lineHeight.tight,
+}}>
+  .why-choose-item {
+    padding: 0 50px;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .why-choose-item.compact {
+    padding: 0 30px;
+  }
+
+  .img-holder {
+    min-height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+
+  .img-holder img {
+    max-width: 96px;
+    height: auto;
+  }
+
+  .why-choose-item-title {
+    font-size: var(--fontSizeXl);
+    font-weight: var(--fontWeightBold);
+    line-height: var(--lineHeightHeading);
+    margin-bottom: var(--spacingXs);
+    color: var(--textPrimary);
+  }
+
+  .why-choose-item-text {
+    font-size: var(--fontSizeMd);
+    line-height: var(--lineHeightBody);
+    color: var(--textSecondary);
+  }
+
+  .why-choose-item.compact .why-choose-item-title {
+    margin-bottom: 15px;
+  }
+
+  .why-choose-item.compact .img-holder {
+    min-height: 108px;
+  }
+
+  @media screen and (max-width: 991px) {
+    .why-choose-item {
+      padding: 0 20px;
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .why-choose-item {
+      margin-bottom: 70px;
+    }
+  }
+</style>

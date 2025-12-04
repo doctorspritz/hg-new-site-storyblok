@@ -1,0 +1,132 @@
+---
+/**
+ * NavDropdown Molecule - Hunter Galloway Mega Menu (legacy-correct)
+ */
+
+import { semantic } from '../../../tokens/semantic';
+import './NavDropdown.css';
+
+export interface NavDropdownLink {
+  label: string;
+  url: string;
+  badge?: string;
+}
+
+export interface NavDropdownColumn {
+  heading: string;
+  links: NavDropdownLink[];
+  readMore?: { label: string; url: string };
+}
+
+export interface NavDropdownPromo {
+  title: string;
+  description: string;
+  cta: { label: string; url: string };
+}
+
+export interface NavDropdownPromoImage {
+  imageUrl: string;
+  title: string;
+  url: string;
+}
+
+export interface NavDropdownProps {
+  columns: NavDropdownColumn[];
+  promo?: NavDropdownPromo;
+  promoImage?: NavDropdownPromoImage;
+}
+
+const {
+  columns = [],
+  promo,
+  promoImage,
+} = Astro.props as NavDropdownProps;
+
+// Determine layout class based on content
+const layoutClass = promoImage ? 'hg-dropdown--with-image' : 
+                   promo ? 'hg-dropdown--with-promo' : 
+                   'hg-dropdown--standard';
+---
+
+<div class={`hg-dropdown ${layoutClass}`}>
+  <div class="hg-dropdown__container">
+    <!-- Main columns -->
+    <div class="hg-dropdown__columns">
+      {columns.map((column) => (
+        <div class="hg-dropdown__column">
+          {column.heading && (
+            <h3 class="hg-dropdown__heading">{column.heading}</h3>
+          )}
+          <ul class="hg-dropdown__list">
+            {column.links.map((link) => (
+              <li class="hg-dropdown__item">
+                <a href={link.url} class="hg-dropdown__link">
+                  {link.label}
+                  {link.badge && (
+                    <span class="hg-dropdown__badge">{link.badge}</span>
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+          {column.readMore && (
+            <a href={column.readMore.url} class="hg-dropdown__read-more">
+              {column.readMore.label} →
+            </a>
+          )}
+        </div>
+      ))}
+    </div>
+    
+    <!-- Promo Card -->
+    {promo && (
+      <div class="hg-dropdown__promo">
+        <h3 class="hg-dropdown__promo-title">{promo.title}</h3>
+        <p class="hg-dropdown__promo-description">{promo.description}</p>
+        <a href={promo.cta.url} class="hg-dropdown__promo-cta">
+          {promo.cta.label}
+        </a>
+      </div>
+    )}
+    
+    <!-- Promo Image Card -->
+    {promoImage && (
+      <a href={promoImage.url} class="hg-dropdown__image-card">
+        <img 
+          src={promoImage.imageUrl} 
+          alt={promoImage.title}
+          class="hg-dropdown__image"
+        />
+        <div class="hg-dropdown__image-overlay">
+          <h4 class="hg-dropdown__image-title">{promoImage.title}</h4>
+        </div>
+      </a>
+    )}
+  </div>
+</div>
+
+<style define:vars={{
+  nd_brandPrimary: semantic.color.brand.primary,
+  nd_brandAccent: semantic.color.brand.legacyAccent,
+  nd_textPrimary: semantic.color.text.primary,
+  nd_surfaceWhite: semantic.color.surface.white,
+  nd_surfaceLight: semantic.color.surface.secondary,
+  nd_shadowDropdown: semantic.shadow.dropdown,
+}}>
+  :root {
+    --nd-brandPrimary: var(--nd_brandPrimary);
+    --nd-brandAccent: var(--nd_brandAccent);
+    --nd-textPrimary: var(--nd_textPrimary);
+    --nd-surfaceWhite: var(--nd_surfaceWhite);
+    --nd-surfaceLight: var(--nd_surfaceLight);
+    --nd-shadowDropdown: var(--nd_shadowDropdown);
+  }
+</style>
+
+<style>
+  /* Ensure dropdown has a solid background in all contexts */
+  .hg-dropdown {
+    background: var(--color-surface-primary) !important;
+    box-shadow: var(--shadow-lg) !important;
+  }
+</style>

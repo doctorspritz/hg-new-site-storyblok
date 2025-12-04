@@ -1,0 +1,270 @@
+---
+/**
+ * Molecule: ReviewCard
+ * Displays a customer review with avatar, name, expandable text, and star rating.
+ * Uses existing atoms and molecules for consistency.
+ */
+import Image from '../../atoms/Image.astro';
+import Paragraph from '../../atoms/Paragraph.astro';
+import Link from '../../atoms/Link.astro';
+import Rating from '../Rating.astro';
+
+export interface Props {
+  /** User's name */
+  userName: string;
+  /** User's avatar image source */
+  userAvatar: string;
+  /** Alt text for the avatar */
+  userAvatarAlt?: string;
+  /** Review text content */
+  reviewText: string;
+  /** Star rating (1-5) */
+  rating: number;
+  /** Maximum length before showing "Read more" */
+  textTruncateLength?: number;
+  /** Additional CSS classes */
+  class?: string;
+  /** Visual variant */
+  variant?: 'default' | 'featured';
+  /** Rating size */
+  ratingSize?: 'sm' | 'md' | 'lg' | 'xl';
+}
+
+const {
+  userName,
+  userAvatar,
+  userAvatarAlt = 'user',
+  reviewText,
+  rating = 5,
+  textTruncateLength = 150,
+  class: className = '',
+  variant = 'default',
+  ratingSize = 'sm',
+} = Astro.props;
+
+// Determine if text should be truncated
+const shouldTruncate = reviewText.length > textTruncateLength;
+const truncatedText = shouldTruncate
+  ? reviewText.slice(0, textTruncateLength).trim() + '...'
+  : reviewText;
+---
+
+<div class:list={['hg-ReviewCard', className]}>
+  <div
+    class:list={[
+      'hg-review-card-img-holder',
+      variant === 'featured' && 'is-featured',
+    ]}
+  >
+    <Image src={userAvatar} alt={userAvatarAlt} radius="full" />
+  </div>
+
+  <Paragraph
+    class="hg-review-card-user-name"
+    size="lg"
+    color={variant === 'featured' ? 'inverse' : 'heading'}
+    weight={variant === 'featured' ? 'bold' : 'regular'}
+  >
+    {userName}
+  </Paragraph>
+
+  <div class="hg-review-card-slide-content">
+    <Paragraph
+      class="hg-review-card-text hg-review-card-line-3"
+      color={variant === 'featured' ? 'inverse' : 'body'}
+    >
+      {shouldTruncate ? truncatedText : reviewText}
+    </Paragraph>
+
+    {
+      shouldTruncate && (
+        <Link
+          href="#"
+          variant="subtle"
+          tone={variant === 'featured' ? 'inverse' : 'default'}
+          class="hg-review-card-btn-show-more"
+          ariaLabel={`Read more of ${userName}'s review`}
+        >
+          <span class="hg-review-card-more">
+            ... <span>Read more</span>
+          </span>
+          <span class="hg-review-card-less hg-review-card-hidden">
+            Show less
+          </span>
+        </Link>
+      )
+    }
+  </div>
+
+  <div class="hg-review-card-rating">
+    <Rating
+      rating={rating}
+      showText={false}
+      size={ratingSize}
+      color={variant === 'featured' ? 'primary' : 'warning'}
+    />
+  </div>
+</div>
+
+<style>
+  /* ReviewCard Component Styles */
+  .hg-ReviewCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+    max-width: var(--size-content-max-width-lg);
+    transition: transform var(--transition-duration-base)
+      var(--transition-timing-function-ease);
+  }
+
+  .hg-ReviewCard:hover {
+    transform: translateY(calc(var(--space-xs) * -1));
+  }
+
+  /* Featured variant (placed after base rules to avoid specificity warnings) */
+
+  .hg-review-card-img-holder {
+    width: var(--width-lg);
+    height: var(--height-lg);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+    margin-bottom: var(--space-md);
+  }
+
+  .hg-review-card-user-name {
+    font-size: var(--font-size-lg);
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .hg-review-card-slide-content {
+    margin-bottom: var(--space-md);
+    width: 100%;
+  }
+
+  .hg-review-card-text {
+    line-height: var(--line-height-relaxed);
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .hg-review-card-text.hg-review-card-line-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hg-review-card-text.expanded {
+    display: block;
+    -webkit-line-clamp: unset;
+  }
+
+  .hg-review-card-btn-show-more {
+    display: inline-block;
+    color: var(--color-text-link);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: color var(--transition-duration-base)
+      var(--transition-timing-function-ease);
+  }
+
+  .hg-review-card-btn-show-more:hover {
+    color: var(--color-text-link-hover);
+  }
+
+  .hg-review-card-more,
+  .hg-review-card-less {
+    display: inline;
+  }
+
+  .hg-review-card-less.hg-review-card-hidden,
+  .hg-review-card-more.hg-review-card-hidden {
+    display: none;
+  }
+
+  .hg-review-card-rating {
+    margin-top: var(--space-md);
+  }
+
+  /* Responsive adjustments */
+  @media (width <= 48rem) {
+    .hg-ReviewCard {
+      padding: var(--space-md);
+      max-width: 100%;
+    }
+
+    .hg-review-card-img-holder {
+      width: var(--width-md);
+      height: var(--width-md);
+    }
+  }
+
+  /* Featured variant (after base rules) */
+  .hg-ReviewCard.featured {
+    background-color: var(--color-text-body);
+    color: var(--color-text-inverse);
+    position: relative;
+    padding-top: calc(var(--space-lg) + var(--height-lg) / 2);
+    overflow: visible; /* allow avatar to protrude above card */
+  }
+
+  /* Color and weight for featured state are set via Paragraph atom props */
+
+  .hg-ReviewCard.featured .hg-review-card-img-holder.is-featured {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: var(--z-index-sticky);
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const reviewCards = document.querySelectorAll('.hg-ReviewCard');
+
+    reviewCards.forEach((card) => {
+      const toggle = card.querySelector('.hg-review-card-btn-show-more');
+      if (!toggle) return;
+
+      const textElement = card.querySelector('.hg-review-card-text');
+      const moreSpan = card.querySelector('.hg-review-card-more');
+      const lessSpan = card.querySelector('.hg-review-card-less');
+
+      if (!textElement || !moreSpan || !lessSpan) return;
+
+      toggle.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        const isExpanded = textElement.classList.contains('expanded');
+
+        if (isExpanded) {
+          // Collapse
+          textElement.classList.remove('expanded');
+          textElement.classList.add('hg-review-card-line-3');
+          moreSpan.classList.remove('hg-review-card-hidden');
+          lessSpan.classList.add('hg-review-card-hidden');
+          toggle.setAttribute('aria-expanded', 'false');
+        } else {
+          // Expand
+          textElement.classList.add('expanded');
+          textElement.classList.remove('hg-review-card-line-3');
+          moreSpan.classList.add('hg-review-card-hidden');
+          lessSpan.classList.remove('hg-review-card-hidden');
+          toggle.setAttribute('aria-expanded', 'true');
+        }
+      });
+
+      // Set initial aria-expanded state
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+</script>

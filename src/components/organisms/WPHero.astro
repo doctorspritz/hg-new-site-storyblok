@@ -1,0 +1,164 @@
+---
+import Heading from '../atoms/Heading.astro';
+import Paragraph from '../atoms/Paragraph.astro';
+import Button from '../atoms/Button.astro';
+
+interface CTA {
+  href: string;
+  label: string;
+}
+interface Props {
+  title: string;
+  subtitle?: string;
+  cta?: CTA | null;
+  background?: string; // absolute or relative URL (desktop/tablet)
+  mobileBackground?: string; // optional mobile-specific background
+}
+
+const {
+  title,
+  subtitle = '',
+  cta = null,
+  background = '',
+  mobileBackground = '',
+} = Astro.props as Props;
+// Expose background URLs as CSS vars to enable responsive switching in CSS
+const bgStyle = (() => {
+  const parts: string[] = [];
+  if (background) parts.push(`--hg-wphero-bg-desktop: url('${background}')`);
+  if (mobileBackground)
+    parts.push(`--hg-wphero-bg-mobile: url('${mobileBackground}')`);
+  return parts.join('; ');
+})();
+---
+
+<section id="hg-WPHero" class="hg-WPHero" style={bgStyle}>
+  <div class="overlay" aria-hidden="true"></div>
+  <div class="container">
+    <div class="content">
+      <Heading level={1} color="inverse" class="title">{title}</Heading>
+      {
+        subtitle && (
+          <Paragraph color="inverse" class="subtitle">
+            {subtitle}
+          </Paragraph>
+        )
+      }
+      {
+        cta && (
+          <div class="actions">
+            <Button href={cta.href} variant="primary" size="lg">
+              {cta.label}
+            </Button>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  /* stylelint-disable color-function-alias-notation, color-function-notation, alpha-value-notation, media-feature-range-notation, at-rule-empty-line-before, rule-empty-line-before, comment-empty-line-before, scale-unlimited/declaration-strict-value */
+  .hg-WPHero {
+    position: relative;
+    /* Match WP hero composition: gradient overlay + right-anchored image */
+    background-image:
+      linear-gradient(
+        270deg,
+        rgba(48, 147, 152, 0) 40%,
+        rgba(48, 147, 152, 0.7) 60%,
+        rgb(48, 147, 152) 70%
+      ),
+      var(--hg-wphero-bg-desktop);
+    background-size: cover, cover;
+    background-position:
+      0% 0%,
+      100% 50%;
+
+    /* Desktop/tablet vertical rhythm similar to WP */
+    padding: var(--padding-xl) var(--padding-md);
+
+    /* Parity min-heights based on live captures */
+    min-height: var(--size-hero-min-height-lg);
+  }
+
+  .hg-WPHero .overlay {
+    position: absolute;
+    inset: 0;
+
+    /* Keep a subtle dark veil to improve text contrast on busy areas */
+    background: linear-gradient(to bottom, rgb(0 0 0 / 10%), rgb(0 0 0 / 10%));
+    z-index: 0;
+  }
+
+  .hg-WPHero .container {
+    max-width: var(--size-container-wide);
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hg-WPHero .content {
+    max-width: var(--size-content-max-width-xl);
+    color: var(--color-text-inverse);
+  }
+
+  .hg-WPHero .title {
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-fluid-hero-title);
+    line-height: var(--line-height-tight);
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .hg-WPHero .subtitle {
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-fluid-hero-subtitle);
+    opacity: 0.95;
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .hg-WPHero .actions :global(a),
+  .hg-WPHero .actions :global(button) {
+    box-shadow: var(--shadow-lg);
+  }
+
+  @media (--bp-md) {
+    .hg-WPHero {
+      padding: var(--padding-xl) var(--padding-md);
+    }
+
+    .hg-WPHero .content {
+      max-width: 100%;
+    }
+  }
+
+  /* Tablet parity */
+  @media (min-width: 600px) and (max-width: 1023.98px) {
+    .hg-WPHero {
+      min-height: var(--size-hero-min-height-xl);
+    }
+  }
+
+  /* Mobile parity */
+  @media (max-width: 599.98px) {
+    .hg-WPHero {
+      min-height: var(--size-viewport-height-70);
+
+      /* Use mobile-specific background if provided */
+      background-image:
+        linear-gradient(
+          270deg,
+          rgba(48, 147, 152, 0) 40%,
+          rgba(48, 147, 152, 0.7) 60%,
+          rgb(48, 147, 152) 70%
+        ),
+        var(--hg-wphero-bg-mobile, var(--hg-wphero-bg-desktop));
+
+      /* Center the mobile image to keep faces in frame */
+      background-position:
+        0% 0%,
+        50% 50%;
+    }
+  }
+</style>
+<!-- stylelint-enable color-function-alias-notation, color-function-notation, alpha-value-notation, media-feature-range-notation, at-rule-empty-line-before, rule-empty-line-before, comment-empty-line-before, scale-unlimited/declaration-strict-value -->

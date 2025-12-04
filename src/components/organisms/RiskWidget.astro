@@ -1,0 +1,251 @@
+---
+import Heading from '../atoms/Heading.astro';
+import Paragraph from '../atoms/Paragraph.astro';
+import Link from '../atoms/Link.astro';
+import Container from '../atoms/Container.astro';
+import Card from '../molecules/Card/Card.astro';
+import Icon from '../atoms/Icon.astro';
+
+interface RiskItem {
+  icon?: string;
+  title: string;
+  paragraphs: string[];
+}
+
+interface RiskImage {
+  src: string;
+  alt: string;
+}
+
+export interface RiskWidgetCopy {
+  title: string;
+  intro: string;
+  tooltip: string;
+  tooltip_link_text: string;
+  tooltip_link_href: string;
+  items: RiskItem[];
+  image: RiskImage;
+}
+
+export interface Props {
+  id?: string;
+  copy: RiskWidgetCopy;
+  class?: string;
+}
+
+const {
+  id = 'risk-widget',
+  copy,
+  class: className = '',
+} = Astro.props as Props;
+
+// Intro rendering: paragraph with inline link; no tooltip to keep structure simple
+---
+
+<section
+  id={id}
+  class:list={['hg-RiskWidget', className]}
+  aria-labelledby={`${id}-title`}
+>
+  <Container class="risk-container" maxWidth="lg" padding="lg">
+    <div class="inner" style={`--risk-image: url('${copy.image.src}')`}>
+      <Heading
+        id={`${id}-title`}
+        level={2}
+        size="4xl"
+        align="center"
+        class="title"
+      >
+        {copy.title}
+      </Heading>
+
+      <div class="content-row">
+        <div class="left">
+          <Paragraph size="sm" class="intro">
+            {copy.intro}{' '}
+            {
+              copy.tooltip_link_href && (
+                <Link
+                  href={copy.tooltip_link_href}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {copy.tooltip_link_text}
+                </Link>
+              )
+            }
+          </Paragraph>
+
+          <ul class="list" role="list">
+            {
+              copy.items.map((item) => (
+                <li>
+                  <Card
+                    variant="bordered"
+                    colorVariant="white"
+                    class="risk-card"
+                  >
+                    <div class="item-head">
+                      <span class="item-icon" aria-hidden="true">
+                        <Icon name="star" size="lg" color="subtle" />
+                      </span>
+                      <Heading level={3} size="lg" class="list-title">
+                        {item.title}
+                      </Heading>
+                    </div>
+                    {item.paragraphs.map((p) => (
+                      <Paragraph size="sm" class="list-text">
+                        {p}
+                      </Paragraph>
+                    ))}
+                  </Card>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+
+      <!-- Decorative image now applied as background on the inner container; no floating img block -->
+    </div>
+  </Container>
+</section>
+
+<style>
+  .hg-RiskWidget {
+    padding: var(--space-xl) 0;
+    background-color: var(--color-background-body);
+  }
+
+  /* Outer wrapper uses Container atom via .risk-container */
+
+  .hg-RiskWidget .inner {
+    background: var(--color-background-secondary);
+    border-radius: var(--radius-lg);
+
+    /* Match live: top 64, right 0, bottom 48, left 48 */
+    padding: var(--space-2xl) var(--space-xl) var(--space-xl) var(--space-xl);
+    position: relative; /* anchor the decorative image */
+    overflow: hidden; /* keep image inside rounded container */
+
+    /* Decorative image anchored bottom-right */
+    background-image: var(--risk-image);
+    background-repeat: no-repeat;
+    background-position: right bottom;
+    background-size: var(--size-content-max-width-md);
+  }
+
+  .hg-RiskWidget .title {
+    color: var(--color-text-heading);
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .hg-RiskWidget .content-row {
+    display: grid;
+
+    /* Stack so cards can use full available width */
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: var(--space-lg);
+    position: relative;
+    z-index: 1; /* text/cards above decorative image */
+  }
+
+  .hg-RiskWidget .left {
+    padding-left: 0;
+  }
+
+  .hg-RiskWidget .intro {
+    color: var(--color-text-body);
+    margin: 0 0 var(--space-lg) 0;
+    text-align: center;
+    padding: 0 var(--space-lg);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Card list */
+
+  .hg-RiskWidget .list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    /* Cap card width and align to left within container (narrower per spec visual) */
+    max-width: var(--size-content-max-width-md);
+    margin-left: 0;
+    margin-right: auto;
+    margin-top: var(--space-lg);
+  }
+
+  .hg-RiskWidget .risk-card {
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .hg-RiskWidget .risk-card .content {
+    padding: var(--space-ml);
+  }
+
+  .hg-RiskWidget .item-head {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-sm);
+    align-items: center;
+    margin-bottom: var(--space-xs);
+  }
+
+  .hg-RiskWidget .item-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    /* 48px square placeholder */
+    width: var(--space-xl);
+    height: var(--space-xl);
+    border-radius: var(--radius-md);
+    background: var(--color-background-light-blue);
+  }
+
+  .hg-RiskWidget .list-title {
+    margin: 0 0 var(--space-xs) 0;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+  }
+
+  .hg-RiskWidget .list-text {
+    margin: 0 0 var(--space-xs) 0;
+    color: var(--color-text-body);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+  }
+
+  /* Removed floating image block — background handles image */
+
+  .hg-RiskWidget .figure {
+    max-width: var(--size-content-max-width-md);
+    height: auto;
+    display: block;
+  }
+
+  /* Responsive */
+  @media (--bp-md) {
+    .hg-RiskWidget .figure {
+      max-width: var(--size-dropdown-width-lg);
+      margin-top: var(--space-sm);
+    }
+  }
+
+  @media (--bp-sm) {
+    .hg-RiskWidget .inner {
+      padding: var(--space-lg) var(--space-md);
+    }
+
+    .hg-RiskWidget .title {
+      text-align: center;
+    }
+  }
+</style>

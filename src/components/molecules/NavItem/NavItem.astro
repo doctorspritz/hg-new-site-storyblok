@@ -1,0 +1,91 @@
+---
+/**
+ * NavItem Component
+ * Hunter Galloway Design System - Atomic Component
+ * 
+ * A navigation item component that wraps navigation links and dropdowns.
+ * Can be used in headers, footers, and other navigation contexts.
+ */
+
+import { semantic } from '../../../tokens/semantic';
+
+export interface Props {
+  hasDropdown?: boolean;
+  isActive?: boolean;
+  class?: string;
+}
+
+const {
+  hasDropdown = false,
+  isActive = false,
+  class: additionalClasses = '',
+} = Astro.props;
+
+const navItemClasses = [
+  'hg-nav-item',
+  hasDropdown && 'hg-nav-item--dropdown',
+  isActive && 'hg-nav-item--active',
+  additionalClasses,
+].filter(Boolean).join(' ');
+---
+
+<li class={navItemClasses}>
+  <slot />
+</li>
+
+<style define:vars={{
+  brandPrimary: semantic.color.brand.primary,
+}}>
+.hg-nav-item {
+  position: relative;
+  list-style: none;
+}
+
+.hg-nav-item--dropdown:hover .hg-dropdown {
+  pointer-events: auto;
+}
+
+.hg-nav-item--active .hg-nav-link {
+  color: var(--brandPrimary);
+}
+
+/* Hover effects for navigation items */
+.hg-nav-item:hover .hg-nav-link {
+  color: var(--brandPrimary);
+}
+
+/* Ensure only one dropdown is visible at a time */
+.hg-dropdown {
+  display: none !important;
+}
+
+.hg-dropdown.visible {
+  display: block !important;
+}
+
+/* Prevent dropdown overlap issues */
+.hg-nav-item {
+  z-index: 1001;
+}
+
+.hg-nav-item:hover {
+  z-index: 1002;
+}
+
+/* Ensure dropdowns are properly positioned */
+.hg-nav-item .hg-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+/* Override any problematic styles that might force visibility */
+.hg-nav-item .hg-dropdown:not(.visible) {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  display: none !important;
+}
+</style>

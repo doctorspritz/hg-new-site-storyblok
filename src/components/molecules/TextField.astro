@@ -1,0 +1,82 @@
+---
+/**
+ * Molecule: TextField
+ * A labelled text input with optional prefix/suffix adornments and helper/error text.
+ * Composes `FormField` and `InputField` atoms with specific text input behavior.
+ */
+import FormField from './FormField.astro';
+import InputField from '../atoms/InputField.astro';
+import Icon from '../atoms/Icon.astro';
+
+interface Props {
+  id: string;
+  name?: string;
+  type?: 'text' | 'email' | 'password' | 'tel' | 'url' | 'search' | 'number';
+  value?: string;
+  placeholder?: string;
+  label?: string;
+  required?: boolean;
+  disabled?: boolean;
+  invalid?: boolean;
+  helper?: string;
+  error?: string;
+  prefixText?: string;
+  suffixText?: string;
+  prefixIcon?: string;
+  suffixIcon?: string;
+}
+
+const {
+  id,
+  name,
+  type = 'text',
+  value,
+  placeholder,
+  label,
+  required = false,
+  disabled = false,
+  invalid = false,
+  helper,
+  error,
+  prefixText,
+  suffixText,
+  prefixIcon,
+  suffixIcon,
+} = Astro.props;
+---
+
+<FormField
+  id={id}
+  label={label}
+  required={required}
+  helper={helper}
+  error={error}
+>
+  <InputField
+    id={id}
+    name={name}
+    type={type}
+    value={value}
+    placeholder={placeholder}
+    required={required}
+    disabled={disabled}
+    invalid={invalid}
+  >
+    {prefixText && <span slot="prefix">{prefixText}</span>}
+    {
+      prefixIcon && (
+        <span slot="prefix">
+          <Icon name={prefixIcon} size="sm" color="secondary" />
+        </span>
+      )
+    }
+    {suffixText && <span slot="suffix">{suffixText}</span>}
+    {
+      suffixIcon && (
+        <span slot="suffix">
+          <Icon name={suffixIcon} size="sm" color="secondary" />
+        </span>
+      )
+    }
+  </InputField>
+</FormField>

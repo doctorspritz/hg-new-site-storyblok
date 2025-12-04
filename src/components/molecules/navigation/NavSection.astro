@@ -1,0 +1,80 @@
+---
+/**
+ * Molecule: NavSection
+ * Section heading + NavList + optional footer link.
+ */
+import Link from '../../atoms/Link.astro';
+import type { Section } from '../../navigation/types';
+
+interface Props {
+  section: Section;
+  headingLevel?: 2 | 3 | 4;
+}
+
+const { section, headingLevel = 3 } = Astro.props as Props;
+const HeadingTag = `h${headingLevel}` as keyof HTMLElementTagNameMap;
+---
+
+<section class="hg-nav-section">
+  {
+    section.title && (
+      <HeadingTag class="section-heading">
+        <span class="heading-text">{section.title}</span>
+        <span class="heading-rule" aria-hidden="true" />
+      </HeadingTag>
+    )
+  }
+
+  <!-- Defer to NavList for items -->
+  <slot name="list" />
+
+  {
+    section.readMore && (
+      <Link
+        href={section.readMore.href}
+        variant="default"
+        underline="dashed-text"
+        class="read-more"
+      >
+        {section.readMore.label}
+      </Link>
+    )
+  }
+</section>
+
+<style>
+  .hg-nav-section {
+    display: grid;
+    gap: var(--space-sm);
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-lg);
+    margin: 0;
+    width: 100%;
+  }
+
+  .heading-text {
+    margin: 0;
+  }
+
+  .heading-rule {
+    flex: 1 1 auto;
+    height: var(--border-width-md);
+    background: var(--color-interactive-primary);
+    opacity: 0.7;
+    border-radius: var(--radius-pill);
+  }
+
+  .read-more {
+    margin-top: var(--space-xs);
+    color: var(--color-text-body);
+  }
+</style>

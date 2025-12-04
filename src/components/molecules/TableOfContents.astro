@@ -1,0 +1,118 @@
+---
+/**
+ * Molecule: TableOfContents
+ * Navigation component for page headings.
+ *
+ * Props:
+ * - items: Array<{ id: string; title: string; level: number }>
+ * - activeId?: string
+ * - class?: string
+ */
+interface TocItem {
+  id: string;
+  title: string;
+  level: number;
+}
+
+interface TocNode extends TocItem {
+  children: TocNode[];
+}
+
+interface Props {
+  items: TocItem[];
+  activeId?: string;
+  class?: string;
+}
+
+const { items = [], activeId, class: className = '' } = Astro.props as Props;
+
+if (items.length === 0) {
+  throw new Error('TableOfContents requires at least one item');
+}
+
+function buildTree(items: TocItem[]): TocNode[] {
+  const root: TocNode = {
+    id: '',
+    title: '',
+    level: 0,
+    children: [],
+  };
+  const stack: TocNode[] = [root];
+  items.forEach((item) => {
+    const node: TocNode = { ...item, children: [] };
+    while (stack.length > 1 && item.level <= stack[stack.length - 1].level) {
+      stack.pop();
+    }
+    stack[stack.length - 1].children.push(node);
+    stack.push(node);
+  });
+  return root.children;
+}
+
+const tree = buildTree(items);
+const classes = ['hg-TableOfContents', className].filter(Boolean).join(' ');
+
+function renderListHTML(nodes: TocNode[]): string {
+  return nodes
+    .map((node) => {
+      const link = `<a href="#${node.id}" data-id="${node.id}" class="toc-link${
+        node.id === activeId ? ' active' : ''
+      }"${node.id === activeId ? ' aria-current="true"' : ''}>${node.title}</a>`;
+      const children =
+        node.children.length > 0
+          ? `<ul class="toc-list">${renderListHTML(node.children)}</ul>`
+          : '';
+      return `<li>${link}${children}</li>`;
+    })
+    .join('');
+}
+---
+
+<nav aria-label="Table of contents" class={classes}>
+  <ul class="toc-list" set:html={renderListHTML(tree)} />
+</nav>
+
+<script>
+  const root = document.currentScript?.closest('.hg-TableOfContents');
+  root?.querySelectorAll('.toc-link').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const id = (event.currentTarget as HTMLAnchorElement).dataset.id;
+      root.dispatchEvent(
+        new CustomEvent('toc:navigate', {
+          detail: { id },
+          bubbles: true,
+        }),
+      );
+    });
+  });
+</script>
+
+<style>
+  .hg-TableOfContents {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-body);
+  }
+
+  .toc-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+
+  .toc-list .toc-list {
+    padding-left: var(--space-md);
+  }
+
+  .toc-link {
+    display: block;
+    padding: var(--space-2xs) 0;
+    color: var(--color-text-link);
+    text-decoration: none;
+  }
+
+  .toc-link:hover,
+  .toc-link[aria-current='true'] {
+    color: var(--color-text-link-hover);
+    font-weight: var(--font-weight-bold);
+  }
+</style>

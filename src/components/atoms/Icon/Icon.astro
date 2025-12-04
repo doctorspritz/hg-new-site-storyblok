@@ -1,0 +1,166 @@
+---
+/**
+ * Icon Component
+ * Hunter Galloway Design System - Atomic Component
+ * 
+ * A flexible SVG icon component supporting both inline SVG icons and external files.
+ * Includes all header icons and semantic icon sizing tokens.
+ */
+
+import type { IconProps } from './Icon.types';
+import { semantic } from '../../../tokens/semantic';
+import inlineIconMap from './Icon.icons';
+
+interface Props extends IconProps {}
+
+const {
+  name,
+  size = 'md',
+  color = 'inherit',
+  class: additionalClasses = '',
+  alt,
+  inline = false,
+} = Astro.props;
+
+// Build CSS classes with semantic tokens
+const iconClasses = [
+  'hg-icon',
+  `hg-icon--${size}`,
+  `hg-icon--${color}`,
+  inline ? 'hg-icon--inline' : 'hg-icon--block',
+  additionalClasses,
+].filter(Boolean).join(' ');
+
+// Inline SVG icon definitions moved to separate file for maintainability
+const inlineIcons = inlineIconMap;
+
+// Check if this is an inline icon or external file
+const isInlineIcon = Object.keys(inlineIcons).includes(name);
+const iconPath = isInlineIcon ? null : `/images/${name}.svg`;
+---
+
+{isInlineIcon ? (
+  <span 
+    class={iconClasses}
+    role={alt ? 'img' : 'presentation'}
+    aria-label={alt || `${name} icon`}
+    aria-hidden={!alt}
+    set:html={inlineIcons[name]}
+  />
+) : (
+  <img 
+    src={iconPath}
+    alt={alt || `${name} icon`}
+    class={iconClasses}
+    loading="lazy"
+    role={alt ? 'img' : 'presentation'}
+    aria-hidden={!alt}
+  />
+)}
+
+<style define:vars={{
+  colorPrimary: semantic.color.interactive.primary,
+  colorSecondary: semantic.color.text.secondary,
+  colorSuccess: semantic.color.status.success,
+  colorWarning: semantic.color.status.warning,
+  colorError: semantic.color.status.error,
+  spaceXs: semantic.space.xs,
+  spaceSm: semantic.space.sm,
+  spaceMd: semantic.space.md,
+  spaceLg: semantic.space.lg,
+  spaceXl: semantic.space.xl,
+}}>
+/* Icon component styles - semantic tokens for sizing */
+.hg-icon {
+  flex-shrink: 0;
+  user-select: none;
+  vertical-align: middle;
+  max-width: 100%;
+  height: auto;
+}
+
+/* For inline SVG icons */
+.hg-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Display variants */
+.hg-icon--inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hg-icon--block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Size variants using semantic tokens */
+.hg-icon--xs {
+  width: 12px; /* 0.75rem */
+  height: 12px;
+}
+
+.hg-icon--sm {
+  width: 16px; /* 1rem - perfect for header icons */
+  height: 16px;
+}
+
+.hg-icon--md {
+  width: 20px; /* 1.25rem - slightly larger for primary actions */
+  height: 20px;
+}
+
+.hg-icon--lg {
+  width: 24px; /* 1.5rem - mobile menu icons */
+  height: 24px;
+}
+
+.hg-icon--xl {
+  width: var(--spaceLg); /* 32px using semantic tokens */
+  height: var(--spaceLg);
+}
+
+.hg-icon--2xl {
+  width: var(--spaceXl); /* 48px using semantic tokens */
+  height: var(--spaceXl);
+}
+
+/* Color variants using semantic tokens */
+.hg-icon--primary {
+  color: var(--colorPrimary);
+}
+
+.hg-icon--secondary {
+  color: var(--colorSecondary);
+}
+
+.hg-icon--success {
+  color: var(--colorSuccess);
+}
+
+.hg-icon--warning {
+  color: var(--colorWarning);
+}
+
+.hg-icon--error {
+  color: var(--colorError);
+}
+
+.hg-icon--inherit {
+  color: inherit;
+}
+
+/* Hover effects for interactive icons */
+.hg-icon--interactive {
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.hg-icon--interactive:hover {
+  transform: scale(1.1);
+}
+</style>

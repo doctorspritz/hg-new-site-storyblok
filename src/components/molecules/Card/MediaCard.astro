@@ -1,0 +1,49 @@
+---
+/**
+ * Molecule: MediaCard (scaffold)
+ * Image + content. Orientation: vertical | horizontal.
+ */
+import Card from './Card.astro';
+import Image from '../../atoms/Image.astro';
+
+interface Props {
+  imageSrc: string;
+  imageAlt?: string;
+  orientation?: 'vertical' | 'horizontal';
+  class?: string;
+}
+
+const {
+  imageSrc,
+  imageAlt = '',
+  orientation = 'vertical',
+  class: className = '',
+} = Astro.props as Props;
+---
+
+<Card class:list={[`hg-MediaCard`, `orientation-${orientation}`, className]}>
+  <div class="media">
+    <Image src={imageSrc} alt={imageAlt} />
+  </div>
+  <div class="body">
+    <slot />
+  </div>
+</Card>
+
+<style>
+  .hg-MediaCard.orientation-horizontal {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+  }
+
+  @media (width <= 48rem) {
+    .hg-MediaCard.orientation-horizontal {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .hg-MediaCard .body {
+    padding-top: var(--space-sm);
+  }
+</style>

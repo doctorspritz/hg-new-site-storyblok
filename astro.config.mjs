@@ -14,33 +14,33 @@ const env = loadEnv("", process.cwd(), 'STORYBLOK');
 export default defineConfig({
 	site: 'https://huntergalloway.com.au',
 	integrations: [
-		mdx(), 
-		sitemap(), 
+		mdx(),
+		sitemap(),
 		tailwind({
 			config: { path: './tailwind.config.js' }
 		}),
 		react(),
-		storyblok({
-			accessToken: env.STORYBLOK_DELIVERY_API_TOKEN,
-			// No region specified = defaults to EU region (which is correct)
-			components: {
-				'page': 'components/storyblok/Page',
-				'hero': 'components/storyblok/Hero',
-				'text': 'components/storyblok/Text',
-				'image': 'components/storyblok/Image',
-				'cta': 'components/storyblok/CTA',
-				'lead-form': 'components/storyblok/LeadForm',
-				'awards': 'components/storyblok/Awards',
-				'rating': 'components/storyblok/Rating',
-				'service-grid': 'components/storyblok/ServiceGrid',
-				'teaser': 'components/storyblok/Teaser',
-				'grid': 'components/storyblok/Grid',
-				'feature': 'components/storyblok/Feature',
-				'hero_with_bullets': 'components/storyblok/HeroWithBullets',
-				'bullet_point': 'components/storyblok/BulletPoint',
-				'cta_button': 'components/storyblok/CtaButton',
-				'stat_item': 'components/storyblok/StatItem'
-			}
-		})
+		// storyblok({
+		// 	accessToken: env.STORYBLOK_DELIVERY_API_TOKEN,
+		// 	// No region specified = defaults to EU region (which is correct)
+		// 	components: {
+		// 		'page': 'components/storyblok/Page',
+		// 		'hero': 'components/storyblok/Hero',
+		// 		'text': 'components/storyblok/Text',
+		// 		'image': 'components/storyblok/Image',
+		// 		'cta': 'components/storyblok/CTA',
+		// 		'lead-form': 'components/storyblok/LeadForm',
+		// 		'awards': 'components/storyblok/Awards',
+		// 		'rating': 'components/storyblok/Rating',
+		// 		'service-grid': 'components/storyblok/ServiceGrid',
+		// 		'teaser': 'components/storyblok/Teaser',
+		// 		'grid': 'components/storyblok/Grid',
+		// 		'feature': 'components/storyblok/Feature',
+		// 		'hero_with_bullets': 'components/storyblok/HeroWithBullets',
+		// 		'bullet_point': 'components/storyblok/BulletPoint',
+		// 		'cta_button': 'components/storyblok/CtaButton',
+		// 		'stat_item': 'components/storyblok/StatItem'
+		// 	}
+		// })
 	],
 });

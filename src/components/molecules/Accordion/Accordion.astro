@@ -1,0 +1,66 @@
+---
+import { component } from '../../../tokens/component';
+interface Item { id: string; title: string; content: string; }
+export interface Props { items?: Item[] }
+const { items = [] } = Astro.props as Props;
+---
+<div class="hg-accordion" role="region">
+  {items.map((item) => (
+    <details class="hg-accordion__item">
+      <summary class="hg-accordion__summary" aria-controls={`acc-${item.id}`}>
+        {item.title}
+      </summary>
+      <div id={`acc-${item.id}`} class="hg-accordion__panel" role="region">
+        <div set:html={item.content}></div>
+      </div>
+    </details>
+  ))}
+</div>
+<style define:vars={{
+  bg: component.accordion.colors.background,
+  bgHover: component.accordion.colors.backgroundHover,
+  border: component.accordion.colors.border,
+  text: component.accordion.colors.text,
+  textSecondary: component.accordion.colors.textSecondary,
+  focus: component.accordion.colors.focus,
+  titleSize: component.accordion.typography.titleSize,
+  titleWeight: component.accordion.typography.titleWeight,
+  bodySize: component.accordion.typography.bodySize,
+  lineHeight: component.accordion.typography.lineHeight,
+  titleSizeMobile: component.accordion.typography.titleSizeMobile,
+  lineHeightMobile: component.accordion.typography.lineHeightMobile,
+  iconSize: component.accordion.dimensions.iconSize,
+  iconSizeOpen: component.accordion.dimensions.iconSizeOpen,
+  iconRadius: component.accordion.dimensions.iconRadius,
+  iconBorderWidth: component.accordion.dimensions.iconBorderWidth,
+  leftPadding: component.accordion.dimensions.leftPadding,
+  duration: component.accordion.duration,
+  iconOpenBg: component.accordion.colors.iconOpenBg,
+}}>
+.hg-accordion { display: grid; gap: 0; }
+.hg-accordion__item { background: unset; margin: 0; border-top: 1px solid var(--border); border-bottom: none; border-radius: 0; box-shadow: none; overflow: visible; }
+.hg-accordion__item:first-child { border-top: unset; }
+.hg-accordion__summary {
+  position: relative; display: block;
+  list-style: none; cursor: pointer; padding: 24px 0 24px var(--leftPadding);
+  font-size: var(--titleSize); font-weight: var(--titleWeight); color: var(--text);
+}
+.hg-accordion__summary::-webkit-details-marker { display: none; }
+.hg-accordion__summary::before {
+  content: ''; position: absolute; left: 0; top: 30%; width: var(--iconSize); height: var(--iconSize);
+  border: var(--iconBorderWidth) solid var(--border); border-radius: var(--iconRadius);
+  background: url(https://conversionratestore.github.io/projects/hantergalloway/img/what_we_do/plus.svg) center no-repeat; background-size: 16px 16px;
+}
+.hg-accordion__item[open] .hg-accordion__summary { background: unset; }
+.hg-accordion__item[open] .hg-accordion__summary::before {
+  width: var(--iconSizeOpen); height: var(--iconSizeOpen); background: var(--iconOpenBg) url(https://conversionratestore.github.io/projects/hantergalloway/img/what_we_do/minus.svg) center no-repeat; background-size: 16px 16px; border: none;
+}
+.hg-accordion__summary:focus { outline: 2px solid var(--focus); outline-offset: 2px; }
+.hg-accordion__panel { border-top: 1px solid var(--border); padding: var(--space-md) 0; color: var(--textSecondary); font-size: var(--bodySize); line-height: var(--lineHeight); }
+.hg-accordion__item:not([open]) .hg-accordion__panel { display: none; }
+@media (max-width: 768px) {
+  .hg-accordion__summary { font-size: var(--titleSizeMobile); line-height: var(--lineHeightMobile); text-transform: capitalize; }
+}
+</style>
+
+

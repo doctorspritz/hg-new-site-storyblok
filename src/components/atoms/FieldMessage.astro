@@ -1,0 +1,34 @@
+---
+/**
+ * Atom: FieldMessage
+ * Helper or error text displayed below form fields.
+ */
+interface Props {
+  variant: 'helper' | 'error';
+  id?: string;
+}
+
+const { variant, id } = Astro.props as Props;
+---
+
+<div
+  id={id}
+  class:list={['hg-FieldMessage', variant]}
+  role={variant === 'error' ? 'alert' : undefined}
+>
+  <slot />
+</div>
+
+<style>
+  .hg-FieldMessage {
+    font-size: var(--font-size-sm);
+  }
+
+  .hg-FieldMessage.helper {
+    color: var(--color-text-subtle);
+  }
+
+  .hg-FieldMessage.error {
+    color: var(--color-feedback-error);
+  }
+</style>

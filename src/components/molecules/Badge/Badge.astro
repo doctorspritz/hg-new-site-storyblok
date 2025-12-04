@@ -1,0 +1,237 @@
+---
+/**
+ * Molecule: Badge
+ * Variants: experience | review
+ * Uses tokens-only styling and composes atoms (Icon, Paragraph, etc.).
+ */
+import Icon from '../../atoms/Icon.astro';
+import Image from '../../atoms/Image.astro';
+import Rating from '../Rating.astro';
+
+interface BaseProps {
+  /** Dimensional size variant */
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  /** Additional classes */
+  class?: string;
+}
+
+interface ExperienceProps extends BaseProps {
+  variant: 'experience';
+  years: string | number;
+  label?: string; // default: 'Years of experience'
+}
+
+interface ReviewProps extends BaseProps {
+  variant: 'review';
+  provider?: 'google';
+  countText: string; // e.g., '2000+ reviews'
+  label?: string; // e.g., 'Based on'
+  score?: number; // e.g., 5.0
+  max?: number; // e.g., 5
+  showStars?: boolean; // default true
+}
+
+type Props = ExperienceProps | ReviewProps;
+
+const props = Astro.props as Props;
+const size = props.size ?? 'md';
+const iconSize = ((): 'xs' | 'sm' | 'md' | 'lg' | 'xl' => {
+  // Map Badge size directly to Icon size using available variants
+  if (size === 'sm') return 'sm';
+  if (size === 'lg') return 'lg';
+  if (size === 'xl') return 'xl';
+  return 'md';
+})();
+---
+
+{
+  props.variant === 'experience' ? (
+    <div
+      class:list={[
+        'hg-Badge',
+        `hg-Badge--experience`,
+        `hg-Badge--${size}`,
+        props.class,
+      ]}
+    >
+      <div class="circle">
+        <span class="value">{String(props.years)}</span>
+      </div>
+      <div class="text">
+        <span class="line1">{props.label ?? 'Years of experience'}</span>
+      </div>
+    </div>
+  ) : (
+    <div
+      class:list={[
+        'hg-Badge',
+        `hg-Badge--review`,
+        `hg-Badge--${size}`,
+        props.class,
+      ]}
+    >
+      <div class="logo">
+        {props.provider === 'google' ? (
+          <Image
+            src="/images/icons/google.svg"
+            alt="Google"
+            size="sm"
+            objectFit="contain"
+            radius="none"
+          />
+        ) : (
+          <Icon name="star" size={iconSize} />
+        )}
+      </div>
+      <div class="text">
+        <div class="rating-line">
+          {typeof (props as any).score === 'number' && (
+            <>
+              <span class="score">{String((props as any).score)}</span>
+              {(props as any).showStars !== false && (
+                <Rating
+                  rating={Math.round((props as any).score ?? 0)}
+                  showText={false}
+                  size="sm"
+                />
+              )}
+            </>
+          )}
+        </div>
+        <span class="line1">{props.label ?? 'Based on'}</span>
+        <span class="line2">{props.countText}</span>
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .hg-Badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-md);
+    color: var(--color-text-body);
+  }
+
+  /* Size modifiers for spacing */
+  .hg-Badge.hg-Badge--sm {
+    gap: var(--space-sm);
+  }
+
+  .hg-Badge.hg-Badge--lg {
+    gap: var(--space-lg);
+  }
+
+  .hg-Badge.hg-Badge--xl {
+    gap: var(--space-xl);
+  }
+
+  /* Experience variant */
+  .hg-Badge--experience .circle {
+    border-radius: var(--radius-pill);
+    display: grid;
+    place-items: center;
+    background: var(--color-surface);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+  }
+
+  /* Experience size mappings */
+  .hg-Badge--sm .circle {
+    width: var(--size-icon-sm);
+    height: var(--size-icon-sm);
+  }
+
+  .hg-Badge--md .circle {
+    width: var(--size-icon-md);
+    height: var(--size-icon-md);
+  }
+
+  .hg-Badge--lg .circle {
+    width: var(--size-icon-lg);
+    height: var(--size-icon-lg);
+  }
+
+  .hg-Badge--xl .circle {
+    width: var(--size-icon-lg);
+    height: var(--size-icon-lg);
+  }
+
+  .hg-Badge--experience .value {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+    line-height: var(--line-height-normal);
+  }
+
+  /* Experience value size mappings */
+  .hg-Badge--sm .value {
+    font-size: var(--font-size-lg);
+  }
+
+  .hg-Badge--md .value {
+    font-size: var(--font-size-xl);
+  }
+
+  .hg-Badge--lg .value {
+    font-size: var(--font-size-2xl);
+  }
+
+  .hg-Badge--xl .value {
+    font-size: var(--font-size-3xl);
+  }
+
+  /* Review variant */
+  .hg-Badge--review .logo {
+    display: flex;
+    align-items: center;
+    color: var(--color-text-heading);
+  }
+
+  .hg-Badge--review .text {
+    display: flex;
+    flex-direction: column;
+    line-height: var(--line-height-normal);
+  }
+
+  .hg-Badge--review .rating-line {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .hg-Badge--review .score {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+  }
+
+  .hg-Badge--review .line2 {
+    color: var(--color-text-heading);
+  }
+
+  .hg-Badge--review .line1 {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-body);
+  }
+
+  /* Experience label size */
+  .hg-Badge--experience .text .line1 {
+    font-size: var(--font-size-sm);
+  }
+
+  /* Review size mappings for main stat line */
+  .hg-Badge--sm .line2 {
+    font-size: var(--font-size-sm);
+  }
+
+  .hg-Badge--md .line2 {
+    font-size: var(--font-size-md);
+  }
+
+  .hg-Badge--lg .line2 {
+    font-size: var(--font-size-lg);
+  }
+
+  .hg-Badge--xl .line2 {
+    font-size: var(--font-size-xl);
+  }
+</style>

@@ -1,0 +1,55 @@
+---
+/**
+ * Atom: Label
+ * Semantic label text for form controls.
+ */
+interface Props {
+  forId?: string;
+  text?: string;
+  required?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'inverse';
+}
+
+const {
+  forId,
+  text = '',
+  required = false,
+  size = 'md',
+  variant = 'default',
+} = Astro.props as Props;
+---
+
+<label
+  for={forId}
+  class:list={['hg-Label', `size-${size}`, `variant-${variant}`]}
+>
+  <slot>{text}</slot>{required ? ' *' : ''}
+  {required && <span class="sr-only"> required</span>}
+</label>
+
+<style>
+  .hg-Label {
+    display: inline-block;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+  }
+
+  .variant-inverse {
+    color: var(--color-text-inverse);
+  }
+
+  .size-sm {
+    font-size: var(--font-size-sm);
+  }
+
+  .size-md {
+    font-size: var(--font-size-md);
+  }
+
+  .size-lg {
+    font-size: var(--font-size-lg);
+  }
+
+  /* uses global .sr-only utility */
+</style>

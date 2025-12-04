@@ -1,0 +1,57 @@
+---
+/**
+ * Container Component
+ * Hunter Galloway Design System - Atomic Component
+ * 
+ * A layout container component that provides consistent spacing and max-width.
+ * Uses semantic tokens for consistent layout across the application.
+ */
+
+import type { ContainerProps } from './Container.types';
+import { semantic } from '../../../tokens/semantic';
+
+interface Props extends ContainerProps {}
+
+const {
+  maxWidth = '1272px', // WordPress container max-width
+  padding = true,
+  class: additionalClasses = '',
+} = Astro.props;
+
+// Build CSS classes using design tokens
+const containerClasses = [
+  'hg-container',
+  !padding && 'hg-container--no-padding',
+  additionalClasses,
+].filter(Boolean).join(' ');
+---
+
+<div class={containerClasses}>
+  <slot />
+</div>
+
+<style define:vars={{
+  containerPadding: semantic.spacing.container,
+  containerPaddingMobile: semantic.space.xs,
+  maxWidth: maxWidth,
+}}>
+.hg-container {
+  max-width: var(--maxWidth);
+  margin: 0 auto;
+  padding-left: var(--containerPadding);
+  padding-right: var(--containerPadding);
+}
+
+.hg-container--no-padding {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Responsive design using semantic tokens */
+@media (max-width: 768px) {
+  .hg-container {
+    padding-left: var(--containerPaddingMobile);
+    padding-right: var(--containerPaddingMobile);
+  }
+}
+</style>

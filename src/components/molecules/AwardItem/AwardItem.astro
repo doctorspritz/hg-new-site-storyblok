@@ -1,0 +1,219 @@
+---
+/**
+ * AwardItem Component
+ * Hunter Galloway Design System - Molecular Component
+ * 
+ * An award display component with hover tooltip functionality.
+ * Used in the awards section to showcase Hunter Galloway achievements.
+ * Following atomic design principles strictly.
+ */
+
+import type { AwardItemProps } from './AwardItem.types';
+
+interface Props extends AwardItemProps {}
+
+const {
+  image,
+  alt,
+  tooltip,
+  id,
+  size = 'md',
+  class: additionalClasses = '',
+} = Astro.props;
+
+// Size configurations - WordPress exact sizing
+const sizeConfigs = {
+  sm: {
+    container: 'h-12',
+    image: 'max-h-12',
+  },
+  md: {
+    container: 'h-20',
+    image: 'max-h-20',
+  },
+  lg: {
+    container: 'h-24',
+    image: 'max-h-24',
+  },
+};
+
+// Build CSS classes
+const containerClasses = [
+  'hg-award-item',
+  'relative',
+  'cursor-pointer',
+  'transition-transform',
+  'duration-normal',
+  'hover:-translate-y-0.5',
+  'group',
+  sizeConfigs[size].container,
+  additionalClasses,
+].filter(Boolean).join(' ');
+
+const imageClasses = [
+  'hg-award-image',
+  'w-auto',
+  'object-contain',
+  sizeConfigs[size].image,
+].join(' ');
+---
+
+<div 
+  class={containerClasses}
+  data-award={id}
+  role="img"
+  aria-label={tooltip}
+>
+  <!-- Award Image -->
+  <img 
+    src={image} 
+    alt={alt}
+    class={imageClasses}
+    loading="lazy"
+    decoding="async"
+  />
+  
+  <!-- Tooltip -->
+  <div class="hg-award-tooltip">
+    {tooltip}
+    <!-- Tooltip Arrow -->
+    <div class="hg-award-tooltip-arrow"></div>
+  </div>
+</div>
+
+<style>
+/* AwardItem component styles - Using Design System CSS Variables */
+.hg-award-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--durationNormal) ease;
+}
+
+.hg-award-item:hover {
+  transform: translateY(-2px);
+}
+
+/* Award image styling */
+.hg-award-image {
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+/* Tooltip styling - WordPress exact colors */
+.hg-award-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--hg-color-text-primary);
+  color: var(--hg-color-text-inverse);
+  font-size: var(--hg-font-size-sm);
+  font-weight: var(--hg-font-weight-body);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--durationNormal) ease;
+  z-index: 10;
+  pointer-events: none;
+  box-shadow: var(--shadow-card);
+  font-family: var(--font-family-body);
+}
+
+/* Tooltip arrow styling */
+.hg-award-tooltip-arrow {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--hg-color-text-primary);
+}
+
+/* Show tooltip on hover/focus */
+.group:hover .hg-award-tooltip,
+.group:focus-within .hg-award-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Responsive adjustments - WordPress mobile */
+@media (max-width: 768px) {
+  .hg-award-item {
+    height: 3rem;
+  }
+  
+  .hg-award-image {
+    max-height: 3rem;
+  }
+  
+  .hg-award-tooltip {
+    font-size: var(--hg-font-size-xs);
+    padding: var(--space-xs) var(--space-sm);
+  }
+}
+
+/* WordPress tablet adjustments */
+@media (max-width: 1024px) {
+  .hg-award-item {
+    height: 4rem;
+  }
+  
+  .hg-award-image {
+    max-height: 4rem;
+  }
+}
+</style>
+
+<script>
+// Award tooltip functionality - Enhanced version with accessibility
+document.addEventListener('DOMContentLoaded', () => {
+  const awardItems = document.querySelectorAll('.hg-award-item');
+  
+  awardItems.forEach(item => {
+    const tooltip = item.querySelector('.hg-award-tooltip');
+    
+    if (tooltip) {
+      // Show tooltip on mouseenter
+      item.addEventListener('mouseenter', () => {
+        tooltip.style.opacity = '1';
+        tooltip.style.visibility = 'visible';
+      });
+      
+      // Hide tooltip on mouseleave
+      item.addEventListener('mouseleave', () => {
+        tooltip.style.opacity = '0';
+        tooltip.style.visibility = 'hidden';
+      });
+      
+      // Keyboard accessibility
+      item.addEventListener('focus', () => {
+        tooltip.style.opacity = '1';
+        tooltip.style.visibility = 'visible';
+      });
+      
+      item.addEventListener('blur', () => {
+        tooltip.style.opacity = '0';
+        tooltip.style.visibility = 'hidden';
+      });
+      
+      // Touch device support
+      item.addEventListener('touchstart', () => {
+        tooltip.style.opacity = '1';
+        tooltip.style.visibility = 'visible';
+      });
+      
+      item.addEventListener('touchend', () => {
+        setTimeout(() => {
+          tooltip.style.opacity = '0';
+          tooltip.style.visibility = 'hidden';
+        }, 2000);
+      });
+    }
+  });
+});
+</script>

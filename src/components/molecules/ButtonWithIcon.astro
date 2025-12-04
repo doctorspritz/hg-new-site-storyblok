@@ -1,0 +1,211 @@
+---
+/**
+ * Molecule: ButtonWithIcon
+ * Composes Button atom with icon for enhanced functionality
+ */
+import Button from '../atoms/Button.astro';
+import Icon from '../atoms/Icon.astro';
+
+export interface Props {
+  /** Button text */
+  label?: string;
+  /** Button variant */
+  variant?: 'primary' | 'secondary' | 'ghost' | 'link' | 'link-plain';
+  /** Button size */
+  size?: 'sm' | 'md' | 'lg';
+  /** Button disabled state */
+  disabled?: boolean;
+  /** Button type */
+  type?: 'button' | 'submit' | 'reset';
+  /** Link href if button should be a link */
+  href?: string;
+  /** Link target */
+  target?: '_self' | '_blank' | '_parent' | '_top';
+  /** Link rel attribute */
+  rel?: string;
+  /** Icon position */
+  iconPosition?: 'left' | 'right';
+  /** Icon source (image path or SVG) */
+  iconSrc?: string;
+  /** Icon alt text */
+  iconAlt?: string;
+  /** Icon name from Icon atom (e.g., 'chevron-right', 'arrow-right') */
+  iconName?: string;
+  /** Icon as text/character (like arrows) */
+  iconText?: string;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  label = '',
+  variant = 'primary',
+  size = 'md',
+  disabled = false,
+  type = 'button',
+  href,
+  target,
+  rel,
+  iconPosition = 'right',
+  iconSrc,
+  iconAlt,
+  iconName,
+  iconText,
+  class: className = '',
+} = Astro.props;
+
+// Map button size → icon size using semantic steps
+const iconSizeForButton = (
+  btnSize: 'sm' | 'md' | 'lg',
+): 'xs' | 'sm' | 'md' | 'lg' => {
+  if (btnSize === 'sm') return 'sm';
+  if (btnSize === 'lg') return 'lg';
+  return 'md';
+};
+const resolvedIconSize = iconSizeForButton(size);
+// Use one-size smaller visual for better balance (md → sm, lg → md)
+const visualSizeToken = size === 'lg' ? 'md' : 'sm';
+const iconStyle = `width: var(--size-icon-button-${visualSizeToken}); height: var(--size-icon-button-${visualSizeToken}); transform: translateY(var(--button-icon-baseline-adjust-${size}));`;
+---
+
+<div
+  class={`hg-button-with-icon size-${size} hg-button-with-icon--icon-${iconPosition} ${className}`}
+>
+  <Button
+    variant={variant}
+    size={size}
+    disabled={disabled}
+    type={type}
+    href={href}
+    target={target}
+    rel={rel}
+  >
+    {
+      iconPosition === 'left' && (iconSrc || iconName || iconText) && (
+        <span class="hg-button-icon hg-button-icon--left">
+          {iconSrc ? (
+            <img
+              src={iconSrc}
+              alt={iconAlt || ''}
+              class="hg-button-icon-image"
+            />
+          ) : iconName ? (
+            <Icon
+              name={iconName}
+              size={resolvedIconSize}
+              class="hg-button-icon-svg"
+              style={iconStyle}
+            />
+          ) : (
+            <span class="hg-button-icon-text">{iconText}</span>
+          )}
+        </span>
+      )
+    }
+
+    <slot>{label}</slot>
+
+    {
+      iconPosition === 'right' && (iconSrc || iconName || iconText) && (
+        <span class="hg-button-icon hg-button-icon--right">
+          {iconSrc ? (
+            <img
+              src={iconSrc}
+              alt={iconAlt || ''}
+              class="hg-button-icon-image"
+            />
+          ) : iconName ? (
+            <Icon
+              name={iconName}
+              size={resolvedIconSize}
+              class="hg-button-icon-svg"
+              style={iconStyle}
+            />
+          ) : (
+            <span class="hg-button-icon-text">{iconText}</span>
+          )}
+        </span>
+      )
+    }
+  </Button>
+</div>
+
+<style>
+  .hg-button-with-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .hg-button-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hg-button-icon-image {
+    width: var(--size-icon-sm);
+    height: var(--size-icon-sm);
+    object-fit: contain;
+  }
+
+  .hg-button-icon-text {
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-tight);
+    font-weight: var(--font-weight-regular);
+  }
+
+  .hg-button-icon-svg {
+    /* size handled by Icon atom; ensure alignment */
+    margin-left: var(--space-xs);
+    vertical-align: middle;
+    transform: translateY(0); /* size rules below apply baseline offset */
+  }
+
+  /* Override icon sizes to follow button size via tokens */
+  .hg-button-with-icon.size-sm .hg-button-icon-svg {
+    width: var(--size-icon-button-sm);
+    height: var(--size-icon-button-sm);
+    transform: translateY(var(--button-icon-baseline-adjust-sm));
+  }
+
+  .hg-button-with-icon.size-md .hg-button-icon-svg {
+    width: var(--size-icon-button-md);
+    height: var(--size-icon-button-md);
+    transform: translateY(var(--button-icon-baseline-adjust-md));
+  }
+
+  .hg-button-with-icon.size-lg .hg-button-icon-svg {
+    width: var(--size-icon-button-lg);
+    height: var(--size-icon-button-lg);
+    transform: translateY(var(--button-icon-baseline-adjust-lg));
+  }
+
+  /* Size-specific icon sizing */
+  .hg-button-with-icon.size-sm .hg-button-icon-image {
+    width: var(--size-icon-sm);
+    height: var(--size-icon-sm);
+  }
+
+  .hg-button-with-icon.size-sm .hg-button-icon-text {
+    font-size: var(--font-size-sm);
+  }
+
+  .hg-button-with-icon.size-lg .hg-button-icon-image {
+    width: var(--size-icon-md);
+    height: var(--size-icon-md);
+  }
+
+  .hg-button-with-icon.size-lg .hg-button-icon-text {
+    font-size: var(--font-size-lg);
+  }
+
+  /* Ensure proper spacing for icons */
+  .hg-button-with-icon--icon-left {
+    flex-direction: row;
+  }
+
+  .hg-button-with-icon--icon-right {
+    flex-direction: row;
+  }
+</style>

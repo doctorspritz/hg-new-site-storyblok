@@ -1,0 +1,138 @@
+---
+/**
+ * Atom: Skeleton
+ * A loading placeholder component that displays a shimmer animation.
+ * Props follow prop-based naming with variant and size.
+ */
+interface Props {
+  variant?: 'text' | 'rectangular' | 'circular';
+  size?: 'sm' | 'md' | 'lg';
+  width?: string;
+  height?: string;
+  class?: string;
+}
+
+const {
+  variant = 'rectangular',
+  size = 'md',
+  width,
+  height,
+  class: className,
+  ...attrs
+} = Astro.props as Props;
+
+// Generate inline styles for custom dimensions
+const inlineStyles = [];
+if (width) inlineStyles.push(`width: ${width}`);
+if (height) inlineStyles.push(`height: ${height}`);
+const style = inlineStyles.length > 0 ? inlineStyles.join('; ') : undefined;
+---
+
+<div
+  class:list={['hg-Skeleton', `variant-${variant}`, `size-${size}`, className]}
+  style={style}
+  role="img"
+  aria-label="Loading..."
+  {...attrs}
+>
+</div>
+
+<style>
+  .hg-Skeleton {
+    display: block;
+    background: linear-gradient(
+      90deg,
+      var(--color-border-subtle) 25%,
+      var(--color-border-default) 50%,
+      var(--color-border-subtle) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s infinite ease-in-out;
+    border-radius: var(--radius-sm);
+  }
+
+  @keyframes skeleton-shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Variant: text - matches typical text line height */
+
+  .variant-text {
+    height: var(--line-height-normal);
+    border-radius: var(--radius-sm);
+  }
+
+  /* Variant: rectangular - basic rectangle */
+  .variant-rectangular {
+    /* Uses default styling from base class */
+  }
+
+  /* Variant: circular - perfect circle */
+  .variant-circular {
+    border-radius: var(--radius-pill);
+    aspect-ratio: 1;
+  }
+
+  /* Size variants */
+
+  .size-sm {
+    min-height: var(--space-md);
+  }
+
+  .size-md {
+    min-height: var(--space-lg);
+  }
+
+  .size-lg {
+    min-height: var(--space-xl);
+  }
+
+  /* Text variant size adjustments */
+  .variant-text.size-sm {
+    height: var(--font-size-sm);
+    min-height: auto;
+  }
+
+  .variant-text.size-md {
+    height: var(--font-size-md);
+    min-height: auto;
+  }
+
+  .variant-text.size-lg {
+    height: var(--font-size-lg);
+    min-height: auto;
+  }
+
+  /* Circular variant size adjustments */
+  .variant-circular.size-sm {
+    width: var(--space-lg);
+    height: var(--space-lg);
+    min-height: auto;
+  }
+
+  .variant-circular.size-md {
+    width: var(--space-xl);
+    height: var(--space-xl);
+    min-height: auto;
+  }
+
+  .variant-circular.size-lg {
+    width: var(--width-md);
+    height: var(--height-md);
+    min-height: auto;
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .hg-Skeleton {
+      animation: none;
+      background: var(--color-border-default);
+    }
+  }
+</style>

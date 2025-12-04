@@ -1,0 +1,185 @@
+---
+/**
+ * Footer Component - Legacy (WordPress-exact)
+ */
+
+import { semantic } from '../../tokens/semantic';
+import FooterStatCard from '../molecules/FooterStatCard/FooterStatCard.astro';
+import Button from '../atoms/Button/Button.astro';
+import Container from '../atoms/Container/Container.astro';
+import SocialLinks from '../molecules/SocialLinks/SocialLinks.astro';
+import FooterNavigation from '../molecules/FooterNavigation/FooterNavigation.astro';
+
+const recentPosts = [
+  { title: 'Can You Pay Your Mortgage With A Credit Card In Australia? (Guide for First Home Buyers)', href: '/can-home-loan-be-paid-by-credit-card/' },
+  { title: 'Can I Get A Home Loan If I Just Started A New Job?', href: '/can-i-get-a-home-loan-if-i-just-started-a-new-job/' },
+  { title: 'First Home Owners Grant QLD 2025 [Are you Eligible?]', href: '/first-home-owners-grant-qld/' },
+  { title: 'Can New Zealanders Buy Property In Australia [2025 Guide]', href: '/new-zealand-citizen-home-loan/' },
+  { title: 'Home Loans for Nurses: The Definitive Guide', href: '/home-loans-for-nurses/' },
+];
+
+const footerMenu = [
+  { label: 'Mortgage Broker Brisbane', href: '/mortgage-broker-brisbane/' },
+  { label: 'First Home Buyers Information', href: '/first-home-buyer-guide/' },
+  { label: 'Home Buying Hub', href: '/hub/' },
+  { label: 'Free Resources', href: '/resources/' },
+];
+---
+
+<!-- Pre-Footer Statistics Section -->
+<section class="footer_adv">
+  <Container>
+    <div class="footer_adv_top">
+      <ul class="hg_adv">
+        <li><FooterStatCard number="60%" description="average loan Approval Rate" /></li>
+        <li><FooterStatCard number="97%" description="our loan Approval rate" /></li>
+        <li><FooterStatCard number="2,000+" description="5 star Reviews on google" /></li>
+      </ul>
+    </div>
+    <div class="footer_adv_bottom">
+      <p class="footer-cta-text">We can find you the perfect home loan solution</p>
+      <div class="footer-cta-action">
+        <Button variant="primary" size="lg" href="/get-free-assessment/" class="footer-cta-button" ariaLabel="Request a call">Request a Call</Button>
+        <p class="footer_video_text">or video call</p>
+      </div>
+    </div>
+  </Container>
+</section>
+
+<footer id="main-footer">
+  <Container>
+    <div id="footer-widgets" class="clearfix">
+      <div class="footer-widget">
+        <div class="widget_text fwidget">
+          <div class="textwidget custom-html-widget">
+            <h4 class="title">About us</h4>
+            Mortgage Broker Brisbane - Hunter Galloway is an Award Winning Mortgage Broker based in Brisbane. We help clients from our local area and Australia-wide. We believe buying a home should be stress-free and uncomplicated, and we will work for you to make your dreams become reality.
+          </div>
+        </div>
+        <div class="fwidget widget_block">
+          <div class="ti-widget" data-layout-id="60">
+            <div class="ti-widget-container">
+              <a href="https://www.google.com/search?q=hunter+galloway+reviews" target="_blank" rel="noopener nofollow" class="ti-header source-Google">
+                <div class="ti-fade-container">
+                  <div class="ti-mob-row">
+                    <span class="ti-stars">{[...Array(5)].map(() => (<img class="ti-star f" src="/images/star.svg" alt="Google" width="17" height="17" loading="lazy" />))}</span>
+                  </div>
+                  <div class="ti-mob-row">
+                    <span class="nowrap"><strong>2216 reviews</strong></span>
+                    <div class="ti-small-logo"><img src="/images/google.svg" loading="lazy" alt="Google" width="62" height="20" /></div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="widget_text fwidget">
+          <div class="textwidget custom-html-widget">
+            <div class="footer_logo flex">
+              <img src="/images/logo-yellow.svg" alt="mortgage-broker-brisbane-hunter-galloway-yellow" />
+              <a href="/privacy-policy/">Privacy Policy</a> | <a href="/contact/">Contact</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-widget">
+        <div class="widget_text fwidget">
+          <div class="textwidget custom-html-widget">
+            <h4 class="title">Contact us</h4>
+            <div class="footer_contact flex"><img src="/images/yellow_phone.svg" alt="" /><a href="tel:1300088065">1300 088 065</a></div>
+            <div class="footer_contact flex"><img src="/images/yellow_mail.svg" alt="" /><a href="mailto:hello@huntergalloway.com.au">hello@huntergalloway.com.au</a></div>
+            <div class="footer_contact flex">Mortgage Broker Brisbane - Hunter Galloway</div>
+            <div class="footer_contact flex"><img src="/images/yellow_map.svg" alt="" /><span>Head Office: Level 10, 179 North Quay, Brisbane QLD 4000</span></div>
+            <div class="footer_contact flex"><img src="/images/yellow_openmail.svg" alt="" /><span>PO Box 12780<br />George Street, Brisbane QLD 4003</span></div>
+            <div class="footer_contact flex"><img src="/images/yellow_map.svg" alt="" /><span>CBD Office: Level 20, 300 Queen Street Brisbane, QLD 4000</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-widget">
+        <div class="fwidget widget_recent_entries">
+          <h4 class="title">Recent posts</h4>
+          <ul>
+            {recentPosts.map((post) => (<li><span class="bullet">•</span><a href={post.href}>{post.title}</a></li>))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </Container>
+  <div id="et-footer-nav">
+    <Container>
+      <div class="footer-nav-wrapper">
+        <FooterNavigation links={footerMenu} variant="horizontal" className="footer-main-nav" />
+      </div>
+    </Container>
+  </div>
+  <div id="footer-bottom">
+    <Container class="clearfix">
+      <div class="footer-bottom-content">
+        <SocialLinks variant="footer" className="footer-social" />
+        <p id="footer-info">Hunter Galloway Finance Pty Ltd T/A Mortgage Broker Brisbane - Hunter Galloway ABN 20 605 252 926. Credit Representative 476903 is authorised under Australian Credit Licence 389328. Your full financial situation would need to be reviewed prior to acceptance of any offer or product.</p>
+      </div>
+    </Container>
+  </div>
+</footer>
+
+<style define:vars={{
+  grayDark: semantic.color.surface.footer,
+  brandYellow: semantic.color.brand.primary,
+  textInverse: semantic.color.text.inverse,
+  footerNavBg: semantic.color.surface.footerNav,
+  footerBottomBg: semantic.color.surface.footerBottom,
+  footerTextMuted: 'rgba(255,255,255,0.7)',
+  footerTextMutedStrong: 'rgba(255,255,255,0.9)',
+  footerBorderSubtle: semantic.color.border.subtleOnDark,
+  fontSizeSm: semantic.typography.size.sm,
+  fontSizeLg: '28px',
+  fontWeightBold: semantic.typography.weight.bold,
+}}>
+.footer_adv { background-color: var(--grayDark); padding: 48px 0 0px; }
+.footer_adv_top { margin-bottom: 50px; }
+.hg_adv { display: flex; justify-content: flex-start; align-items: flex-start; list-style: none; margin: 0; padding: 0; }
+.hg_adv li + li { margin: 0 0 0 60px; }
+.footer_adv_bottom { display: flex; padding: 24px 40px; border-radius: 8px; border: 1px solid var(--footerBorderSubtle); align-items: center; justify-content: space-between; }
+.footer-cta-text { color: var(--brandYellow); font-size: var(--fontSizeLg); font-weight: var(--fontWeightBold); line-height: 36px; letter-spacing: -0.3px; margin: 0; }
+.footer-cta-action { display: flex; flex-direction: column; align-items: center; }
+.footer_adv :global(.footer-cta-button) { width: 260px; }
+.footer_video_text { color: var(--textInverse); text-align: center; font-family: 'Open Sans'; font-size: 17px; font-weight: 400; line-height: 18.7px; letter-spacing: -0.17px; margin-top: 16px; margin-bottom: 0 !important; }
+@media screen and (max-width: 767px) { .footer_adv_bottom { flex-direction: column; text-align: center; padding: 20px; } .footer-cta-text { font-size: 20px; line-height: 24px; letter-spacing: -0.3px; margin-bottom: 20px; } .footer_adv_bottom > div, .footer_adv :global(.footer-cta-button) { width: 100%; } .hg_adv { display: block; text-align: center; } .hg_adv li { margin: 0 auto 16px !important; } .footer_adv_top { margin-bottom: 30px; } }
+@media screen and (max-width: 420px) { .footer_adv { padding-bottom: 45px; padding-top: 45px; } .hg_adv { flex-wrap: wrap; justify-content: space-between; } .hg_adv li + li { margin-left: 0px; } .footer_adv_bottom { flex-direction: column; } .footer-cta-text { margin-bottom: 30px; } }
+#main-footer { background: var(--grayDark); padding: 36px 0 0; color: var(--footerTextMuted); }
+.container { max-width: 1272px; margin: 0 auto; padding: 0 1rem; }
+#footer-widgets { display: flex; gap: 40px; padding-bottom: 36px; }
+.footer-widget { flex: 1; }
+.footer-widget .title, .footer-widget h4 { color: var(--brandYellow); font-size: 20px; font-weight: 600; margin: 0 0 20px 0; padding: 0; line-height: 1.2; }
+.footer-widget p, .footer-widget .textwidget { color: rgba(255,255,255,0.7); font-size: 14px; line-height: 1.6; margin: 0 0 20px 0; }
+.footer_contact { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: var(--footerTextMuted); font-size: 14px; }
+.footer_contact img { width: 16px; height: 16px; flex-shrink: 0; }
+.footer_contact a { color: var(--brandYellow); text-decoration: none; }
+.footer_contact a:hover { text-decoration: underline; }
+.footer_logo { display: flex; align-items: center; gap: 20px; margin-top: 20px; }
+.footer_logo img { height: 40px; width: auto; }
+.footer_logo a { color: var(--footerTextMuted); text-decoration: none; font-size: 13px; }
+.footer_logo a:hover { color: var(--brandYellow); }
+.ti-widget { margin: 20px 0; }
+.ti-header { background: transparent; padding: 0; text-decoration: none; display: block; }
+.ti-mob-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.ti-stars { display: flex; gap: 2px; }
+.ti-star { width: 17px; height: 17px; }
+.nowrap { color: rgba(255,255,255,0.9); font-size: 14px; }
+.ti-small-logo img { height: 20px; width: auto; }
+.widget_recent_entries ul { list-style: none; margin: 0; padding: 0; }
+.widget_recent_entries li { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: flex-start; gap: 8px; }
+.widget_recent_entries li:last-child { border-bottom: none; }
+.widget_recent_entries .bullet { color: var(--brandYellow); font-weight: bold; font-size: 16px; line-height: 1.4; flex-shrink: 0; }
+.widget_recent_entries a { color: var(--footerTextMuted); text-decoration: none; font-size: 14px; line-height: 1.4; flex: 1; }
+.widget_recent_entries a:hover { color: #FDB948; }
+#et-footer-nav { background: var(--footerNavBg); border-top: 1px solid var(--footerBorderSubtle); padding: 20px 0; }
+.footer-nav-wrapper { display: flex; justify-content: center; align-items: center; }
+#footer-bottom { background: var(--footerBottomBg); border-top: 1px solid var(--footerBorderSubtle); padding: 20px 0; }
+.footer-bottom-content { display: flex; justify-content: space-between; align-items: center; }
+#footer-info { color: rgba(255,255,255,0.5); font-size: 12px; line-height: 1.6; text-align: right; margin: 0; flex: 1; margin-left: 20px; }
+@media (max-width: 980px) { #footer-widgets { flex-direction: column; gap: 30px; } .footer-widget { max-width: 100%; } #et-footer-nav .container { flex-direction: column; gap: 20px; } .bottom-nav { justify-content: center; } }
+@media (max-width: 480px) { .footer_contact { font-size: 13px; } .footer-bottom-content { flex-direction: column; gap: 15px; text-align: center; } #footer-info { text-align: center; margin-left: 0; } }
+.flex { display: flex; }
+.clearfix::after { content: ""; display: table; clear: both; }
+</style>

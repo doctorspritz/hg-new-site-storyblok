@@ -1,0 +1,103 @@
+---
+/**
+ * BankLogo Molecule
+ * Hunter Galloway Design System - Molecular Component
+ * 
+ * Composes Image atom to create consistent bank logo display.
+ * Used in BankLogos organism for lender network display.
+ */
+
+import type { BankLogoProps } from './BankLogo.types';
+import Image from '../../atoms/Image/Image.astro';
+import { component } from '../../../tokens/component';
+
+interface Props extends BankLogoProps {}
+
+const {
+  src,
+  alt,
+  class: additionalClasses = '',
+} = Astro.props;
+
+// Build CSS classes
+const logoClasses = [
+  'hg-bank-logo',
+  additionalClasses,
+].filter(Boolean).join(' ');
+---
+
+<div class={logoClasses}>
+  <Image 
+    src={src}
+    alt={alt}
+    class="hg-bank-logo__image"
+  />
+</div>
+
+<style define:vars={{
+  maxHeight: component.bankLogo.dimensions.maxHeight,
+  maxHeightMobile: component.bankLogo.dimensions.maxHeightMobile,
+  maxHeightSmall: component.bankLogo.dimensions.maxHeightSmall,
+  maxWidth: component.bankLogo.dimensions.maxWidth,
+  maxWidthMobile: component.bankLogo.dimensions.maxWidthMobile,
+  maxWidthSmall: component.bankLogo.dimensions.maxWidthSmall,
+  opacity: component.bankLogo.opacity.default,
+  opacityHover: component.bankLogo.opacity.hover,
+  transition: component.bankLogo.transition,
+  backgroundColor: component.bankLogo.container.backgroundColor,
+  borderRadius: component.bankLogo.container.borderRadius,
+  padding: component.bankLogo.container.padding,
+}}>
+.hg-bank-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--maxWidth);
+  height: var(--maxHeight);
+  flex-shrink: 0;
+  background: var(--backgroundColor);
+  border-radius: var(--borderRadius);
+  padding: var(--padding);
+  box-sizing: border-box;
+}
+
+.hg-bank-logo__image {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  opacity: var(--opacity);
+  transition: var(--transition);
+  border-radius: 0; /* Override default Image border radius */
+}
+
+.hg-bank-logo__image:hover {
+  opacity: var(--opacityHover);
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+  .hg-bank-logo {
+    width: var(--maxWidthMobile);
+    height: var(--maxHeightMobile);
+  }
+}
+
+@media (max-width: 480px) {
+  .hg-bank-logo {
+    width: var(--maxWidthSmall);
+    height: var(--maxHeightSmall);
+  }
+}
+
+/* Special handling for Macquarie logo - maintain uniform container size */
+.hg-bank-logo.icon_macq_logo {
+  /* Container stays same size, logo scales down within it */
+}
+
+.hg-bank-logo.icon_macq_logo .hg-bank-logo__image {
+  /* Additional scaling can be applied here if needed */
+  object-fit: contain;
+}
+</style>

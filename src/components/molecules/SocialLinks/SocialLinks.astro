@@ -1,0 +1,146 @@
+---
+/**
+ * SocialLinks Component
+ * Hunter Galloway Design System - Molecular Component
+ * 
+ * Social media links with icons for footer and other contexts
+ * Refactored to use semantic design tokens for consistency
+ */
+
+import { semantic } from '../../../tokens/semantic';
+
+export interface Props {
+  variant?: 'default' | 'footer';
+  className?: string;
+}
+
+const {
+  variant = 'default',
+  className = '',
+} = Astro.props;
+
+const socialLinks = [
+  {
+    name: 'Facebook',
+    href: 'https://www.facebook.com/MortgageBrokerBrisbane/',
+    icon: '/images/social/facebook.svg'
+  },
+  {
+    name: 'Instagram', 
+    href: 'https://www.instagram.com/huntergalloway_finance/',
+    icon: '/images/social/instagram.svg'
+  },
+  {
+    name: 'Twitter',
+    href: 'https://twitter.com/BrokerBrisbane',
+    icon: '/images/X_icon.svg'
+  },
+  {
+    name: 'YouTube',
+    href: 'https://www.youtube.com/channel/UCKw1JlNlcWR62EpSrXpfUWA',
+    icon: '/images/social/youtube.svg'
+  },
+  {
+    name: 'LinkedIn',
+    href: 'https://www.linkedin.com/company/hunter-galloway/',
+    icon: '/images/social/linkedin.svg'
+  }
+];
+---
+
+<div class={`hg-social-links hg-social-links--${variant} ${className}`}>
+  {socialLinks.map((social) => (
+    <a 
+      href={social.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="hg-social-links__link"
+      aria-label={`Follow us on ${social.name}`}
+    >
+      <img 
+        src={social.icon} 
+        alt={social.name}
+        class="hg-social-links__icon"
+        width="24"
+        height="24"
+      />
+    </a>
+  ))}
+</div>
+
+<style define:vars={{
+  brandPrimary: semantic.color.brand.primary,
+  textInverse: semantic.color.text.inverse,
+  spaceSm: semantic.space.sm,
+  radiusPill: semantic.radius.pill,
+  durationNormal: semantic.duration.normal,
+}}}>
+/* SocialLinks component styles using design tokens */
+.hg-social-links {
+  display: flex;
+  gap: var(--spaceSm);
+  align-items: center;
+}
+
+.hg-social-links__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radiusPill);
+  background: rgba(255, 255, 255, 0.1);
+  transition: all var(--durationNormal) ease;
+  text-decoration: none;
+}
+
+.hg-social-links__link:hover {
+  background: var(--brandPrimary);
+  transform: translateY(-2px);
+}
+
+.hg-social-links__icon {
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) invert(1);
+}
+
+.hg-social-links__link:hover .hg-social-links__icon {
+  filter: none;
+}
+
+/* Footer variant - WordPress exact styling */
+.hg-social-links--footer {
+  gap: 15px; /* WordPress footer social gap */
+}
+
+.hg-social-links--footer .hg-social-links__link {
+  width: 24px; /* WordPress footer icon size */
+  height: 24px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+.hg-social-links--footer .hg-social-links__link:hover {
+  background: transparent;
+  transform: none;
+}
+
+.hg-social-links--footer .hg-social-links__icon {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1); /* WordPress white icons */
+}
+
+.hg-social-links--footer .hg-social-links__link:hover .hg-social-links__icon {
+  filter: brightness(0) invert(1) opacity(0.8); /* Slight opacity on hover */
+}
+
+/* Responsive design using semantic tokens */
+@media (max-width: 768px) {
+  .hg-social-links {
+    justify-content: center;
+  }
+}
+</style>

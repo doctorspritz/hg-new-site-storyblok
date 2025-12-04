@@ -1,0 +1,61 @@
+---
+/**
+ * ReviewBadge Molecule
+ * Logo with review text
+ */
+
+import { component } from '../../../tokens/component';
+
+interface Props {
+  logoSrc: string;
+  text: string;
+  className?: string;
+}
+
+const { logoSrc, text, className = '' } = Astro.props;
+---
+
+<div class={`review-badge ${className}`}>
+  <div class="review-badge__logo">
+    <img src={logoSrc} alt="Reviews logo" />
+  </div>
+  <div class="review-badge__text">
+    <span set:html={text}></span>
+  </div>
+</div>
+
+<style define:vars={{
+  textColor: component.reviewBadge.colors.text,
+  fontSize: component.reviewBadge.typography.fontSize,
+  lineHeight: component.reviewBadge.typography.lineHeight,
+  weight: component.reviewBadge.typography.weight,
+  logoWidth: component.reviewBadge.dimensions.logoWidth,
+  logoHeight: component.reviewBadge.dimensions.logoHeight,
+  gap: component.reviewBadge.spacing.gap,
+}}>
+.review-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+}
+
+.review-badge__logo {
+  width: var(--logoWidth);
+  height: var(--logoHeight);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.review-badge__logo img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.review-badge__text {
+  color: var(--textColor);
+  font-size: var(--fontSize);
+  font-weight: var(--weight);
+  line-height: var(--lineHeight);
+}
+</style>

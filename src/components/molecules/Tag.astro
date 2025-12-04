@@ -1,0 +1,281 @@
+---
+/**
+ * Molecule: Tag (Chip)
+ * Interactive tag/chip component combining Badge with optional Icon and dismiss functionality.
+ *
+ * Layout: [icon] text [dismiss-button]
+ * States: default, selected, removable, hover, focus
+ * Accessibility: screen reader labels, keyboard interaction, focus management
+ */
+import Icon from '../atoms/Icon.astro';
+
+interface Props {
+  /** Tag text content */
+  text: string;
+  /** Optional leading icon name */
+  icon?: string;
+  /** Make tag dismissible with close button */
+  onDismiss?: boolean;
+  /** Size variant */
+  size?: 'sm' | 'md' | 'lg';
+  /** Color variant */
+  variant?: 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info';
+  /** Selected state styling */
+  selected?: boolean;
+  /** Removable state styling (alternative to onDismiss) */
+  removable?: boolean;
+  /** Additional CSS classes */
+  class?: string;
+  /** Custom dismiss button label for accessibility */
+  dismissLabel?: string;
+}
+
+const {
+  text,
+  icon,
+  onDismiss = false,
+  size = 'md',
+  variant = 'default',
+  selected = false,
+  removable = false,
+  class: className = '',
+  dismissLabel,
+} = Astro.props as Props;
+
+// Determine if tag should have dismiss functionality
+const isDismissible = onDismiss || removable;
+
+// Build CSS classes
+const tagClasses = [
+  'hg-tag',
+  `hg-tag--${size}`,
+  `hg-tag--${variant}`,
+  { 'is-selected': selected },
+  { 'is-removable': removable },
+  { 'has-dismiss': isDismissible },
+  className,
+].filter(Boolean);
+
+// Accessibility label for dismiss button
+const dismissAriaLabel = dismissLabel || `Remove tag '${text}'`;
+---
+
+<div class:list={tagClasses} data-tag-text={text}>
+  {
+    icon && (
+      <Icon
+        name={icon}
+        size={size === 'lg' ? 'md' : 'sm'}
+        color="inherit"
+        class="tag-icon"
+      />
+    )
+  }
+  <span class="tag-text">{text}</span>
+  {
+    isDismissible && (
+      <button
+        type="button"
+        class="tag-dismiss"
+        aria-label={dismissAriaLabel}
+        data-action="dismiss"
+      >
+        <Icon
+          name="x"
+          size={size === 'lg' ? 'sm' : 'xs'}
+          color="inherit"
+          alt=""
+        />
+      </button>
+    )
+  }
+</div>
+
+<script>
+  // Add dismiss functionality
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    const dismissBtn = target?.closest('[data-action="dismiss"]');
+    if (!dismissBtn) return;
+
+    const tag = dismissBtn.closest('.hg-tag') as HTMLElement;
+    if (!tag) return;
+
+    const tagText = tag.dataset.tagText || '';
+
+    // Emit custom event
+    tag.dispatchEvent(
+      new CustomEvent('tag:dismiss', {
+        detail: { text: tagText, element: tag },
+        bubbles: true,
+      }),
+    );
+
+    // Remove from DOM (can be prevented by event handler)
+    if (!e.defaultPrevented) {
+      tag.remove();
+    }
+  });
+
+  // Add keyboard support for dismiss button
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+
+    const target = e.target as HTMLElement;
+    const dismissBtn = target?.closest(
+      '[data-action="dismiss"]',
+    ) as HTMLElement;
+    if (!dismissBtn) return;
+
+    e.preventDefault();
+    dismissBtn.click();
+  });
+</script>
+
+<style>
+  .hg-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-normal);
+    border-radius: var(--radius-md);
+    white-space: nowrap;
+    transition:
+      background-color var(--transition-duration-fast)
+        var(--transition-timing-function-ease),
+      color var(--transition-duration-fast)
+        var(--transition-timing-function-ease),
+      border-color var(--transition-duration-fast)
+        var(--transition-timing-function-ease);
+  }
+
+  /* Size variants using design tokens */
+  .hg-tag--sm {
+    font-size: var(--font-size-sm);
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  .hg-tag--md {
+    font-size: var(--font-size-md);
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .hg-tag--lg {
+    font-size: var(--font-size-lg);
+    padding: var(--space-sm) var(--space-lg);
+  }
+
+  /* Color variants using design tokens */
+  .hg-tag--default {
+    background-color: var(--color-background-surface);
+    color: var(--color-text-body);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-default);
+  }
+
+  .hg-tag--primary {
+    background-color: var(--color-interactive-primary);
+    color: var(--color-text-on-primary);
+  }
+
+  .hg-tag--success {
+    background-color: var(--color-feedback-success);
+    color: var(--color-text-inverse);
+  }
+
+  .hg-tag--warning {
+    background-color: var(--color-feedback-warning);
+    color: var(--color-text-body);
+  }
+
+  .hg-tag--error {
+    background-color: var(--color-feedback-error);
+    color: var(--color-text-inverse);
+  }
+
+  .hg-tag--info {
+    background-color: var(--color-feedback-info);
+    color: var(--color-text-inverse);
+  }
+
+  /* Selected state */
+  .hg-tag.is-selected {
+    background-color: var(--color-interactive-selection-background);
+    color: var(--color-interactive-primary);
+    border-color: var(--color-interactive-primary);
+  }
+
+  /* Removable state styling */
+  .hg-tag.is-removable {
+    background-color: var(--color-background-surface);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-default);
+    color: var(--color-text-body);
+  }
+
+  .hg-tag.is-removable:hover {
+    background-color: var(--color-interactive-primary-hover);
+    border-color: var(--color-border-focus);
+  }
+
+  /* Icon styling */
+  .tag-icon {
+    flex-shrink: 0;
+  }
+
+  /* Text styling */
+  .tag-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Dismiss button */
+  .tag-dismiss {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.7;
+    border-radius: var(--radius-sm);
+    padding: var(--space-xs);
+    margin: calc(var(--space-xs) * -1);
+    margin-left: var(--space-xs);
+    flex-shrink: 0;
+    transition:
+      opacity var(--transition-duration-fast)
+        var(--transition-timing-function-ease),
+      background-color var(--transition-duration-fast)
+        var(--transition-timing-function-ease);
+  }
+
+  .tag-dismiss:hover {
+    opacity: 1;
+    background-color: var(--color-background-accent);
+  }
+
+  .tag-dismiss:focus-visible {
+    opacity: 1;
+    outline: var(--outline-width-sm) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--space-2xs);
+    background-color: var(--color-background-accent);
+  }
+
+  /* Adjust padding when dismiss button is present */
+  .hg-tag.has-dismiss.hg-tag--sm {
+    padding-right: var(--space-xs);
+  }
+
+  .hg-tag.has-dismiss.hg-tag--md {
+    padding-right: var(--space-sm);
+  }
+
+  .hg-tag.has-dismiss.hg-tag--lg {
+    padding-right: var(--space-md);
+  }
+</style>

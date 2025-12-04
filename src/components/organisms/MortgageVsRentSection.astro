@@ -1,0 +1,171 @@
+---
+/**
+ * Organism: MortgageVsRentSection
+ * Complete section for mortgage vs rent comparison
+ * Includes heading, description, and interactive calculator
+ */
+import MortgageVsRentCalculator from '../molecules/MortgageVsRentCalculator.astro';
+
+export interface Props {
+  variant?: 'default' | 'centered';
+  background?: 'white' | 'gray' | 'transparent';
+  title?: string;
+  description?: string;
+  calculatorProps?: {
+    buttonText?: string;
+    buttonHref?: string;
+    min?: number;
+    max?: number;
+    step?: number;
+    defaultValue?: number;
+    currency?: string;
+  };
+  id?: string;
+}
+
+const {
+  variant = 'centered',
+  background = 'transparent',
+  title = 'Compare your current rent with your mortgage payment',
+  description = 'Your mortgage payment could be lower than your current rent.',
+  calculatorProps = {},
+  id = 'mortagevsrent',
+} = Astro.props as Props;
+
+const sectionClasses = [
+  'hg-mortgage-vs-rent-section',
+  `variant-${variant}`,
+  `background-${background}`,
+];
+---
+
+<section class:list={sectionClasses} id={id}>
+  <div class="container">
+    <div class="section-content">
+      <header class="section-header">
+        <h2 class="section-title">{title}</h2>
+        <p class="section-description">{description}</p>
+      </header>
+
+      <div class="calculator-wrapper">
+        <MortgageVsRentCalculator variant={variant} {...calculatorProps} />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hg-mortgage-vs-rent-section {
+    width: 100%;
+    padding: var(--space-xl) 0;
+  }
+
+  .container {
+    max-width: var(--size-container-narrow);
+    margin: 0 auto;
+    padding: 0 var(--space-md);
+  }
+
+  .section-content {
+    width: 100%;
+  }
+
+  .section-header {
+    margin-bottom: var(--space-xl);
+  }
+
+  .section-title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-heading);
+    margin-bottom: var(--space-md);
+    line-height: var(--line-height-normal);
+    padding-bottom: var(--space-lg);
+  }
+
+  .section-description {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+    color: var(--color-text-body);
+    margin: 0;
+  }
+
+  .calculator-wrapper {
+    width: 100%;
+    margin: var(--space-xl) auto 0;
+  }
+
+  /* Variant styles */
+  .variant-centered .section-header {
+    text-align: center;
+  }
+
+  .variant-default .section-header {
+    text-align: left;
+  }
+
+  /* Background variants */
+  .background-white {
+    background-color: var(--color-background-body);
+  }
+
+  .background-gray {
+    background-color: var(--color-surface);
+  }
+
+  .background-transparent {
+    background-color: transparent;
+  }
+
+  /* Mobile responsive adjustments */
+  @media (width <= 48rem) {
+    .hg-mortgage-vs-rent-section {
+      padding: var(--space-lg) 0;
+    }
+
+    .container {
+      padding: 0 var(--space-sm);
+    }
+
+    .section-header {
+      margin-bottom: var(--space-lg);
+    }
+
+    .section-title {
+      font-size: var(--font-size-2xl);
+      line-height: var(--line-height-tight);
+      padding-bottom: var(--space-md);
+    }
+
+    .section-description {
+      font-size: var(--font-size-sm);
+      line-height: var(--line-height-normal);
+    }
+
+    .calculator-wrapper {
+      margin: var(--space-lg) auto 0;
+    }
+  }
+
+  /* Large screen adjustments */
+  @media (width >= 62rem) {
+    .hg-mortgage-vs-rent-section {
+      padding: var(--space-xl) 0;
+    }
+
+    .container {
+      padding: 0 var(--space-lg);
+    }
+  }
+
+  /* Extra large screen adjustments */
+  @media (width >= 75rem) {
+    .hg-mortgage-vs-rent-section {
+      padding: var(--space-xl) 0;
+    }
+
+    .calculator-wrapper {
+      margin: var(--space-xl) auto 0;
+    }
+  }
+</style>

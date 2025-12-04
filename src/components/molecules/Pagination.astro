@@ -1,0 +1,166 @@
+---
+/**
+ * Molecule: Pagination
+ * Paged navigation with accessible semantics and token-based styling.
+ */
+interface Props {
+  /** Current active page (1-indexed) */
+  currentPage: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Base href used to build page links (e.g., "/blog?page=") */
+  baseHref: string;
+  /** Number of sibling pages to show on each side of current page */
+  siblingCount?: number;
+  /** Optional aria-label for navigation */
+  ariaLabel?: string;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  currentPage,
+  totalPages,
+  baseHref,
+  siblingCount = 1,
+  ariaLabel = 'Pagination',
+  class: className = '',
+} = Astro.props as Props;
+
+if (totalPages < 1) {
+  throw new Error('Pagination requires totalPages to be at least 1');
+}
+
+if (currentPage < 1 || currentPage > totalPages) {
+  throw new Error('currentPage must be between 1 and totalPages');
+}
+
+// Build list of pages with optional ellipsis markers
+function getPages(total: number, current: number, sibling: number) {
+  const pages: Array<number | 'ellipsis'> = [];
+  const start = Math.max(1, current - sibling);
+  const end = Math.min(total, current + sibling);
+
+  if (start > 1) {
+    pages.push(1);
+    if (start > 2) pages.push('ellipsis');
+  }
+
+  for (let i = start; i <= end; i++) pages.push(i);
+
+  if (end < total) {
+    if (end < total - 1) pages.push('ellipsis');
+    pages.push(total);
+  }
+
+  return pages;
+}
+
+const pages = getPages(totalPages, currentPage, siblingCount);
+const classes = ['hg-Pagination', className].filter(Boolean);
+---
+
+<nav aria-label={ariaLabel} class:list={classes}>
+  <ul class="pagination-list">
+    <li class:list={['page-item', currentPage === 1 && 'disabled']}>
+      <a
+        href={currentPage > 1 ? `${baseHref}${currentPage - 1}` : '#'}
+        aria-label="Previous page"
+        class="page-link prev"
+        aria-disabled={currentPage === 1 ? 'true' : undefined}
+        tabindex={currentPage === 1 ? -1 : undefined}
+      >
+        Prev
+      </a>
+    </li>
+
+    {
+      pages.map((page) =>
+        page === 'ellipsis' ? (
+          <li class="ellipsis" aria-hidden="true">
+            &hellip;
+          </li>
+        ) : (
+          <li class:list={['page-item', page === currentPage && 'active']}>
+            <a
+              href={`${baseHref}${page}`}
+              class="page-link"
+              aria-current={page === currentPage ? 'page' : undefined}
+            >
+              {page}
+            </a>
+          </li>
+        ),
+      )
+    }
+
+    <li class:list={['page-item', currentPage === totalPages && 'disabled']}>
+      <a
+        href={currentPage < totalPages ? `${baseHref}${currentPage + 1}` : '#'}
+        aria-label="Next page"
+        class="page-link next"
+        aria-disabled={currentPage === totalPages ? 'true' : undefined}
+        tabindex={currentPage === totalPages ? -1 : undefined}
+      >
+        Next
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<style>
+  .hg-Pagination {
+    display: block;
+  }
+
+  .pagination-list {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: var(--space-xs);
+  }
+
+  .page-item .page-link {
+    display: inline-block;
+    padding: var(--space-xs) var(--space-sm);
+    color: var(--color-text-body);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-default);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    transition: background-color var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .page-item .page-link:hover {
+    background-color: var(--color-interactive-selection-background);
+  }
+
+  .page-item .page-link:focus-visible {
+    outline: var(--outline-width-md) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--space-2xs);
+  }
+
+  .page-item.active .page-link {
+    background-color: var(--color-interactive-primary);
+    color: var(--color-text-on-primary);
+    border-color: var(--color-interactive-primary);
+    cursor: default;
+  }
+
+  .page-item.disabled .page-link {
+    color: var(--color-text-subtle);
+    background-color: var(--color-background-disabled);
+    border-color: var(--color-border-subtle);
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
+  .ellipsis {
+    color: var(--color-text-subtle);
+    padding: var(--space-xs) var(--space-sm);
+  }
+</style>

@@ -1,0 +1,26 @@
+---
+export interface Props {
+  text?: string;
+  href?: string;
+  src?: string;
+  srcset?: string;
+  alt?: string;
+  title?: string;
+  value?: string;
+  placeholder?: string;
+  ariaLabel?: string;
+}
+const {
+  text = '',
+  href = '#',
+  src = '',
+  srcset = '',
+  alt = '',
+  title = '',
+  value = '',
+  placeholder = '',
+  ariaLabel = '',
+} = Astro.props;
+---
+
+<input type="text" class="nitro-lazy" />

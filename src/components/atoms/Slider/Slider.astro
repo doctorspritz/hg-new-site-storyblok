@@ -1,0 +1,265 @@
+---
+/**
+ * Slider Component
+ * Hunter Galloway Design System - Atomic Component
+ * 
+ * A flexible range slider component that supports custom styling and labels.
+ * Uses design tokens for consistent styling across the application.
+ */
+
+import type { SliderProps } from './Slider.types';
+import { semantic } from '../../../tokens/semantic';
+
+interface Props extends SliderProps {}
+
+const {
+  min = 0,
+  max = 100,
+  step = 1,
+  value = 50,
+  name,
+  id,
+  disabled = false,
+  showValue = true,
+  showLabels = true,
+  formatValue = (val: number) => val.toString(),
+  class: additionalClasses = '',
+  ...rest
+} = Astro.props;
+
+// Build CSS classes based on props
+const sliderClasses = [
+  'hg-slider',
+  disabled && 'hg-slider--disabled',
+  additionalClasses,
+].filter(Boolean).join(' ');
+
+const sliderWrapperClasses = [
+  'hg-slider-wrapper',
+].join(' ');
+---
+
+<div class={sliderWrapperClasses}>
+  <input 
+    type="range"
+    min={min}
+    max={max}
+    step={step}
+    value={value}
+    name={name}
+    id={id}
+    disabled={disabled}
+    class={sliderClasses}
+    {...rest}
+  />
+  
+  {showValue && (
+    <div class="hg-slider-value">
+      {formatValue(value)}
+    </div>
+  )}
+  
+  {showLabels && (
+    <div class="hg-slider-labels">
+      <span class="hg-slider-label hg-slider-label--min">
+        {formatValue(min)}
+      </span>
+      <span class="hg-slider-label hg-slider-label--max">
+        {formatValue(max)}
+      </span>
+    </div>
+  )}
+</div>
+
+<style define:vars={{
+  brandPrimary: semantic.color.brand.primary,
+  surfaceSecondary: semantic.color.surface.secondary,
+  surfaceTertiary: semantic.color.surface.tertiary,
+  textPrimary: semantic.color.text.primary,
+  textSecondary: semantic.color.text.secondary,
+  fontSizeSm: semantic.typography.size.sm,
+  fontSizeMd: semantic.typography.size.md,
+  fontSizeLg: semantic.typography.size.lg,
+  fontWeightBold: semantic.typography.weight.bold,
+  radiusSm: semantic.radius.sm,
+  spaceSm: semantic.space.sm,
+  spaceMd: semantic.space.md,
+  durationNormal: semantic.duration.normal,
+}}>
+/* Slider wrapper */
+.hg-slider-wrapper {
+  position: relative;
+  width: 100%;
+  padding: var(--spaceMd) 0;
+}
+
+/* Range input styling */
+.hg-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: var(--surfaceSecondary);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+  transition: all var(--durationNormal) ease;
+}
+
+.hg-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  background: var(--brandPrimary);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all var(--durationNormal) ease;
+  box-shadow: 0 2px 8px rgba(43, 43, 43, 0.15);
+}
+
+.hg-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(43, 43, 43, 0.2);
+}
+
+.hg-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  background: var(--brandPrimary);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  transition: all var(--durationNormal) ease;
+  box-shadow: 0 2px 8px rgba(43, 43, 43, 0.15);
+}
+
+.hg-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(43, 43, 43, 0.2);
+}
+
+/* Value display */
+.hg-slider-value {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--brandPrimary);
+  color: var(--textPrimary);
+  padding: var(--spaceSm) var(--spaceMd);
+  border-radius: var(--radiusSm);
+  font-size: var(--fontSizeMd);
+  font-weight: var(--fontWeightBold);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.hg-slider-value::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-top-color: var(--brandPrimary);
+}
+
+/* Labels */
+.hg-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--spaceSm);
+}
+
+.hg-slider-label {
+  font-size: var(--fontSizeSm);
+  color: var(--textSecondary);
+  font-weight: var(--fontWeightBold);
+}
+
+/* Disabled state */
+.hg-slider--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.hg-slider--disabled::-webkit-slider-thumb {
+  cursor: not-allowed;
+}
+
+.hg-slider--disabled::-moz-range-thumb {
+  cursor: not-allowed;
+}
+
+/* Focus styles for accessibility */
+.hg-slider:focus {
+  outline: 2px solid var(--brandPrimary);
+  outline-offset: 2px;
+}
+
+/* Track styling for different browsers */
+.hg-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 6px;
+  background: var(--surfaceSecondary);
+  border-radius: 3px;
+}
+
+.hg-slider::-moz-range-track {
+  width: 100%;
+  height: 6px;
+  background: var(--surfaceSecondary);
+  border-radius: 3px;
+  border: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .hg-slider-value {
+    font-size: var(--fontSizeSm);
+    padding: 4px 8px;
+  }
+  
+  .hg-slider::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .hg-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+  }
+}
+</style>
+
+<script>
+// Dynamic value positioning for slider
+document.addEventListener('DOMContentLoaded', () => {
+  const sliders = document.querySelectorAll('.hg-slider');
+  
+  sliders.forEach(slider => {
+    const valueDisplay = slider.parentElement?.querySelector('.hg-slider-value');
+    
+    if (valueDisplay) {
+      const updateValuePosition = () => {
+        const value = parseFloat(slider.value);
+        const min = parseFloat(slider.min);
+        const max = parseFloat(slider.max);
+        const percentage = ((value - min) / (max - min)) * 100;
+        
+        // Position the value display above the thumb
+        valueDisplay.style.left = `${percentage}%`;
+      };
+      
+      // Update position on input
+      slider.addEventListener('input', updateValuePosition);
+      
+      // Initial position
+      updateValuePosition();
+    }
+  });
+});
+</script>

@@ -1,0 +1,102 @@
+---
+/**
+ * Logo Component
+ * Hunter Galloway Design System - Atomic Component
+ * 
+ * WordPress-aligned logo component with regional switching logic
+ * Matches exact WordPress sizing: 126px desktop, 94px mobile
+ */
+
+import { semantic } from '../../../tokens/semantic';
+
+export interface Props {
+  variant?: 'default' | 'white' | 'dark';
+  size?: 'header' | 'sm' | 'md' | 'lg';
+  href?: string;
+  className?: string;
+  showBrisbane?: boolean;
+}
+
+const {
+  variant = 'default',
+  size = 'header',
+  href = '/',
+  className = '',
+  showBrisbane = true,
+} = Astro.props;
+
+// WordPress logo logic - regional switching
+const getLogoSrc = () => {
+  if (variant === 'white') {
+    return '/images/logo-white.svg';
+  }
+  
+  // WordPress logic: conditionally show Brisbane or non-Brisbane variant
+  if (showBrisbane) {
+    return '/images/hunter_logo_black_.svg';
+  } else {
+    return '/images/no_brisbane_variants/hg_logo_black.svg';  
+  }
+};
+
+const logoSrc = getLogoSrc();
+---
+
+<a href={href} class={`hg-logo hg-logo--${size} ${className}`} aria-label="Hunter Galloway - Mortgage Brokers Brisbane">
+  <img 
+    src={logoSrc} 
+    alt="Hunter Galloway Mortgage Brokers" 
+    class="hg-logo__image"
+    width="200" 
+    height="48"
+    onerror="console.error('Logo failed to load:', this.src)"
+  />
+</a>
+
+<style define:vars={{
+  durationNormal: semantic.duration.normal,
+  space8: '2rem',   // 32px for sm
+  space12: '3rem',  // 48px for md
+  space16: '4rem',  // 64px for lg
+}}>
+.hg-logo {
+  display: inline-block;
+  text-decoration: none;
+  transition: opacity var(--durationNormal) ease;
+}
+
+.hg-logo:hover {
+  opacity: 0.8;
+}
+
+.hg-logo__image {
+  display: block;
+  width: auto;
+  object-fit: contain;
+}
+
+/* WordPress exact sizes */
+.hg-logo--header .hg-logo__image {
+  width: 126px; /* WordPress desktop size */
+}
+
+/* Size variants using semantic tokens */
+.hg-logo--sm .hg-logo__image {
+  height: var(--space8);
+}
+
+.hg-logo--md .hg-logo__image {
+  height: var(--space12);
+}
+
+.hg-logo--lg .hg-logo__image {
+  height: var(--space16);
+}
+
+/* WordPress mobile logo sizing */
+@media (max-width: 992px) {
+  .hg-logo--header .hg-logo__image {
+    width: 94px; /* WordPress mobile size */
+  }
+}
+</style>

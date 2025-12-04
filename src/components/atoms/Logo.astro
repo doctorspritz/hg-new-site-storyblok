@@ -1,0 +1,81 @@
+---
+/**
+ * Atom: Logo
+ * Displays the brand mark as an image or via slot. Supports size and inverse variants.
+ */
+interface Props {
+  href?: string;
+  src?: string;
+  alt?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  variant?: 'default' | 'inverse';
+}
+
+const {
+  href,
+  src,
+  alt = 'Hunter Galloway',
+  size = 'md',
+  variant = 'default',
+} = Astro.props as Props;
+---
+
+{
+  href ? (
+    <a
+      href={href}
+      class:list={['hg-Logo', `size-${size}`, `variant-${variant}`]}
+      aria-label={alt}
+    >
+      {src ? <img class="logo" src={src} alt={alt} /> : <slot />}
+    </a>
+  ) : (
+    <span class:list={['hg-Logo', `size-${size}`, `variant-${variant}`]}>
+      <slot>{src && <img class="logo" src={src} alt={alt} />}</slot>
+    </span>
+  )
+}
+
+<style>
+  .hg-Logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--color-text-heading);
+  }
+
+  .hg-Logo .logo {
+    height: var(--space-md);
+    width: auto;
+    display: block;
+  }
+
+  .size-sm .logo {
+    height: var(--space-sm);
+  }
+
+  .size-md .logo {
+    height: var(--space-md);
+  }
+
+  .size-lg .logo {
+    height: var(--space-lg);
+  }
+
+  .size-xl .logo {
+    height: var(--space-xl);
+  }
+
+  /* Inverse variant for dark backgrounds */
+  .variant-inverse {
+    color: var(--color-text-inverse);
+  }
+
+  .variant-inverse .logo {
+    filter: invert(1) contrast(1.05);
+  }
+
+  a.hg-Logo {
+    text-decoration: none;
+  }
+</style>

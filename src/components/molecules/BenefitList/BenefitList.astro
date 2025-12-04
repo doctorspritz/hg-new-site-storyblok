@@ -1,0 +1,139 @@
+---
+/**
+ * BenefitList Molecule
+ * Hunter Galloway Design System - Molecular Component
+ * 
+ * Composes Icon and Typography atoms to create a list of benefits with checkmarks.
+ * Used in Hero sections for highlighting key selling points.
+ */
+
+import type { BenefitListProps } from './BenefitList.types';
+import Typography from '../../atoms/Typography/Typography.astro';
+import { component } from '../../../tokens/component';
+
+interface Props extends BenefitListProps {}
+
+const {
+  items = [],
+  class: additionalClasses = '',
+} = Astro.props;
+
+// Build CSS classes
+const listClasses = [
+  'hg-benefit-list',
+  additionalClasses,
+].filter(Boolean).join(' ');
+---
+
+<ul class={listClasses}>
+  {items.map((item) => (
+    <li class="hg-benefit-list__item">
+      <div class="hg-benefit-list__checkmark">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="10" cy="10" r="10" fill="#77B255"/>
+          <path d="M6 10.5L8.5 13L14 7.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="hg-benefit-list__content">
+        {item.hoverText && item.tooltip ? (
+          <Typography element="p" size="md" color="primary">
+            <span class="hg-benefit-list__hover-text" data-tooltip={item.tooltip}>
+              {item.hoverText}
+            </span>
+            {item.text.replace(item.hoverText, '')}
+          </Typography>
+        ) : (
+          <Typography element="p" size="md" color="primary">
+            {item.text}
+          </Typography>
+        )}
+      </div>
+    </li>
+  ))}
+</ul>
+
+<style define:vars={{
+  itemGap: component.hero.spacing.itemGap,
+  listGap: component.hero.spacing.listGap,
+  checkmarkColor: component.hero.colors.checkmarkColor,
+}}>
+.hg-benefit-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--listGap);
+}
+
+.hg-benefit-list__item {
+  display: flex;
+  align-items: center;
+  gap: var(--itemGap);
+}
+
+.hg-benefit-list__checkmark {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hg-benefit-list__checkmark svg {
+  display: block;
+}
+
+.hg-benefit-list__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.hg-benefit-list__hover-text {
+  position: relative;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: solid;
+  font-weight: 600;
+  color: inherit;
+}
+
+.hg-benefit-list__hover-text:hover {
+  color: var(--checkmarkColor);
+}
+
+/* Tooltip positioning for hover text */
+.hg-benefit-list__hover-text[data-tooltip] {
+  position: relative;
+}
+
+.hg-benefit-list__hover-text[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.4;
+  width: 300px;
+  text-align: left;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.hg-benefit-list__hover-text[data-tooltip]:hover::before {
+  content: '';
+  position: absolute;
+  bottom: 115%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+  z-index: 1001;
+}
+</style>

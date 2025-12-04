@@ -1,0 +1,297 @@
+---
+/**
+ * Reviews Organism
+ * Hunter Galloway Design System - Organism Component
+ * 
+ * Composes Container, Typography atoms and ReviewCard molecules to create
+ * a customer testimonials section with slider functionality.
+ */
+
+import Container from '../atoms/Container/Container.astro';
+import Typography from '../atoms/Typography/Typography.astro';
+import Button from '../atoms/Button/Button.astro';
+import ReviewCard from '../molecules/ReviewCard/ReviewCard.astro';
+import { component } from '../../tokens/component';
+import { semantic } from '../../tokens/semantic';
+
+interface Props {
+  /** Custom title for the reviews section */
+  title?: string;
+  /** Custom subtitle/description */
+  subtitle?: string;
+  /** Custom reviews data */
+  reviews?: Array<{
+    id: number;
+    name: string;
+    image: string;
+    text: string;
+    rating: number;
+  }>;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  title = "We appreciate our customers' feedback!",
+  subtitle = "Here's what some of our customers say about our work.",
+  reviews: customReviews = [],
+  class: additionalClasses = '',
+} = Astro.props;
+
+// Default customer reviews from WordPress
+const defaultReviews = [
+  {
+    id: 1,
+    name: "Dr Emmanuel Alfa",
+    image: "https://lh3.googleusercontent.com/a-/AOh14GgZImFmtfLkefQoN-i2XM5Z7hHnDqTWFX3xNNHPcA=s128-c0x00000000-cc-rp-mo",
+    text: "They're very professional, friendly and helpful. They're experts at their craft and I highly recommend them.\n\nI have done a number of deals with them are they're truly fantastic! Communication is excellent as they keep you updated throughout the process. They're very professional and transparent and would present you with a number of options.\n\nMy recent deal with them was handled by Johanna who is excellent at communication, professionalism and friendliness. I highly recommend her services.\n\nThanks to Nathan and the team; you guys are the best!",
+    rating: 5
+  },
+  {
+    id: 2,
+    name: "Rhen Lopez",
+    image: "https://lh3.googleusercontent.com/a-/AOh14GikybBSBrq6zPJH3OZmZ4cJJC-iI9t7nb1zGw12ZA=s128-c0x00000000-cc-rp-mo",
+    text: "Nathan and Chris were great on guiding me through a smooth change /switch of my existing home loan to a new bank institution. They took the time to explain everything regarding the process and always follow up and answered any questions I may had. Very happy with their service. Thank you guys!",
+    rating: 5
+  },
+  {
+    id: 3,
+    name: "Rose Chandler",
+    image: "https://lh3.googleusercontent.com/a/AATXAJxg9u--V827DquAFfyI2nlDZFaIc1FMeewI0fRS=s128-c0x00000000-cc-rp-mo",
+    text: "Could not recommend Hunter and Galloway enough! Absolutely amazing at what they do... I refinanced my home loan recently and the process was so smooth and easy (for my partner and I)\nGabrielle is extremely vigilant and kept us informed every step of the way , the process was flawless and we are so happy with the outcome.\nThankyou!",
+    rating: 5
+  },
+  {
+    id: 4,
+    name: "Jon Tai",
+    image: "https://lh3.googleusercontent.com/a-/AOh14GjqjB2BKxjK41jp5QoBdVJDhRQn-O180R3VHEJx5Q=s128-c0x00000000-cc-rp-mo",
+    text: "The team at Hunter Galloway have provided us with an outstanding and excellent service throughout our home loan journey. They helped us navigate through the ups, downs and some blind spots of the entire application along with great advise. Loved the youtubes you put up, came very handy.\n\nFrom the initial call to the signing, their strategy coupled with wise financial positioning was out of this world and brilliant, thanks Nathan, Trenton and Blake, simply above and beyond. You guys are real to your words and true relationship builders. So thankful we came across Hunter Galloway and the team.\n\nTo whoever is looking for a loan, do yourself a favour, give them a call, you will soon find out that they are amazing!",
+    rating: 5
+  },
+  {
+    id: 5,
+    name: "Prachi Tyagi",
+    image: "https://lh3.googleusercontent.com/a/AATXAJx2g17D400vYBksa6m5eGC6ly2RYUmMGW1x60DcKA=s128-c0x00000000-cc-rp-mo",
+    text: "Highly recommend Hunter Galloway. 10 out of 10 service for Nathan and Taylah. The best mortgage brokers we have had. They were prompt, efficient and professional. They really know the lending industry and products and were able to help navigate us through our mortgage. They helped us through the process and kept us updated regularly until our mortgage was approved. The whole process of getting the approval was very quick / done in a matter of days. Also, friendly service and answered all of our questions quickly. Thank you to the Hunter Galloway team.",
+    rating: 5
+  }
+];
+
+// Use custom reviews if provided, otherwise use default
+const reviews = customReviews || defaultReviews;
+
+// Build CSS classes  
+const sectionClasses = [
+  'hg-reviews',
+  'hg-reviews-organism', // Add specific class for CSS specificity
+  additionalClasses,
+].filter(Boolean).join(' ');
+---
+
+<section class={sectionClasses} id="reviews-section">
+  <Container class="hg-reviews__container">
+    <div class="hg-reviews__header">
+      <Typography 
+        element="h2" 
+        size="4xl" 
+        weight="heading"
+        class="hg-reviews__title"
+      >
+        {title}
+      </Typography>
+      
+      <Typography 
+        element="p" 
+        size="lg" 
+        class="hg-reviews__subtitle"
+      >
+        {subtitle}
+      </Typography>
+    </div>
+    
+    <div class="hg-reviews__slider">
+      <div class="hg-reviews__wrapper">
+        {reviews.map((review) => (
+          <ReviewCard
+            name={review.name}
+            image={review.image}
+            text={review.text}
+            rating={review.rating}
+            hasReadMore={true}
+            className="hg-reviews__card"
+          />
+        ))}
+      </div>
+      
+      <!-- Navigation Arrows -->
+      <div class="hg-reviews__nav-next" tabindex="0" role="button" aria-label="Next slide"></div>
+      <div class="hg-reviews__nav-prev" tabindex="0" role="button" aria-label="Previous slide"></div>
+    </div>
+    
+    <Button 
+      text="Show more"
+      variant="primary"
+      class="hg-reviews__show-more d-lg-none"
+    />
+  </Container>
+</section>
+
+<style define:vars={{
+  background: component.reviews.colors.background,
+  paddingY: component.reviews.spacing.paddingY,
+  paddingYMobile: component.reviews.spacing.paddingYMobile,
+  titleMarginBottom: component.reviews.spacing.titleMarginBottom,
+  subtitleMarginBottom: component.reviews.spacing.subtitleMarginBottom,
+  gap: component.reviews.layout.gap,
+  gapMobile: component.reviews.layout.gapMobile,
+  cardWidth: component.reviews.layout.cardWidth,
+  cardWidthMobile: component.reviews.layout.cardWidthMobile,
+  maxWidth: component.reviews.layout.maxWidth,
+  navButtonSize: component.reviews.navigation.buttonSize,
+  navButtonOffset: component.reviews.navigation.buttonOffset,
+  brandPrimary: semantic.color.brand.primary,
+  brandHover: semantic.color.brand.primaryHover,
+  textPrimary: semantic.color.text.primary,
+  reviewCardWidth: component.reviews.layout.cardWidth,
+}}>
+.hg-reviews {
+  padding: var(--paddingY) 0;
+  background: var(--background);
+}
+
+.hg-reviews__container {
+  text-align: center;
+}
+
+.hg-reviews__header {
+  margin-bottom: var(--subtitleMarginBottom);
+}
+
+.hg-reviews__title {
+  margin-bottom: var(--titleMarginBottom);
+}
+
+.hg-reviews__subtitle {
+  margin: 0;
+}
+
+.hg-reviews__slider {
+  position: relative;
+  overflow: hidden;
+}
+
+/* More specific selector to override .organism-block > * */
+.hg-reviews-organism .hg-reviews__wrapper {
+  display: flex;
+  gap: var(--gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 0 var(--navButtonOffset);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  width: max-content;
+  min-width: 100%;
+}
+
+.hg-reviews-organism .hg-reviews__wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+/* Higher specificity to override design system constraints */
+.hg-reviews-organism .hg-reviews__wrapper .hg-reviews__card {
+  flex: 0 0 var(--cardWidth);
+  width: var(--cardWidth);
+  max-width: var(--cardWidth);
+  scroll-snap-align: start;
+}
+
+/* Navigation arrows */
+.hg-reviews__nav-next,
+.hg-reviews__nav-prev {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--navButtonSize);
+  height: var(--navButtonSize);
+  background: var(--brandPrimary);
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.hg-reviews__nav-next:hover,
+.hg-reviews__nav-prev:hover {
+  background: var(--brandHover);
+}
+
+.hg-reviews__nav-next {
+  right: calc(var(--navButtonOffset) * -1);
+}
+
+.hg-reviews__nav-prev {
+  left: calc(var(--navButtonOffset) * -1);
+}
+
+.hg-reviews__nav-next::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 8px solid var(--textPrimary);
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  margin-left: 2px;
+}
+
+.hg-reviews__nav-prev::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-right: 8px solid var(--textPrimary);
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  margin-right: 2px;
+}
+
+.hg-reviews__show-more {
+  margin-top: 32px;
+}
+
+.d-lg-none {
+  display: none;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .hg-reviews {
+    padding: var(--paddingYMobile) 0;
+  }
+  
+  .hg-reviews__wrapper {
+    flex-direction: column;
+    gap: var(--gapMobile);
+    overflow-x: visible;
+    padding: 0;
+  }
+  
+  .hg-reviews__card {
+    flex: none;
+    width: var(--cardWidthMobile);
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  .d-lg-none {
+    display: inline-flex;
+  }
+  
+  .hg-reviews__nav-next,
+  .hg-reviews__nav-prev {
+    display: none;
+  }
+}
+</style>

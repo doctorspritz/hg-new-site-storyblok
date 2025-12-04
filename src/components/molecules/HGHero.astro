@@ -1,0 +1,427 @@
+---
+/**
+ * Molecule: HGHero
+ * Hunter Galloway-specific hero section with HG styling patterns.
+ * Features responsive layout, HG colors, and flexible content slots.
+ * Updated to match extracted hero section design.
+ */
+import Button from '../atoms/Button.astro';
+import Container from '../atoms/Container.astro';
+import FeatureItem from './FeatureItem.astro';
+import Stat from './Stat.astro';
+/* badges removed from layout */
+
+interface Action {
+  label: string;
+  href: string;
+  variant?: 'primary' | 'secondary' | 'ghost';
+  size?: 'sm' | 'md' | 'lg' | 'wide';
+}
+
+interface Feature {
+  text: string;
+  tooltip?: string;
+  iconSrc?: string;
+  iconAlt?: string;
+  highlightText?: string;
+}
+
+interface StatSpec {
+  value: string | number;
+  label?: string;
+  icon?: string;
+  iconSrc?: string;
+  iconAlt?: string;
+  labelLines?: string[];
+  shape?: 'plain' | 'circle' | 'circle-outline';
+  iconSize?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  showValue?: boolean;
+}
+
+interface Props {
+  title?: string; // fallback when not using split title
+  /** Optional split title parts for bold + light styles */
+  titleStrong?: string;
+  titleLight?: string;
+  subtitle?: string;
+  description?: string;
+  features?: Feature[];
+  stats?: StatSpec[];
+  actions?: Action[];
+  backgroundImage?: string;
+  backgroundImageAlt?: string;
+  variant?: 'default' | 'centered' | 'split';
+  columns?: '50-50' | '60-40' | '40-60' | '70-30' | '30-70';
+  class?: string;
+}
+
+const {
+  title,
+  titleStrong,
+  titleLight,
+  subtitle,
+  description,
+  features = [],
+  stats = [],
+  actions = [],
+  backgroundImage,
+  backgroundImageAlt = '',
+  variant = 'default',
+  columns = '60-40',
+  class: className = '',
+} = Astro.props as Props;
+
+// Helper function to determine grid columns
+const getGridColumns = () => {
+  if (variant !== 'split') return '1fr';
+
+  switch (columns) {
+    case '50-50':
+      return '1fr 1fr';
+    case '60-40':
+      return '3fr 2fr';
+    case '40-60':
+      return '2fr 3fr';
+    case '70-30':
+      return '7fr 3fr';
+    case '30-70':
+      return '3fr 7fr';
+    default:
+      return '1fr 1fr';
+  }
+};
+---
+
+<section
+  class:list={[
+    'hg-HGHero',
+    `variant-${variant}`,
+    variant === 'split' ? `columns-${columns}` : '',
+    className,
+  ]}
+>
+  {
+    backgroundImage && (
+      <div class="background-image">
+        <img src={backgroundImage} alt={backgroundImageAlt} class="bg-img" />
+        <div class="overlay" />
+      </div>
+    )
+  }
+
+  <div class="content-layer">
+    <Container
+      maxWidth="wide"
+      padding="lg"
+      layout="grid"
+      gridColumns={getGridColumns()}
+      gap="xl"
+      alignItems={variant === 'split' ? 'stretch' : 'center'}
+      class={variant === 'centered'
+        ? 'hero-container centered-container'
+        : 'hero-container'}
+    >
+      <div class="content">
+        {subtitle && <p class="subtitle">{subtitle}</p>}
+
+        <h1 class="title">
+          {
+            titleStrong ? (
+              <>
+                <span class="title-strong">{titleStrong}</span>
+                {titleLight && <span class="title-light"> {titleLight}</span>}
+              </>
+            ) : (
+              title
+            )
+          }
+        </h1>
+
+        {description && <p class="description">{description}</p>}
+
+        {/* Feature List */}
+        {
+          features.length > 0 && (
+            <ul class="feature-list">
+              {features.map((feature) => (
+                <li class="feature-item">
+                  <FeatureItem
+                    text={feature.text}
+                    tooltip={feature.tooltip}
+                    iconSrc={feature.iconSrc}
+                    iconAlt={feature.iconAlt}
+                    highlightText={feature.highlightText}
+                    styleVariant="badge"
+                  />
+                </li>
+              ))}
+            </ul>
+          )
+        }
+
+        <slot name="content" />
+
+        {
+          actions.length > 0 && (
+            <div class="actions">
+              {actions.map((action) => (
+                <Button
+                  href={action.href}
+                  variant={action.variant || 'primary'}
+                  size={action.size || 'wide'}
+                >
+                  {action.label}
+                </Button>
+              ))}
+            </div>
+          )
+        }
+
+        {/* Stats Section moved below primary actions */}
+        {
+          stats.length > 0 && (
+            <div class="stats-section">
+              {stats.map((s) => (
+                <Stat
+                  value={s.value}
+                  label={s.label}
+                  labelLines={s.labelLines}
+                  icon={s.icon}
+                  iconSrc={s.iconSrc}
+                  iconAlt={s.iconAlt}
+                  shape={s.shape}
+                  iconSize={s.iconSize}
+                  showValue={s.showValue}
+                  inline={true}
+                />
+              ))}
+            </div>
+          )
+        }
+
+        {/* badges intentionally not rendered under primary actions */}
+
+        <slot name="actions" />
+      </div>
+
+      <div class="media">
+        <slot name="media" />
+      </div>
+    </Container>
+  </div>
+</section>
+
+<style>
+  .hg-HGHero {
+    position: relative;
+    padding: var(--space-xl) 0 var(--space-xl);
+    background: transparent;
+    overflow: hidden;
+  }
+
+  /* For split layout, remove extra bottom padding so media height matches content */
+  .hg-HGHero.variant-split {
+    padding-bottom: 0;
+  }
+
+  /* Background image styling */
+  .background-image {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-surface) 90%, transparent) 0%,
+      color-mix(in srgb, var(--color-surface) 70%, transparent) 100%
+    );
+  }
+
+  .content-layer {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Centered layout specific styling */
+  .centered-container {
+    justify-items: center;
+    text-align: center;
+  }
+
+  /* Content styling */
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .variant-centered .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: var(--size-container-narrow);
+  }
+
+  .subtitle {
+    margin: 0;
+    color: var(--color-interactive-primary);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--space-2xs);
+  }
+
+  .title {
+    margin: 0;
+    color: var(--color-text-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-normal);
+  }
+
+  .title-strong {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+  }
+
+  .title-light {
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-body);
+  }
+
+  .description {
+    margin: 0;
+    color: var(--color-text-body);
+    font-size: var(--font-size-xl);
+    line-height: var(--line-height-normal);
+    max-width: var(--size-content-max-width-lg);
+  }
+
+  /* Feature List Styling */
+  .feature-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-md) 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+
+    /* Larger, readable icon size for hero features */
+    --feature-icon-size: var(--space-lg);
+  }
+
+  /* Stats Section Styling */
+  .stats-section {
+    display: flex;
+    gap: var(--space-md);
+    margin: var(--space-lg) 0 0;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .actions {
+    display: flex;
+    gap: var(--space-md);
+    margin-top: var(--space-lg);
+  }
+
+  /* badges and divider styles removed */
+
+  .media {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* top align image */
+  }
+
+  /* Ensure a tall media area for split layout */
+  .variant-split .media {
+    align-self: stretch; /* fill grid row height */
+  }
+
+  /* Make side image fill the column in split variant */
+  .variant-split .media :global(.hg-image) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Responsive design */
+  @media (--bp-lg) {
+    .title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .stats-section {
+      justify-content: center;
+    }
+
+    /* Scale icons up slightly on large screens */
+    .feature-list {
+      --feature-icon-size: var(--space-xl);
+    }
+  }
+
+  @media (--bp-md) {
+    .hg-HGHero {
+      padding: var(--space-lg) 0;
+    }
+
+    .title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .description {
+      font-size: var(--font-size-lg);
+    }
+
+    .actions {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .variant-centered .actions {
+      align-items: center;
+    }
+
+    .subtitle {
+      font-size: var(--font-size-md);
+    }
+
+    .feature-list {
+      gap: var(--space-sm);
+    }
+
+    /* Fix grid stacking on mobile - force single column layout */
+    .variant-split .hero-container {
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+    }
+  }
+
+  /* Enhance HG branding */
+  .variant-default {
+    background: transparent;
+  }
+
+  .variant-centered {
+    background: transparent;
+  }
+
+  /* Split specifics */
+  .variant-split .content {
+    text-align: left;
+    align-items: flex-start;
+  }
+</style>

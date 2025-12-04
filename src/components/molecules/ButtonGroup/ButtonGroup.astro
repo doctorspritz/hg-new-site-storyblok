@@ -1,0 +1,235 @@
+---
+/**
+ * Molecule: ButtonGroup
+ * Composes custom buttons into a single- or multi-select group with keyboard a11y.
+ */
+
+type Mode = 'single' | 'multiple';
+
+interface Option {
+  label: string;
+  value: string;
+  disabled?: boolean;
+  variant?: 'primary' | 'secondary' | 'ghost';
+}
+
+interface Props {
+  options?: Option[];
+  selected?: string | string[];
+  mode?: Mode;
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'secondary' | 'ghost';
+  ariaLabel?: string;
+}
+
+const {
+  options = [],
+  selected = undefined,
+  mode = 'single',
+  size = 'md',
+  variant = undefined,
+  ariaLabel = 'Button group',
+} = Astro.props as Props;
+
+const isMultiple = mode === 'multiple';
+const selectedSet = new Set(
+  Array.isArray(selected) ? selected : selected ? [selected] : [],
+);
+---
+
+<div
+  class="hg-ButtonGroup"
+  role={isMultiple ? 'group' : 'radiogroup'}
+  aria-label={ariaLabel}
+>
+  {
+    options.length > 0 ? (
+      options.map((opt, idx) => (
+        <button
+          type="button"
+          data-index={idx}
+          data-value={opt.value}
+          disabled={opt.disabled}
+          data-selected={String(selectedSet.has(opt.value))}
+          role={!isMultiple ? 'radio' : undefined}
+          tabindex={
+            selectedSet.size > 0
+              ? selectedSet.has(opt.value)
+                ? 0
+                : -1
+              : idx === 0
+                ? 0
+                : -1
+          }
+          class:list={[
+            'hg-ButtonGroup-button',
+            `variant-${opt.variant ?? variant}`,
+            `size-${size}`,
+            { 'is-selected': selectedSet.has(opt.value) },
+          ]}
+        >
+          {opt.label}
+        </button>
+      ))
+    ) : (
+      <slot />
+    )
+  }
+</div>
+
+<script>
+  (function () {
+    const rootEl =
+      document.currentScript && document.currentScript.previousElementSibling;
+    const root =
+      rootEl && rootEl.nodeType === 1 ? (rootEl as HTMLElement) : null;
+    if (!root) return;
+
+    const selectable = Array.from(root.querySelectorAll('[data-index]'));
+    if (selectable.length === 0) return;
+
+    const mode =
+      root.getAttribute('role') === 'radiogroup' ? 'single' : 'multiple';
+
+    function updateRovingTabindex(activeIndex: number) {
+      selectable.forEach((el, i) =>
+        el.setAttribute('tabindex', i === activeIndex ? '0' : '-1'),
+      );
+    }
+
+    function emitChange() {
+      const values = selectable
+        .filter((el) => el.getAttribute('data-selected') === 'true')
+        .map((el) => String((el as HTMLElement).dataset.value ?? ''));
+      const detail = mode === 'single' ? (values[0] ?? null) : values;
+      root?.dispatchEvent(new CustomEvent('change', { detail, bubbles: true }));
+    }
+
+    function toggleIndex(index: number) {
+      const el = selectable[index];
+      if (!el || el.getAttribute('disabled') !== null) return;
+      if (mode === 'single') {
+        selectable.forEach((e, i) => {
+          e.setAttribute('data-selected', i === index ? 'true' : 'false');
+        });
+        updateRovingTabindex(index);
+      } else {
+        const current = el.getAttribute('data-selected') === 'true';
+        el.setAttribute('data-selected', current ? 'false' : 'true');
+      }
+      emitChange();
+    }
+
+    root.addEventListener('click', (e: Event) => {
+      const target = (e.target as HTMLElement)?.closest('[data-index]');
+      if (!target) return;
+      const idx = Number((target as HTMLElement).dataset.index);
+      toggleIndex(idx);
+    });
+
+    root.addEventListener('keydown', (e) => {
+      const keyEvent = e as KeyboardEvent;
+      const active = document.activeElement;
+      const currentIdx = active ? selectable.indexOf(active) : -1;
+      if (currentIdx === -1) return;
+      let nextIdx = currentIdx;
+      if (keyEvent.key === 'ArrowRight' || keyEvent.key === 'ArrowDown') {
+        nextIdx = (currentIdx + 1) % selectable.length;
+        (selectable[nextIdx] as HTMLElement).focus();
+        updateRovingTabindex(nextIdx);
+        keyEvent.preventDefault();
+      } else if (keyEvent.key === 'ArrowLeft' || keyEvent.key === 'ArrowUp') {
+        nextIdx = (currentIdx - 1 + selectable.length) % selectable.length;
+        (selectable[nextIdx] as HTMLElement).focus();
+        updateRovingTabindex(nextIdx);
+        keyEvent.preventDefault();
+      } else if (keyEvent.key === ' ' || keyEvent.key === 'Enter') {
+        toggleIndex(currentIdx);
+        keyEvent.preventDefault();
+      }
+    });
+  })();
+</script>
+
+<style>
+  .hg-ButtonGroup {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  .hg-ButtonGroup-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    border: 0;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-normal);
+    transition:
+      background-color 0.15s ease,
+      box-shadow 0.15s ease,
+      color 0.15s ease;
+  }
+
+  /* Size variants */
+  .hg-ButtonGroup-button.size-sm {
+    font-size: var(--font-size-sm);
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  .hg-ButtonGroup-button.size-md {
+    font-size: var(--font-size-md);
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .hg-ButtonGroup-button.size-lg {
+    font-size: var(--font-size-lg);
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  /* Visual variants */
+  .hg-ButtonGroup-button.variant-primary {
+    color: var(--color-text-on-primary);
+    background-color: var(--color-interactive-primary);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .hg-ButtonGroup-button.variant-primary:hover:not(:disabled) {
+    background-color: var(--color-interactive-primary-hover);
+  }
+
+  .hg-ButtonGroup-button.variant-secondary {
+    color: var(--color-interactive-secondary-text);
+    background-color: transparent;
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-interactive-secondary-border);
+    border-radius: var(--radius-pill);
+  }
+
+  .hg-ButtonGroup-button.variant-secondary:hover:not(:disabled) {
+    border-color: var(--color-interactive-secondary-border-hover);
+    color: var(--color-interactive-secondary-text);
+  }
+
+  .hg-ButtonGroup-button.variant-ghost {
+    color: var(--color-text-link);
+    background-color: transparent;
+  }
+
+  .hg-ButtonGroup-button.variant-ghost:hover:not(:disabled) {
+    color: var(--color-text-link-hover);
+  }
+
+  .hg-ButtonGroup-button:disabled {
+    background-color: var(--color-interactive-disabled);
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+  }
+
+  .hg-ButtonGroup-button.is-selected {
+    box-shadow: var(--shadow-md);
+  }
+</style>

@@ -1,0 +1,390 @@
+---
+/**
+ * Organism: NavDropdown
+ * Typed, variant-driven mega menu panel.
+ *
+ * Controls ARIA structure and variant layout; open state is controlled
+ * by parent (e.g., MainNavigation) for now.
+ */
+import NavList from '../molecules/navigation/NavList.astro';
+import NavSection from '../molecules/navigation/NavSection.astro';
+import PromoCard from '../molecules/navigation/PromoCard.astro';
+import TeaserCard from '../molecules/navigation/TeaserCard.astro';
+import FooterLink from '../molecules/navigation/FooterLink.astro';
+import type { DropdownConfig } from '../navigation/types';
+
+interface Props {
+  config: DropdownConfig;
+  id?: string;
+  labelledBy?: string;
+  open?: boolean;
+  class?: string;
+}
+
+const {
+  config,
+  id,
+  labelledBy,
+  open = true,
+  class: className = '',
+} = Astro.props as Props;
+
+const rootClasses = [
+  'hg-nav-dropdown',
+  `variant-${config.variant}`,
+  { 'is-open': open },
+  className,
+].filter(Boolean);
+
+// no JSX in frontmatter; map sections inline in the template
+---
+
+<div
+  id={id}
+  class:list={rootClasses}
+  role="menu"
+  aria-labelledby={labelledBy}
+  aria-hidden={open ? 'false' : 'true'}
+>
+  {
+    config.variant === 'mega' && (
+      <div class="grid-mega grid">
+        {config.sections.map((section) => (
+          <div class="col">
+            <NavSection section={section}>
+              <Fragment slot="list">
+                <NavList
+                  items={section.items}
+                  role="menu"
+                  itemRole="menuitem"
+                />
+              </Fragment>
+            </NavSection>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  {
+    config.variant === 'mega-aside' && (
+      <div class="grid-aside variant-mega-aside grid">
+        <div class="grid-left">
+          {config.sections[0]?.title && (
+            <div class="left-heading">
+              <span class="heading-text">{config.sections[0].title}</span>
+              <span class="heading-rule" aria-hidden="true" />
+            </div>
+          )}
+
+          {config.sections.map((section) => (
+            <div class="col">
+              <NavSection section={{ ...section, title: undefined }}>
+                <Fragment slot="list">
+                  <NavList
+                    items={section.items}
+                    role="menu"
+                    itemRole="menuitem"
+                  />
+                </Fragment>
+              </NavSection>
+            </div>
+          ))}
+        </div>
+        {config.aside && config.aside.type === 'promo' && (
+          <div class="grid-right">
+            <PromoCard
+              title={config.aside.title}
+              description={config.aside.description}
+              cta={config.aside.cta}
+              ctaSize="sm"
+              class="promo-compact"
+            />
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  {
+    config.variant === 'content-teaser' && (
+      <div class="grid-aside variant-content-teaser grid">
+        <div class="grid-left">
+          {config.sections.map((section) => (
+            <div class="col">
+              <NavSection section={section}>
+                <Fragment slot="list">
+                  <NavList
+                    items={section.items}
+                    role="menu"
+                    itemRole="menuitem"
+                  />
+                </Fragment>
+              </NavSection>
+            </div>
+          ))}
+          {config.footerLink && (
+            <div class="footer">
+              <FooterLink
+                label={config.footerLink.label}
+                href={config.footerLink.href}
+              />
+            </div>
+          )}
+        </div>
+        {config.aside &&
+          config.aside.type === 'teaser' &&
+          config.aside.image && (
+            <div class="grid-right">
+              <div class="aside-heading">
+                <span class="heading-text">Latest From The Blog</span>
+                <span class="heading-rule" aria-hidden="true" />
+              </div>
+              <TeaserCard
+                image={config.aside.image}
+                title={config.aside.title}
+                href={config.aside.cta?.href || '#'}
+              />
+            </div>
+          )}
+      </div>
+    )
+  }
+
+  {
+    config.variant === 'simple' && (
+      <div class="grid-simple grid">
+        {config.sections.map((section) => (
+          <div class="col">
+            <NavSection section={section}>
+              <Fragment slot="list">
+                <NavList
+                  items={section.items}
+                  role="menu"
+                  itemRole="menuitem"
+                />
+              </Fragment>
+            </NavSection>
+          </div>
+        ))}
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .hg-nav-dropdown {
+    background: var(--color-background-body);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-xl);
+    min-width: var(--size-dropdown-menu-width-lg);
+  }
+
+  /* Compact styling for simple variant */
+  .hg-nav-dropdown.variant-simple {
+    padding: var(--space-lg);
+    min-width: var(--size-content-max-width-sm);
+  }
+
+  /* Roomier panel for mega (3-column) menus */
+  .hg-nav-dropdown.variant-mega {
+    min-width: var(--size-content-max-width-xl);
+  }
+
+  /* Mega + Aside (promo) panel width */
+  .hg-nav-dropdown.variant-mega-aside {
+    min-width: var(--size-content-max-width-xl);
+    padding: var(--space-lg) var(--space-xl);
+  }
+
+  /* Content + Teaser panel width (Resources) */
+  .hg-nav-dropdown.variant-content-teaser {
+    min-width: var(--size-content-max-width-xl);
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-lg);
+  }
+
+  /* Tighter vertical spacing for mega-aside to reduce total height */
+  .variant-mega-aside.grid {
+    gap: var(--space-md);
+  }
+
+  .grid-mega {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .grid-aside {
+    grid-template-columns: 3fr 1.25fr;
+  }
+
+  .grid-simple {
+    grid-template-columns: 1fr;
+    max-width: var(--size-content-max-width-sm);
+  }
+
+  .grid-left {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-lg);
+  }
+
+  .variant-mega-aside .grid-left {
+    gap: var(--space-md);
+  }
+
+  /* Combined heading spanning both left columns */
+  .left-heading {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm);
+  }
+
+  .left-heading .heading-text {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-lg);
+  }
+
+  .left-heading .heading-rule {
+    flex: 1 1 auto;
+    height: var(--border-width-md);
+    background: var(--color-interactive-primary);
+    opacity: 0.7;
+    border-radius: var(--radius-pill);
+  }
+
+  .grid-right {
+    align-self: start;
+  }
+
+  /* Make promo card more compact */
+  .promo-compact {
+    padding: var(--space-sm);
+    gap: var(--space-sm);
+    max-width: var(--size-content-max-width-xs);
+  }
+
+  .promo-compact .title {
+    font-size: var(--font-size-md);
+  }
+
+  .promo-compact .desc {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-tight);
+  }
+
+  /* Aside heading for content-teaser */
+  .aside-heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm);
+  }
+
+  .aside-heading .heading-text {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    color: var(--color-text-heading);
+    letter-spacing: var(--letter-spacing-lg);
+  }
+
+  .aside-heading .heading-rule {
+    flex: 1 1 auto;
+    height: var(--border-width-md);
+    background: var(--color-interactive-primary);
+    opacity: 0.7;
+    border-radius: var(--radius-pill);
+  }
+
+  .footer {
+    margin-top: var(--space-md);
+  }
+
+  @media (--bp-lg) {
+    .hg-nav-dropdown {
+      padding: var(--space-lg);
+      min-width: 0;
+    }
+
+    .grid-mega {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .grid-aside {
+      grid-template-columns: 1fr;
+    }
+
+    .grid-left {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // @ts-nocheck
+  // Lightweight roving focus for all dropdown panels on the page
+  (function () {
+    /**
+     * @param {HTMLElement} root
+     */
+    const init = (root) => {
+      if (!root || root.dataset.ddInit === '1') return;
+      root.dataset.ddInit = '1';
+
+      /**
+       * @returns {HTMLElement[]}
+       */
+      const getItems = () =>
+        Array.from(root.querySelectorAll('[role="menuitem"]'));
+
+      /**
+       * @param {1|-1} dir
+       */
+      const move = (dir) => {
+        const items = getItems();
+        if (!items.length) return;
+        const active = document.activeElement;
+        let idx = items.findIndex((el) => el === active);
+        if (idx === -1) idx = 0;
+        idx = (idx + dir + items.length) % items.length;
+        items[idx]?.focus();
+      };
+
+      /**
+       * @param {KeyboardEvent} e
+       */
+      root.addEventListener('keydown', (e) => {
+        const target = /** @type {HTMLElement} */ (e.target);
+        if (!root.contains(target)) return;
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          move(1);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          move(-1);
+        } else if (e.key === 'Home') {
+          const items = getItems();
+          if (items.length) items[0]?.focus();
+          e.preventDefault();
+        } else if (e.key === 'End') {
+          const items = getItems();
+          if (items.length) items[items.length - 1]?.focus();
+          e.preventDefault();
+        }
+      });
+    };
+
+    /** @type {NodeListOf<HTMLElement>} */ (
+      document.querySelectorAll('.hg-nav-dropdown')
+    ).forEach(init);
+  })();
+</script>

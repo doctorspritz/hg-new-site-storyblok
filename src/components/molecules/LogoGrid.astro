@@ -1,0 +1,190 @@
+---
+/**
+ * Molecule: LogoGrid
+ * Displays a grid of logos with optional title.
+ * Designed for bank logos and other logo grids without Card wrapper.
+ */
+import Heading from '../atoms/Heading.astro';
+import Image from '../atoms/Image.astro';
+import BankItem from './BankItem.astro';
+
+interface LogoItem {
+  src: string;
+  alt: string;
+  href?: string;
+}
+
+export interface Props {
+  /** Section title */
+  title?: string;
+  /** Array of logo items */
+  logos: LogoItem[];
+  /** Size for each logo */
+  logoSize?: 'sm' | 'md' | 'lg' | 'xl';
+  /** Object fit behavior for logos */
+  objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+  /** Layout type - flex for general use, grid for uniform sizing */
+  layout?: 'flex' | 'grid';
+  /** Whether logos should be interactive with hover effects */
+  interactive?: boolean;
+  /** Use BankItem molecules for specialized bank logo display */
+  useBankItems?: boolean;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  title,
+  logos = [],
+  logoSize = 'md',
+  objectFit = 'contain',
+  layout = 'flex',
+  interactive = true,
+  useBankItems = false,
+  class: className = '',
+} = Astro.props;
+
+const containerClasses = [
+  'logo-container',
+  `logo-container--${layout}`,
+  !interactive && 'logo-container--static',
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<div class:list={['hg-LogoGrid', className]}>
+  {
+    title && (
+      <Heading level={3} size="2xl" class="title" align="center">
+        {title}
+      </Heading>
+    )
+  }
+  <div class={containerClasses}>
+    {
+      logos.map((logo) =>
+        useBankItems ? (
+          <BankItem
+            src={logo.src}
+            alt={logo.alt}
+            interactive={interactive}
+            class="logo-item"
+          />
+        ) : (
+          <div class="logo">
+            <Image
+              src={logo.src}
+              alt={logo.alt}
+              size={logoSize}
+              objectFit={objectFit}
+              loading="lazy"
+              class="logo-image"
+            />
+          </div>
+        ),
+      )
+    }
+  </div>
+</div>
+
+<style>
+  .hg-LogoGrid {
+    width: 100%;
+  }
+
+  .hg-LogoGrid .title {
+    margin: 0 0 var(--space-xl);
+    text-align: center;
+    color: var(--color-text-heading);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-tight);
+    font-size: var(--font-size-2xl);
+    max-width: var(--size-content-max-width-lg);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hg-LogoGrid .logo-container {
+    max-width: var(--size-container-wide);
+    margin: 0 auto;
+    padding: var(--space-lg);
+  }
+
+  .hg-LogoGrid .logo-container--flex {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-lg) var(--space-xl);
+  }
+
+  .hg-LogoGrid .logo-container--grid {
+    display: grid;
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(var(--size-dropdown-width-sm), 1fr)
+    );
+    gap: var(--space-lg) var(--space-xl);
+    place-items: center center;
+  }
+
+  .hg-LogoGrid .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hg-LogoGrid .logo-container--flex:not(.logo-container--static) .logo {
+    transition: transform var(--transition-duration-fast);
+  }
+
+  .hg-LogoGrid .logo-container--flex:not(.logo-container--static) .logo:hover {
+    transform: scale(1.05);
+  }
+
+  .hg-LogoGrid .logo .hg-image--fit-contain {
+    object-fit: contain;
+  }
+
+  /* Responsive adjustments */
+  @media (--bp-min-xl) {
+    .hg-LogoGrid .logo-container--grid {
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(var(--size-dropdown-width-md), 1fr)
+      );
+      gap: var(--space-xl);
+    }
+  }
+
+  @media (--bp-xl) {
+    .hg-LogoGrid .logo-container--flex {
+      gap: var(--space-lg) var(--space-xl);
+      padding: var(--space-lg);
+    }
+  }
+
+  @media (--bp-md) {
+    .hg-LogoGrid .logo-container--grid {
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(var(--size-dropdown-width-sm), 1fr)
+      );
+      gap: var(--space-md);
+      padding: var(--space-sm);
+    }
+
+    .hg-LogoGrid .logo-container--flex {
+      gap: var(--space-md) var(--space-lg);
+      padding: var(--space-md);
+    }
+  }
+
+  @media (--bp-sm) {
+    .hg-LogoGrid .logo-container--flex {
+      gap: var(--space-sm) var(--space-md);
+      padding: var(--space-sm);
+    }
+  }
+</style>

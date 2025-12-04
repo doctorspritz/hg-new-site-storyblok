@@ -1,0 +1,151 @@
+---
+/**
+ * Molecule: Timeline
+ * Display chronological events/steps.
+ *
+ * Props:
+ * - items: Array<{ title: string; date?: string; content?: string }>
+ * - align: 'left' | 'alternate'
+ */
+export interface TimelineItem {
+  title: string;
+  date?: string;
+  content?: string;
+}
+
+interface Props {
+  items: TimelineItem[];
+  align?: 'left' | 'alternate';
+  class?: string;
+}
+
+const {
+  items = [],
+  align = 'left',
+  class: className = '',
+} = Astro.props as Props;
+
+if (items.length === 0) {
+  throw new Error('Timeline requires at least one item');
+}
+
+const containerClasses = ['hg-timeline', `align-${align}`, className]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<ol class={containerClasses} role="list">
+  {
+    items.map((item) => (
+      <li class="timeline-item">
+        <div class="marker" aria-hidden="true" />
+        <div class="content">
+          <div class="header">
+            <h3 class="title">{item.title}</h3>
+            {item.date && (
+              <time class="date" datetime={item.date}>
+                {item.date}
+              </time>
+            )}
+          </div>
+          {item.content && <div class="body">{item.content}</div>}
+        </div>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .hg-timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .timeline-item {
+    position: relative;
+    padding: var(--space-lg) 0 var(--space-lg) var(--space-xl);
+  }
+
+  .timeline-item + .timeline-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: calc(var(--space-md) / 2);
+    width: var(--border-width-sm);
+    height: 100%;
+    background: var(--color-border-subtle);
+  }
+
+  .marker {
+    position: absolute;
+    left: 0;
+    top: var(--space-lg);
+    width: var(--space-md);
+    height: var(--space-md);
+    background: var(--color-background-surface);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-default);
+    border-radius: var(--radius-pill);
+  }
+
+  .content {
+    position: relative;
+  }
+
+  .header {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+  }
+
+  .title {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    color: var(--color-text-heading);
+  }
+
+  .date {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-subtle);
+  }
+
+  .body {
+    margin-top: var(--space-sm);
+    color: var(--color-text-body);
+  }
+
+  .align-alternate .timeline-item:nth-child(even) {
+    padding-left: 0;
+    padding-right: var(--space-xl);
+    text-align: right;
+  }
+
+  .align-alternate .timeline-item:nth-child(even) .marker {
+    left: auto;
+    right: 0;
+  }
+
+  .align-alternate .timeline-item:nth-child(even)::before {
+    left: auto;
+    right: calc(var(--space-md) / 2);
+  }
+
+  @media (width <= 48rem) {
+    .hg-timeline.align-alternate .timeline-item {
+      padding-left: var(--space-xl);
+      padding-right: 0;
+      text-align: left;
+    }
+
+    .hg-timeline.align-alternate .timeline-item .marker {
+      left: 0;
+      right: auto;
+    }
+
+    .hg-timeline.align-alternate .timeline-item::before {
+      left: calc(var(--space-md) / 2);
+      right: auto;
+    }
+  }
+</style>

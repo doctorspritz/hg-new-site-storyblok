@@ -1,0 +1,104 @@
+---
+/**
+ * Molecule: LogoGridCard
+ * Displays a grid of logos inside a card with optional title.
+ */
+import Card from './Card.astro';
+import Heading from '../../atoms/Heading.astro';
+import Image from '../../atoms/Image.astro';
+
+interface LogoItem {
+  src: string;
+  alt: string;
+  href?: string;
+}
+
+interface Props {
+  /** Card title */
+  title?: string;
+  /** Array of logos to display */
+  logos: LogoItem[];
+  /** Number of columns in grid */
+  columns?: 2 | 3 | 4;
+  /** Size for each logo */
+  logoSize?: 'sm' | 'md' | 'lg' | 'xl';
+  /** Object fit behavior for logos */
+  objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  title,
+  logos = [],
+  columns = 3,
+  objectFit = 'contain',
+  class: className = '',
+} = Astro.props;
+---
+
+<Card class:list={['hg-LogoGridCard', className]}>
+  {
+    title && (
+      <Heading level={3} size="md" class="title">
+        {title}
+      </Heading>
+    )
+  }
+  <div class:list={['logo-grid', `cols-${columns}`]}>
+    {
+      logos.map((logo) => (
+        <div class="logo">
+          <Image
+            src={logo.src}
+            alt={logo.alt}
+            objectFit={objectFit}
+            loading="lazy"
+            class="logo-image"
+          />
+        </div>
+      ))
+    }
+  </div>
+</Card>
+
+<style>
+  .hg-LogoGridCard .title {
+    margin: 0 0 var(--space-md);
+    text-align: center;
+    color: var(--color-text-heading);
+  }
+
+  .hg-LogoGridCard .logo-grid {
+    display: grid;
+    gap: var(--space-md);
+    place-items: center;
+  }
+
+  .hg-LogoGridCard .logo-grid.cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hg-LogoGridCard .logo-grid.cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .hg-LogoGridCard .logo-grid.cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .hg-LogoGridCard .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: var(--size-image-height-sm);
+  }
+
+  .hg-LogoGridCard .logo-image {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+  }
+</style>

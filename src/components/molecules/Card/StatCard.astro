@@ -1,0 +1,136 @@
+---
+/**
+ * Molecule: StatCard (scaffold)
+ * Value, label, delta, optional icon.
+ */
+import Card from './Card.astro';
+import Icon from '../../atoms/Icon.astro';
+
+interface Delta {
+  value: string;
+  direction?: 'up' | 'down';
+}
+interface Props {
+  value: string;
+  label: string;
+  delta?: Delta;
+  icon?: string;
+  variant?: 'positive' | 'negative' | 'neutral';
+  class?: string;
+}
+
+const {
+  value,
+  label,
+  delta,
+  icon,
+  variant = 'neutral',
+  class: className = '',
+} = Astro.props as Props;
+---
+
+<Card
+  class:list={[`hg-StatCard`, `variant-${variant}`, className]}
+  variant="bordered"
+  colorVariant="white"
+>
+  <div class="stat-content">
+    {
+      icon && (
+        <div class="icon">
+          <Icon name={icon} />
+        </div>
+      )
+    }
+    <div class="stat-main">
+      <div class="value">{value}</div>
+      <div class="label">{label}</div>
+      {
+        delta && (
+          <div
+            class:list={[`delta`, delta.direction && `dir-${delta.direction}`]}
+          >
+            {delta.value}
+          </div>
+        )
+      }
+    </div>
+  </div>
+</Card>
+
+<style>
+  .hg-StatCard {
+    border-color: var(--color-border-subtle);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-duration-base)
+      var(--transition-timing-function-ease);
+  }
+
+  .hg-StatCard:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .stat-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+  }
+
+  .stat-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .value {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+    line-height: var(--line-height-tight);
+  }
+
+  .label {
+    color: var(--color-text-subtle);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+    max-width: var(--control-minwidth-lg);
+  }
+
+  .delta {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .delta.dir-up {
+    color: var(--color-feedback-success);
+  }
+
+  .delta.dir-down {
+    color: var(--color-feedback-error);
+  }
+
+  /* Variant-specific styling */
+  .hg-StatCard.variant-positive {
+    border-color: var(--color-feedback-success);
+  }
+
+  .hg-StatCard.variant-negative {
+    border-color: var(--color-feedback-error);
+  }
+
+  /* Responsive adjustments */
+  @media (--bp-sm) {
+    .stat-content {
+      padding: var(--space-md);
+    }
+
+    .value {
+      font-size: var(--font-size-2xl);
+    }
+  }
+</style>

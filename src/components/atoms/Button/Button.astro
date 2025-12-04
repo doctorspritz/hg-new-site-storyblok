@@ -1,0 +1,154 @@
+---
+/**
+ * Button Atom - Hunter Galloway Design System (archived)
+ * Supports link or button rendering, slot or `text`/`label` props,
+ * and forwards extra attributes (e.g., onclick).
+ */
+
+import type { ButtonProps } from './Button.types';
+import { semantic } from '../../../tokens/semantic';
+
+interface Props extends ButtonProps {}
+
+const {
+  text,
+  label,
+  ariaLabel,
+  variant = 'primary',
+  size = 'md',
+  disabled = false,
+  href,
+  target,
+  rel,
+  type = 'button',
+  class: additionalClasses = '',
+  ...attrs
+} = Astro.props as Props & Record<string, any>;
+
+const buttonText = text ?? label ?? '';
+const isLink = !!href;
+
+const buttonClasses = [
+  'hg-button',
+  `hg-button--${variant}`,
+  `hg-button--${size}`,
+  disabled && 'hg-button--disabled',
+  additionalClasses,
+].filter(Boolean).join(' ');
+---
+
+{isLink ? (
+  <a
+    href={disabled ? undefined : href}
+    target={target}
+    rel={rel}
+    class={buttonClasses}
+    aria-disabled={disabled}
+    aria-label={ariaLabel}
+    {...attrs}
+  >
+    <slot>{buttonText}</slot>
+  </a>
+  ) : (
+  <button type={type} class={buttonClasses} disabled={disabled} aria-disabled={disabled} aria-label={ariaLabel} {...attrs}>
+    <slot>{buttonText}</slot>
+  </button>
+)}
+
+<style define:vars={{
+  colorTextPrimary: semantic.color.text.primary,
+  colorInteractivePrimary: semantic.color.interactive.primary,
+  colorInteractivePrimaryHover: semantic.color.interactive.primaryHover,
+  colorInteractiveSecondary: semantic.color.interactive.secondary,
+  colorSurfaceSecondary: semantic.color.surface.secondary,
+  colorSurfaceTertiary: semantic.color.surface.tertiary,
+  colorBorderFocus: semantic.color.border.focus,
+  radiusPill: semantic.radius.pill,
+  spaceSm: semantic.space.sm,
+  spaceMd: semantic.space.md,
+  spaceLg: semantic.space.lg,
+  fontFamilyBody: semantic.typography.fontFamily.body.join(', '),
+  fontWeightStrong: semantic.typography.weight.strong,
+  fontSizeSm: semantic.typography.size.sm,
+  fontSizeMd: semantic.typography.size.md,
+  fontSizeLg: semantic.typography.size.lg,
+  durationNormal: semantic.duration.normal,
+  shadowMd: semantic.shadow.md,
+  shadowLg: semantic.shadow.lg,
+}}>
+ .hg-button {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   text-decoration: none;
+   user-select: none;
+   white-space: nowrap;
+   border: none;
+   cursor: pointer;
+   font-family: var(--fontFamilyBody);
+   font-weight: var(--fontWeightStrong);
+   border-radius: var(--radiusPill);
+   transition: all var(--durationNormal) ease;
+ }
+
+ .hg-button--primary {
+   background: var(--colorInteractivePrimary);
+   color: var(--colorTextPrimary);
+   box-shadow: var(--shadowMd);
+ }
+
+ .hg-button--primary:hover {
+   background: var(--colorInteractivePrimaryHover);
+   text-decoration: none;
+   transform: translateY(-2px);
+   box-shadow: var(--shadowLg);
+ }
+
+ .hg-button--secondary {
+   background: var(--colorInteractiveSecondary);
+   color: var(--colorTextPrimary);
+ }
+
+ .hg-button--secondary:hover {
+   background: var(--colorSurfaceTertiary);
+   text-decoration: none;
+ }
+
+ .hg-button--ghost {
+   background: transparent;
+   color: var(--colorInteractivePrimary);
+ }
+
+ .hg-button--ghost:hover {
+   background: var(--colorSurfaceSecondary);
+   text-decoration: none;
+ }
+
+ .hg-button--outline {
+   background: transparent;
+   color: var(--colorInteractivePrimary);
+   border: 2px solid var(--colorInteractivePrimary);
+ }
+
+ .hg-button--outline:hover {
+   background: var(--colorInteractivePrimary);
+   color: var(--colorTextPrimary);
+   text-decoration: none;
+ }
+
+ .hg-button--sm { padding: var(--spaceSm) var(--spaceMd); font-size: var(--fontSizeSm); }
+ .hg-button--md { padding: var(--spaceSm) var(--spaceMd); font-size: var(--fontSizeMd); }
+ .hg-button--lg { padding: var(--spaceMd) var(--spaceLg); font-size: var(--fontSizeLg); }
+
+ .hg-button--disabled {
+   opacity: 0.5;
+   cursor: not-allowed;
+   pointer-events: none;
+ }
+
+ .hg-button:focus {
+   outline: 2px solid var(--colorBorderFocus);
+   outline-offset: 2px;
+ }
+</style>
+

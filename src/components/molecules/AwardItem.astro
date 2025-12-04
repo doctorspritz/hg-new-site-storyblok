@@ -1,0 +1,108 @@
+---
+/**
+ * Award Item Molecule
+ * Hunter Galloway Design System - Molecule Component
+ *
+ * A single award item with image and tooltip functionality.
+ * Uses Image atom and follows design token principles.
+ */
+
+import Image from '../atoms/Image.astro';
+
+export interface Props {
+  /** Award image source URL */
+  src: string;
+  /** Alt text for the award image */
+  alt: string;
+  /** Tooltip text displayed on hover */
+  tooltip?: string;
+  /** Unique identifier for the award */
+  id?: string | number;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const { src, alt, tooltip, id, class: className = '' } = Astro.props;
+
+const itemClasses = ['hg-award-item', className].filter(Boolean).join(' ');
+---
+
+<div
+  class={itemClasses}
+  data-award={id}
+  data-tooltip={tooltip || ''}
+  tabindex="0"
+  aria-label={alt}
+>
+  <Image
+    src={src}
+    alt={alt}
+    radius="sm"
+    loading="lazy"
+    objectFit="contain"
+    class="hg-award-item-image"
+  />
+</div>
+
+<style>
+  .hg-award-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform var(--transition-duration-base);
+    cursor: pointer;
+    position: relative;
+    width: auto; /* don't stretch inside flex rows */
+    max-width: var(--awards-item-max-width);
+    min-height: var(--size-award-item-min-height);
+    padding: var(--awards-item-padding);
+  }
+
+  .hg-award-item:hover {
+    transform: scale(1.05);
+  }
+
+  .hg-award-item:focus {
+    outline: var(--outline-width-md) var(--border-style-solid)
+      var(--color-interactive-primary);
+    outline-offset: var(--space-2xs);
+    border-radius: var(--radius-sm);
+  }
+
+  .hg-award-item-image {
+    max-width: 100%;
+    max-height: var(--awards-img-max-height);
+    width: auto;
+    height: auto;
+    display: block;
+    filter: grayscale(1);
+    transition: filter var(--transition-duration-base);
+    object-fit: contain;
+  }
+
+  .hg-award-item:hover .hg-award-item-image {
+    filter: grayscale(0);
+  }
+
+  /* Tooltip bubble (tokenized) */
+  .hg-award-item:hover::after,
+  .hg-award-item:focus-visible::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translate(-50%, var(--space-xs));
+    background: var(--color-background-body);
+    color: var(--color-text-body);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-xs) var(--space-sm);
+    box-shadow: var(--shadow-sm);
+    z-index: var(--z-index-tooltip);
+    white-space: nowrap;
+    max-width: var(--size-content-max-width-sm);
+  }
+
+  /* All responsive sizing for awards is controlled via tokens in tokens.css */
+</style>

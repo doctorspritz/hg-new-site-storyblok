@@ -1,0 +1,186 @@
+---
+/**
+ * Molecule: Accordion
+ * Accessible collapsible sections for FAQs and similar content.
+ *
+ * Props:
+ * - items: Array<{ id: string; title: string; content: string }>
+ * - allowMultiple: boolean (default false)
+ * - defaultOpenIds: string[]
+ * - headingLevel: 1-6 (default 3)
+ */
+import Heading from '../atoms/Heading.astro';
+
+export interface AccordionItem {
+  id: string;
+  title: string;
+  content: string;
+}
+
+interface Props {
+  items: AccordionItem[];
+  allowMultiple?: boolean;
+  defaultOpenIds?: string[];
+  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
+  class?: string;
+}
+
+const {
+  items = [],
+  allowMultiple = false,
+  defaultOpenIds = [],
+  headingLevel = 3,
+  class: className = '',
+} = Astro.props as Props;
+
+if (items.length === 0) {
+  throw new Error('Accordion requires at least one item');
+}
+
+const containerClasses = ['hg-accordion', className].filter(Boolean).join(' ');
+---
+
+<div
+  class={containerClasses}
+  data-allow-multiple={allowMultiple}
+  data-default-open={JSON.stringify(defaultOpenIds)}
+>
+  {
+    items.map((item) => {
+      const isOpen = defaultOpenIds.includes(item.id);
+      const headingId = `accordion-${item.id}-button`;
+      const panelId = `accordion-${item.id}-panel`;
+      return (
+        <div class="accordion-item">
+          <Heading level={headingLevel} size="md" class="accordion-heading">
+            <button
+              id={headingId}
+              class="accordion-trigger"
+              aria-expanded={isOpen ? 'true' : 'false'}
+              aria-controls={panelId}
+              data-id={item.id}
+              type="button"
+            >
+              {item.title}
+            </button>
+          </Heading>
+          <div
+            id={panelId}
+            class="accordion-panel"
+            role="region"
+            aria-labelledby={headingId}
+            hidden={!isOpen}
+          >
+            {item.content}
+          </div>
+        </div>
+      );
+    })
+  }
+</div>
+
+<script>
+  const container = document.currentScript?.closest(
+    '.hg-accordion',
+  ) as HTMLElement | null;
+  const allowMultiple = container?.dataset.allowMultiple === 'true';
+  const openIds = new Set(JSON.parse(container?.dataset.defaultOpen || '[]'));
+
+  function update() {
+    document.querySelectorAll('.accordion-trigger').forEach((btn) => {
+      const element = btn as HTMLElement;
+      const id = element.dataset.id;
+      const expanded = openIds.has(id);
+      element.setAttribute('aria-expanded', String(expanded));
+      const panel = document.getElementById(`accordion-${id}-panel`);
+      if (panel) {
+        panel.hidden = !expanded;
+      }
+    });
+  }
+
+  function onClick(event: Event) {
+    const btn = event.currentTarget as HTMLElement;
+    const id = btn.dataset.id;
+    if (openIds.has(id)) {
+      openIds.delete(id);
+    } else {
+      if (!allowMultiple) openIds.clear();
+      openIds.add(id);
+    }
+    update();
+  }
+
+  function onKeydown(event: KeyboardEvent) {
+    const btn = event.currentTarget as HTMLElement;
+    const triggers = Array.from(
+      document.querySelectorAll('.accordion-trigger'),
+    );
+    const index = triggers.indexOf(btn);
+    let targetIndex;
+    switch (event.key) {
+      case 'ArrowDown':
+        targetIndex = (index + 1) % triggers.length;
+        break;
+      case 'ArrowUp':
+        targetIndex = (index - 1 + triggers.length) % triggers.length;
+        break;
+      case 'Home':
+        targetIndex = 0;
+        break;
+      case 'End':
+        targetIndex = triggers.length - 1;
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
+    (triggers[targetIndex] as HTMLElement).focus();
+  }
+
+  document.querySelectorAll('.accordion-trigger').forEach((btn) => {
+    btn.addEventListener('click', onClick);
+    btn.addEventListener('keydown', onKeydown as EventListener);
+  });
+</script>
+
+<style>
+  .hg-accordion {
+    border-top: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-default);
+  }
+
+  .accordion-item + .accordion-item {
+    border-top: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-default);
+  }
+
+  .accordion-heading {
+    margin: 0;
+  }
+
+  .accordion-trigger {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: var(--space-md) 0;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    text-align: left;
+    color: var(--color-text-heading);
+    cursor: pointer;
+  }
+
+  .accordion-trigger:focus-visible {
+    outline: var(--outline-width-md) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--space-2xs);
+  }
+
+  .accordion-panel {
+    padding: 0 0 var(--space-md);
+    color: var(--color-text-body);
+  }
+</style>

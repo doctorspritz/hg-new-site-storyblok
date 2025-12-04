@@ -1,0 +1,175 @@
+---
+/**
+ * Molecule: MenuItem
+ * Navigation menu item that renders as a link or button with optional
+ * leading icon and submenu indicator.
+ *
+ * Layout: [icon] text [submenu]
+ * States: active, hover, focus-visible, disabled
+ * Accessibility: aria-haspopup and aria-expanded when submenu is present
+ */
+import Icon from '../atoms/Icon.astro';
+
+interface Props {
+  /** Menu item label */
+  text: string;
+  /** Link destination; renders as <a> when provided */
+  href?: string;
+  /** Optional leading icon name */
+  icon?: string;
+  /** Display submenu indicator */
+  submenu?: boolean;
+  /** Icon name for submenu indicator */
+  submenuIcon?: string;
+  /** Active state */
+  active?: boolean;
+  /** Disabled state */
+  disabled?: boolean;
+  /** External link behavior */
+  external?: boolean;
+  /** Expanded state for submenu */
+  expanded?: boolean;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  text,
+  href,
+  icon,
+  submenu = false,
+  submenuIcon = 'chevron-right',
+  active = false,
+  disabled = false,
+  external = false,
+  expanded = false,
+  class: className = '',
+} = Astro.props as Props;
+
+// Build CSS classes
+const menuItemClasses = [
+  'hg-menu-item',
+  { 'is-active': active },
+  { 'is-disabled': disabled },
+  { 'has-submenu': submenu },
+  className,
+].filter(Boolean);
+
+const linkAttributes = {
+  href: disabled ? undefined : href,
+  target: external ? '_blank' : undefined,
+  rel: external ? 'noopener noreferrer' : undefined,
+  'aria-haspopup': submenu ? ('menu' as const) : undefined,
+  'aria-expanded': submenu
+    ? expanded
+      ? ('true' as const)
+      : ('false' as const)
+    : undefined,
+};
+
+const buttonAttributes = {
+  type: 'button' as const,
+  disabled: disabled ? true : undefined,
+  'aria-haspopup': submenu ? ('menu' as const) : undefined,
+  'aria-expanded': submenu
+    ? expanded
+      ? ('true' as const)
+      : ('false' as const)
+    : undefined,
+};
+---
+
+{
+  href ? (
+    <a class:list={menuItemClasses} {...(linkAttributes as any)}>
+      {icon && (
+        <Icon name={icon} size="sm" color="inherit" class="menu-item-icon" />
+      )}
+      <span class="menu-item-text">{text}</span>
+      {submenu && (
+        <Icon
+          name={submenuIcon}
+          size="sm"
+          color="inherit"
+          class="menu-item-submenu-icon"
+        />
+      )}
+    </a>
+  ) : (
+    <button class:list={menuItemClasses} {...(buttonAttributes as any)}>
+      {icon && (
+        <Icon name={icon} size="sm" color="inherit" class="menu-item-icon" />
+      )}
+      <span class="menu-item-text">{text}</span>
+      {submenu && (
+        <Icon
+          name={submenuIcon}
+          size="sm"
+          color="inherit"
+          class="menu-item-submenu-icon"
+        />
+      )}
+    </button>
+  )
+}
+
+<style>
+  .hg-menu-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    color: var(--color-text-body);
+    background: none;
+    border: none;
+    text-decoration: none;
+    font: inherit;
+    font-weight: var(--font-weight-regular);
+    cursor: pointer;
+    transition:
+      background-color var(--transition-duration-fast)
+        var(--transition-timing-function-ease),
+      color var(--transition-duration-fast)
+        var(--transition-timing-function-ease);
+  }
+
+  .hg-menu-item:focus-visible {
+    outline: var(--outline-width-md) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--border-width-sm);
+  }
+
+  .hg-menu-item:hover:not(.is-disabled) {
+    background-color: var(--color-interactive-primary-hover);
+    color: var(--color-text-heading);
+  }
+
+  .hg-menu-item.is-active {
+    background-color: var(--color-interactive-selection-background);
+    color: var(--color-interactive-primary);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .hg-menu-item.is-disabled {
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .menu-item-icon {
+    flex-shrink: 0;
+  }
+
+  .menu-item-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .menu-item-submenu-icon {
+    flex-shrink: 0;
+    margin-left: var(--space-xs);
+  }
+</style>

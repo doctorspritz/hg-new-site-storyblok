@@ -1,0 +1,55 @@
+---
+/**
+ * CheckmarkIcon Atom
+ * Green circle with white checkmark
+ */
+
+import { component } from '../../../tokens/component';
+
+interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}
+
+const { size = 'md', className = '' } = Astro.props;
+
+const sizes = {
+  sm: component.checkmarkIcon.sizes.sm,
+  md: component.checkmarkIcon.sizes.md, 
+  lg: component.checkmarkIcon.sizes.lg
+};
+---
+
+<div class={`checkmark-icon checkmark-icon--${size} ${className}`}>
+  <svg width={sizes[size]} height={sizes[size]} viewBox="0 0 24 24" fill="none">
+    <rect x="2" y="2" width="20" height="20" fill={component.checkmarkIcon.colors.fill}/>
+    <path d="M7 12l3 3 7-7" stroke={component.checkmarkIcon.colors.stroke} stroke-width={component.checkmarkIcon.dimensions.strokeWidth} stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</div>
+
+<style define:vars={{
+  smSize: component.checkmarkIcon.sizes.sm,
+  mdSize: component.checkmarkIcon.sizes.md,
+  lgSize: component.checkmarkIcon.sizes.lg,
+}}>
+.checkmark-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkmark-icon--sm svg {
+  width: var(--smSize);
+  height: var(--smSize);
+}
+
+.checkmark-icon--md svg {
+  width: var(--mdSize);
+  height: var(--mdSize);
+}
+
+.checkmark-icon--lg svg {
+  width: var(--lgSize);
+  height: var(--lgSize);
+}
+</style>

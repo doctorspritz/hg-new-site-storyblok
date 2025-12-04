@@ -1,0 +1,129 @@
+---
+/**
+ * Bank Item Molecule
+ * Hunter Galloway Design System - Molecule Component
+ *
+ * A single bank/lender logo item with hover effects.
+ * Based on AwardItem but optimized for bank logos.
+ * Uses Image atom and follows design token principles.
+ */
+
+import Image from '../atoms/Image.astro';
+
+export interface Props {
+  /** Bank logo source URL */
+  src: string;
+  /** Alt text for the bank logo */
+  alt: string;
+  /** Bank name for accessibility */
+  bankName?: string;
+  /** Unique identifier for the bank */
+  id?: string | number;
+  /** Whether the bank item should be interactive with hover effects */
+  interactive?: boolean;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  src,
+  alt,
+  bankName,
+  id,
+  interactive = true,
+  class: className = '',
+} = Astro.props;
+
+const itemClasses = [
+  'hg-bank-item',
+  interactive ? 'hg-bank-item--interactive' : 'hg-bank-item--static',
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+const accessibleName = bankName || alt;
+---
+
+<div
+  class={itemClasses}
+  data-bank={id}
+  title={accessibleName}
+  role="img"
+  aria-label={`${accessibleName} - Lending Partner`}
+>
+  <Image
+    src={src}
+    alt={alt}
+    radius="sm"
+    loading="lazy"
+    objectFit="contain"
+    class="hg-bank-item-image"
+  />
+</div>
+
+<style>
+  .hg-bank-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--size-image-height-md);
+    height: var(--size-image-height-sm);
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .hg-bank-item--interactive {
+    transition: filter var(--transition-duration-base)
+      var(--transition-timing-function-ease);
+  }
+
+  .hg-bank-item-image {
+    max-width: var(--size-image-height-md);
+    max-height: var(--size-image-height-sm);
+    width: auto;
+    height: auto;
+    display: block;
+    object-fit: contain;
+  }
+
+  .hg-bank-item--static .hg-bank-item-image {
+    filter: grayscale(0.2) opacity(0.9);
+  }
+
+  .hg-bank-item--interactive .hg-bank-item-image {
+    filter: grayscale(0.3) opacity(0.8);
+    transition: filter var(--transition-duration-base)
+      var(--transition-timing-function-ease);
+  }
+
+  .hg-bank-item--interactive:hover .hg-bank-item-image {
+    filter: grayscale(0) opacity(1);
+  }
+
+  /* Responsive sizing */
+  @media (--bp-md) {
+    .hg-bank-item {
+      width: var(--size-image-height-sm);
+      height: var(--size-icon-lg);
+    }
+
+    .hg-bank-item-image {
+      max-width: var(--size-image-height-sm);
+      max-height: var(--size-icon-lg);
+    }
+  }
+
+  @media (--bp-sm) {
+    .hg-bank-item {
+      width: var(--size-image-height-sm);
+      height: var(--size-icon-lg);
+    }
+
+    .hg-bank-item-image {
+      max-width: var(--size-image-height-sm);
+      max-height: var(--size-icon-lg);
+    }
+  }
+</style>

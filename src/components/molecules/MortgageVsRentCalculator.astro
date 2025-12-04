@@ -1,0 +1,181 @@
+---
+/**
+ * Molecule: MortgageVsRentCalculator
+ * Interactive calculator widget for comparing mortgage payments with rent
+ * Includes custom slider and action button
+ */
+import MortgageCalculatorSlider from './MortgageCalculatorSlider.astro';
+import ButtonWithIcon from './ButtonWithIcon.astro';
+
+export interface Props {
+  variant?: 'default' | 'centered';
+  buttonText?: string;
+  buttonHref?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  defaultValue?: number;
+  currency?: string;
+  disabled?: boolean;
+}
+
+const {
+  variant = 'default',
+  buttonText = 'Calculate',
+  buttonHref = '/mortgage-vs-rent-calculator/',
+  min = 100,
+  max = 2500,
+  step = 50,
+  defaultValue = 100,
+  currency = '$',
+  disabled = false,
+} = Astro.props as Props;
+
+const calculatorId = `mortgage-calc-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<div
+  class:list={[
+    'hg-mortgage-vs-rent-calculator',
+    `variant-${variant}`,
+    { 'is-disabled': disabled },
+  ]}
+>
+  <div class="calculator-content">
+    <MortgageCalculatorSlider
+      id={calculatorId}
+      name="weekly-rent"
+      min={min}
+      max={max}
+      step={step}
+      value={defaultValue}
+      currency={currency}
+      disabled={disabled}
+    />
+
+    <div class="calculator-actions">
+      <ButtonWithIcon
+        variant="primary"
+        size="lg"
+        href={buttonHref}
+        target="_blank"
+        disabled={disabled}
+        data-calculator-id={calculatorId}
+        iconSrc="/spikes/Mortgage and Home Loan Brokers _ Hunter Galloway_files/16_arrow_r_black.svg"
+        iconAlt="arrow"
+        iconPosition="right"
+        class="calculator-button"
+        label={buttonText}
+      />
+    </div>
+  </div>
+</div>
+
+<style>
+  .hg-mortgage-vs-rent-calculator {
+    width: 100%;
+    margin: var(--space-lg) auto 0;
+    border-radius: var(--radius-lg);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+    background: var(--color-surface);
+    padding: var(--space-md);
+  }
+
+  .calculator-content {
+    max-width: 100%;
+  }
+
+  .calculator-actions {
+    text-align: center;
+    margin-top: var(--space-md);
+  }
+
+  .calculator-button {
+    max-width: var(--size-form-width-sm);
+    width: 100%;
+    margin: auto;
+  }
+
+  .variant-centered {
+    text-align: center;
+  }
+
+  .variant-centered .calculator-content {
+    margin: 0 auto;
+  }
+
+  .hg-mortgage-vs-rent-calculator.is-disabled {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  /* Mobile responsive adjustments */
+  @media (--bp-md) {
+    .hg-mortgage-vs-rent-calculator {
+      margin-top: var(--space-md);
+      padding: var(--space-sm);
+    }
+
+    .calculator-actions {
+      margin-top: var(--space-sm);
+    }
+
+    .calculator-button {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+</style>
+
+<script>
+  // Enhanced calculator functionality
+  function initializeCalculator() {
+    const calculators = document.querySelectorAll(
+      '.hg-mortgage-vs-rent-calculator',
+    ) as NodeListOf<HTMLElement>;
+
+    calculators.forEach((calculator) => {
+      const button = calculator.querySelector(
+        '.hg-Button',
+      ) as HTMLAnchorElement;
+      const slider = calculator.querySelector(
+        '.slider-input',
+      ) as HTMLInputElement;
+
+      if (!button || !slider) return;
+
+      // Update button href with current slider value
+      function updateButtonHref() {
+        const currentValue = slider.value;
+        const baseHref =
+          button.getAttribute('href')?.split('?')[0] ||
+          '/mortgage-vs-rent-calculator/';
+        const newHref = `${baseHref}?initPrice=${currentValue}`;
+        button.setAttribute('href', newHref);
+      }
+
+      // Initialize with default value
+      updateButtonHref();
+
+      // Update on slider change
+      slider.addEventListener('input', updateButtonHref);
+
+      // Handle button click
+      button.addEventListener('click', function (e: Event) {
+        e.preventDefault();
+        const href = (e.target as HTMLAnchorElement).getAttribute('href');
+        if (href) {
+          window.open(href, '_blank');
+        }
+      });
+    });
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeCalculator);
+  } else {
+    initializeCalculator();
+  }
+</script>

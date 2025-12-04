@@ -1,0 +1,152 @@
+---
+/**
+ * Atom: IconButton
+ * Circular icon-only button using tokens.
+ */
+export interface Props {
+  ariaLabel: string;
+  variant?: 'primary' | 'secondary' | 'ghost' | 'neutral';
+  size?: 'sm' | 'md' | 'lg';
+  type?: 'button' | 'submit' | 'reset';
+  href?: string;
+  target?: '_self' | '_blank' | '_parent' | '_top';
+  rel?: string;
+  disabled?: boolean;
+  class?: string;
+}
+
+const {
+  ariaLabel,
+  variant = 'secondary',
+  size = 'md',
+  type = 'button',
+  href,
+  target,
+  rel,
+  disabled = false,
+  class: className = '',
+} = Astro.props as Props;
+
+const isLink = !!href;
+const classes = [
+  'hg-IconButton',
+  `variant-${variant}`,
+  `size-${size}`,
+  className,
+];
+---
+
+{
+  isLink ? (
+    <a
+      href={disabled ? undefined : href}
+      target={target}
+      rel={rel}
+      aria-label={ariaLabel}
+      class:list={classes}
+      aria-disabled={disabled ? 'true' : undefined}
+    >
+      <slot />
+    </a>
+  ) : (
+    <button
+      type={type}
+      disabled={disabled}
+      aria-label={ariaLabel}
+      class:list={classes}
+    >
+      <slot />
+    </button>
+  )
+}
+
+<style>
+  .hg-IconButton {
+    display: inline-grid;
+    place-items: center;
+    inline-size: var(--size-button-height-md);
+    block-size: var(--size-button-height-md);
+    border-radius: var(--radius-pill);
+    border: var(--border-width-sm) var(--border-style-solid) transparent;
+    background-color: transparent;
+    color: var(--color-text-body);
+    box-shadow: var(--shadow-md);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color var(--transition-duration-fast)
+        var(--transition-timing-function-ease),
+      box-shadow var(--transition-duration-fast)
+        var(--transition-timing-function-ease),
+      color var(--transition-duration-fast)
+        var(--transition-timing-function-ease);
+  }
+
+  .size-sm {
+    inline-size: var(--size-button-height-sm);
+    block-size: var(--size-button-height-sm);
+  }
+
+  .size-md {
+    inline-size: var(--size-button-height-md);
+    block-size: var(--size-button-height-md);
+  }
+
+  .size-lg {
+    inline-size: var(--size-button-height-lg);
+    block-size: var(--size-button-height-lg);
+  }
+
+  .variant-primary {
+    background: var(--color-interactive-primary);
+    color: var(--color-text-on-primary);
+    border-color: var(--color-interactive-primary);
+  }
+
+  .variant-primary:hover {
+    background: var(--color-interactive-primary-hover);
+    border-color: var(--color-interactive-primary-hover);
+  }
+
+  .variant-secondary {
+    background: var(--color-background-body);
+    color: var(--color-text-body);
+    border-color: var(--color-border-subtle);
+  }
+
+  .variant-secondary:hover {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .variant-ghost {
+    background: transparent;
+    color: var(--color-text-body);
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .variant-ghost:hover {
+    background: var(--color-surface-subtle);
+  }
+
+  /* Neutral (soft gray) surface button */
+  .variant-neutral {
+    background: var(--color-surface); /* clear light gray */
+    color: var(--color-text-body);
+    border-color: var(--color-border-subtle); /* subtle ring for contrast */
+    box-shadow: none;
+  }
+
+  .variant-neutral:hover,
+  .variant-neutral:focus-visible {
+    box-shadow: var(--shadow-md);
+  }
+
+  .hg-IconButton[disabled],
+  .hg-IconButton[aria-disabled='true'] {
+    background: var(--color-interactive-disabled);
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+</style>

@@ -1,0 +1,269 @@
+---
+/**
+ * Molecule: Card
+ * A flexible content-agnostic container with frame variants (background, borders, shadows).
+ * Uses slots for maximum content flexibility - can contain any combination of atoms or other components.
+ */
+import Badge from '../../atoms/Badge.astro';
+import Image from '../../atoms/Image.astro';
+
+export interface Props {
+  /** Background image src */
+  backgroundImage?: string;
+  /** Background image alt text */
+  backgroundImageAlt?: string;
+  /** Background image display variant */
+  backgroundImageVariant?: 'default' | 'mobile-fullscreen';
+  /** Badge text (appears in top-right) */
+  badge?: string;
+  /** Card variant */
+  variant?: 'default' | 'bordered' | 'elevated';
+  /** Card color variant */
+  colorVariant?:
+    | 'default'
+    | 'primary'
+    | 'gray'
+    | 'white'
+    | 'pale-yellow'
+    | 'pale-blue'
+    | 'dark'
+    | 'warm-cream'
+    | 'first-home'
+    | 'refinance'
+    | 'investment'
+    | 'upgrade';
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  backgroundImage,
+  backgroundImageAlt = '',
+  backgroundImageVariant = 'default',
+  badge,
+  variant = 'default',
+  colorVariant = 'default',
+  class: className = '',
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    'hg-Card',
+    `variant-${variant}`,
+    `color-${colorVariant}`,
+    className,
+  ]}
+>
+  {
+    badge && (
+      <div class="badge-container">
+        <Badge text={badge} variant="corner" />
+      </div>
+    )
+  }
+
+  {
+    backgroundImage && (
+      <div
+        class:list={[
+          'background-image',
+          `bg-variant-${backgroundImageVariant}`,
+        ]}
+      >
+        <Image
+          src={backgroundImage}
+          alt={backgroundImageAlt}
+          radius="none"
+          objectFit="cover"
+        />
+      </div>
+    )
+  }
+
+  <div class="content">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .hg-Card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: var(--size-container-content);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-background-primary);
+    overflow: hidden;
+  }
+
+  /* Variants */
+  .variant-default {
+    background-color: var(--color-surface);
+  }
+
+  .variant-bordered {
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+  }
+
+  .variant-elevated {
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Color variants */
+  .color-default {
+    background-color: var(--color-background-primary);
+    color: var(--color-text-body);
+  }
+
+  .color-primary {
+    background-color: var(--color-interactive-primary);
+    color: var(--color-text-on-primary);
+  }
+
+  .color-gray {
+    background-color: var(--color-background-secondary);
+    color: var(--color-text-body);
+  }
+
+  .color-white {
+    background-color: var(--color-background-body);
+    color: var(--color-text-body);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+  }
+
+  .color-pale-yellow {
+    background-color: var(--color-background-light-accent);
+    color: var(--color-text-body);
+  }
+
+  .color-pale-blue {
+    background-color: var(--color-background-light-blue);
+    color: var(--color-text-body);
+  }
+
+  .color-dark {
+    background-color: var(--color-background-accent);
+    color: var(--color-text-inverse);
+  }
+
+  .color-warm-cream {
+    background-color: var(--color-background-light-accent);
+    color: var(--color-text-body);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+  }
+
+  /* Purpose-specific color variants using design tokens */
+  .color-first-home {
+    background-color: var(--color-feedback-success);
+    color: var(--color-text-inverse);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-default);
+  }
+
+  .color-refinance {
+    background-color: var(--color-feedback-info);
+    color: var(--color-text-inverse);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-default);
+  }
+
+  .color-investment {
+    background-color: var(--color-feedback-warning);
+    color: var(--color-text-body);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-default);
+  }
+
+  .color-upgrade {
+    background-color: var(--color-background-secondary);
+    color: var(--color-text-body);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+  }
+
+  .color-stats {
+    background-color: var(--color-background-primary);
+    color: var(--color-text-body);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+  }
+
+  /* Badge positioning - corner tag style */
+  .badge-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: var(--z-index-sticky);
+    transform-origin: top right;
+  }
+
+  /* Background image */
+  .background-image {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: var(--space-xl);
+    height: var(--space-xl);
+    opacity: 0;
+    z-index: 1;
+    transition: opacity var(--transition-duration-base)
+      var(--transition-timing-function-ease);
+  }
+
+  /* Show background image on card hover */
+  .hg-Card:hover .background-image.bg-variant-default {
+    opacity: 0.15;
+  }
+
+  /* Mobile fullscreen variant - visible on mobile, hidden on desktop */
+  .background-image.bg-variant-mobile-fullscreen {
+    inset: 0;
+    opacity: 0;
+  }
+
+  /* Show mobile fullscreen variant only on mobile */
+  @media (--bp-md) {
+    .background-image.bg-variant-mobile-fullscreen {
+      opacity: 0.15;
+    }
+  }
+
+  /* Hide mobile fullscreen variant on desktop */
+  @media (--bp-min-lg) {
+    .background-image.bg-variant-mobile-fullscreen {
+      display: none;
+    }
+  }
+
+  /* Content area */
+  .content {
+    position: relative;
+    padding: var(--space-lg);
+    padding-top: var(--space-xl); /* Extra padding to avoid badge overlap */
+    z-index: 2;
+    flex: 1;
+  }
+
+  /* Responsive adjustments */
+  @media (width <= 48rem) {
+    .hg-Card {
+      min-width: 100%;
+      max-width: 100%;
+    }
+
+    .content {
+      padding: var(--space-md);
+      padding-top: var(--space-lg); /* Extra padding for badge on mobile */
+    }
+
+    .badge-container {
+      top: var(--space-sm);
+      right: var(--space-sm);
+    }
+  }
+</style>

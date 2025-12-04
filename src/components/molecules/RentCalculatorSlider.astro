@@ -1,0 +1,92 @@
+---
+/**
+ * Molecule: RentCalculatorSlider
+ * Custom slider component for the weekly rent calculator
+ * Uses enhanced Slider atom with design token compliance
+ */
+import Slider from '../atoms/Slider.astro';
+
+export interface Props {
+  id?: string;
+  name?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  value?: number;
+  disabled?: boolean;
+  currency?: string;
+}
+
+const {
+  id,
+  name,
+  min = 100,
+  max = 2500,
+  step = 50,
+  value = 100,
+  disabled = false,
+  currency = '$',
+} = Astro.props as Props;
+---
+
+<div class="hg-rent-calculator-slider">
+  <div class="slider-container">
+    <Slider
+      id={id}
+      name={name}
+      min={min}
+      max={max}
+      step={step}
+      value={value}
+      disabled={disabled}
+      showProgress={true}
+      showCaption={true}
+      captionFormat="currency"
+      currency={currency}
+      variant="filled"
+      size="lg"
+      class="rent-slider"
+    />
+
+    <!-- Min/Max labels -->
+    <div class="slider-sides">
+      <div class="slider-side slider-min">{currency}{min}</div>
+      <div class="slider-side slider-max">{currency}{max}</div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .hg-rent-calculator-slider {
+    width: 100%;
+  }
+
+  .slider-container {
+    position: relative;
+    width: 100%;
+  }
+
+  .slider-sides {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: var(--space-sm);
+    color: var(--color-text-body);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+  }
+
+  .slider-side {
+    font-weight: var(--font-weight-bold);
+  }
+
+  /* Mobile responsive adjustments */
+  @media (--bp-md) {
+    .slider-sides {
+      font-size: var(--font-size-xs);
+      line-height: var(--line-height-tight);
+    }
+  }
+</style>

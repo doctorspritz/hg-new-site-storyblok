@@ -1,0 +1,207 @@
+---
+/**
+ * Atom: RadioButton
+ * Single radio input with custom token-driven UI.
+ */
+interface Props {
+  id?: string;
+  name?: string;
+  value?: string;
+  label?: string;
+  checked?: boolean;
+  disabled?: boolean;
+  required?: boolean;
+  ariaLabel?: string;
+  variant?: 'button' | 'plain';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+}
+
+const {
+  id,
+  name = 'radio',
+  value = '',
+  label = '',
+  checked = false,
+  disabled = false,
+  required = false,
+  ariaLabel,
+  variant = 'button',
+  size = 'md',
+} = Astro.props as Props;
+
+const computedId = id ?? `${name}-${value || 'option'}`;
+---
+
+<label
+  class:list={[
+    'hg-Radio',
+    `variant-${variant}`,
+    `size-${size}`,
+    { 'is-disabled': disabled },
+  ]}
+  for={computedId}
+>
+  <input
+    id={computedId}
+    type="radio"
+    name={name}
+    value={value}
+    checked={checked}
+    disabled={disabled}
+    required={required}
+    aria-label={ariaLabel}
+  />
+  <span class="control" aria-hidden="true"></span>
+  <span class="text"><slot>{label}</slot></span>
+</label>
+
+<style>
+  .hg-Radio {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    color: var(--color-text-body);
+  }
+
+  /* Native input visually hidden but accessible */
+  .hg-Radio input {
+    position: absolute;
+    opacity: 0;
+    width: var(--dim-accessibility-hidden);
+    height: var(--dim-accessibility-hidden);
+    pointer-events: none;
+  }
+
+  .hg-Radio .control {
+    position: relative;
+    width: var(--space-md);
+    height: var(--space-md);
+    border: var(--border-width-md) var(--border-style-solid)
+      var(--color-border-form);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-surface);
+    transition:
+      border-color var(--transition-duration-fast)
+        var(--transition-timing-function-ease),
+      background-color var(--transition-duration-fast)
+        var(--transition-timing-function-ease);
+  }
+
+  /* Inner dot */
+  .hg-Radio .control::after {
+    content: '';
+    position: absolute;
+    inset: calc(var(--space-xs) * 0.5);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-interactive-primary);
+    transform: scale(0);
+    transition: transform var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .text {
+    line-height: var(--line-height-normal);
+  }
+
+  /* Variant: button (HG style – looks like a button/pill) */
+  .variant-button {
+    gap: 0;
+  }
+
+  .variant-button .control {
+    /* hide dot control but keep it for state hooks */
+    width: 0;
+    height: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  /* Disabled */
+  .hg-Radio.is-disabled {
+    cursor: not-allowed;
+    color: var(--color-text-subtle);
+  }
+
+  .hg-Radio.is-disabled .control {
+    background-color: var(--color-interactive-disabled);
+    border-color: var(--color-border-subtle);
+  }
+
+  /* Focus */
+  .hg-Radio input:focus-visible + .control {
+    border-color: var(--color-border-focus);
+  }
+
+  /* Checked */
+  .hg-Radio input:checked + .control {
+    border-color: var(--color-interactive-primary);
+  }
+
+  .hg-Radio input:checked + .control::after {
+    transform: scale(1);
+  }
+
+  .variant-button .text {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-sm);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-form);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface);
+    color: var(--color-text-body);
+    min-width: var(--control-minwidth-md);
+    text-align: center;
+    transition:
+      border-color var(--transition-duration-fast)
+        var(--transition-timing-function-ease),
+      box-shadow var(--transition-duration-fast)
+        var(--transition-timing-function-ease),
+      background-color var(--transition-duration-fast)
+        var(--transition-timing-function-ease);
+  }
+
+  .variant-button.size-xs .text {
+    min-width: var(--control-minwidth-xs);
+  }
+
+  .variant-button.size-sm .text {
+    min-width: var(--control-minwidth-sm);
+  }
+
+  .variant-button.size-md .text {
+    min-width: var(--control-minwidth-md);
+  }
+
+  .variant-button.size-lg .text {
+    min-width: var(--control-minwidth-lg);
+  }
+
+  .variant-button:hover .text {
+    border-color: var(--color-border-focus);
+    color: var(--color-text-subtle);
+  }
+
+  .variant-button.is-disabled .text {
+    background-color: var(--color-interactive-disabled);
+    color: var(--color-text-subtle);
+    border-color: var(--color-border-subtle);
+  }
+
+  .hg-Radio input:checked + .control + .text {
+    font-weight: var(--font-weight-bold);
+  }
+
+  .variant-button input:focus-visible + .control + .text {
+    box-shadow: 0 0 0 var(--border-width-md) var(--color-border-focus);
+  }
+
+  .variant-button input:checked + .control + .text {
+    border-color: var(--color-interactive-primary);
+    box-shadow: var(--shadow-sm);
+    background-color: var(--color-interactive-selection-background);
+    font-weight: var(--font-weight-bold);
+  }
+</style>

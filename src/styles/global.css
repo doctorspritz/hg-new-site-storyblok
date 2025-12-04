@@ -1,87 +1,168 @@
-/* pull in any remaining WP/Divi rules once, then delete as you replace */
-@import "./legacy.css";
-
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap');
+@import './tokens.css';
+@import './base.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* brand fonts – keep in /public/fonts/  */
-@font-face{
-  font-family:"Gotham Pro";
-  src:url("/fonts/GothamPro.woff") format("woff"),
-      url("/fonts/GothamPro.ttf")   format("truetype");
-  font-weight:400;
-  font-display:swap;
-}
-@font-face{
-  font-family:"Gotham Pro";
-  src:url("/fonts/GothamPro-Bold.woff") format("woff"),
-      url("/fonts/GothamPro-Bold.ttf")   format("truetype");
-  font-weight:700;
-  font-display:swap;
-}
-@font-face{
-  font-family:"Gotham Pro";
-  src:url("/fonts/GothamPro-Black.woff") format("woff"),
-      url("/fonts/GothamPro-Black.ttf")   format("truetype");
-  font-weight:900;
-  font-display:swap;
+/* Variables come from TokenStyles.astro (semantic tokens to CSS vars) */
+:root {
+  /* Design System CSS Custom Properties */
+  --hg-font-family-body: 'Open Sans', system-ui, sans-serif;
+  --hg-font-family-heading: 'Open Sans', system-ui, sans-serif;
+
+  /* Font Sizes */
+  --hg-font-size-xs: 0.75rem;
+  --hg-font-size-sm: 0.875rem;
+  --hg-font-size-md: 1rem;
+  --hg-font-size-lg: 1.125rem;
+  --hg-font-size-xl: 1.25rem;
+  --hg-font-size-2xl: 1.5rem;
+  --hg-font-size-3xl: 1.875rem;
+  --hg-font-size-4xl: 2.25rem;
+  --hg-font-size-4_5xl: 2.5rem;
+  --hg-font-size-5xl: 3rem;
+
+  /* Font Weights */
+  --hg-font-weight-body: 400;
+  --hg-font-weight-emphasis: 500;
+  --hg-font-weight-strong: 600;
+  --hg-font-weight-heading: 700;
+  --hg-font-weight-display: 800;
+
+  /* Line Heights */
+  --hg-line-height-tight: 1.25;
+  --hg-line-height-body: 1.5;
+
+  /* Colors */
+  --hg-color-text-primary: #1f2937;
+  --hg-color-text-secondary: #4b5563;
+  --hg-color-text-tertiary: #6b7280;
+  --hg-color-text-inverse: #ffffff;
 }
 
-/* convert two high‑use legacy helpers */
-@layer components{
-  .btn-primary{@apply bg-accent text-black font-bold px-6 py-3 rounded-pill shadow hover:bg-accent/90;}
-  .btn-secondary{@apply bg-accent2 text-white px-6 py-3 rounded-pill hover:bg-accent2/90;}
-  
-  /* Hunter Galloway original button styles */
-  .btn_yellow{
-    @apply inline-block bg-yellow hover:bg-accent text-gray-900 font-bold px-8 py-4 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl;
-    transform: translateY(0);
-  }
-  .btn_yellow:hover{
-    transform: translateY(-2px);
-  }
-  
-  /* Enhanced prose styling for mortgage broker pages */
-  .prose h2{
-    @apply text-2xl lg:text-3xl font-bold text-gray-900 mb-6 mt-8;
-    font-family: 'Gotham Pro', -apple-system, BlinkMacSystemFont, sans-serif;
-  }
-  .prose h3{
-    @apply text-xl lg:text-2xl font-bold text-gray-800 mb-4 mt-6;
-    font-family: 'Gotham Pro', -apple-system, BlinkMacSystemFont, sans-serif;
-  }
-  .prose p{
-    @apply text-gray-700 leading-relaxed mb-4;
-  }
-  .prose ul{
-    @apply space-y-2 mb-6;
-  }
-  .prose li{
-    @apply text-gray-700;
-  }
-  .prose strong{
-    @apply font-bold text-gray-900;
-  }
-  
-  /* Widget styling to match original */
-  .widget{
-    @apply mb-8;
-  }
-  .inner_widget{
-    @apply w-full;
-  }
-  .hero_title{
-    font-family: 'Gotham Pro', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-weight: 900;
-  }
-  .hero_subtitle{
-    @apply leading-relaxed;
-  }
-  .hero_points{
-    @apply text-left;
-  }
-  .hero_text{
-    @apply text-gray-600;
-  }
+/* Base Styles - Match WordPress exactly */
+body {
+  font-family: var(--font-family-body);
+  padding: 0 !important;
+  background: var(--color-surface-primary);
+  color: var(--color-text-primary);
+}
+
+#main-content * {
+  font-family: var(--font-family-body);
+}
+
+/* Typography - WordPress styles */
+h1,
+h2,
+h3,
+h4 {
+  color: var(--color-text-primary);
+  font-style: normal;
+  font-weight: var(--font-weight-heading);
+}
+
+h1 {
+  font-weight: var(--font-weight-body);
+}
+
+h1 b {
+  font-weight: var(--font-weight-display);
+}
+
+h3 {
+  font-size: var(--font-size-3xl);
+}
+
+h4 {
+  font-size: var(--font-size-xl);
+}
+
+/* Body text - WordPress styles */
+li,
+p,
+a {
+  color: var(--color-text-primary);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-md);
+  font-style: normal;
+  font-weight: var(--font-weight-body);
+  line-height: var(--line-height-body);
+}
+
+/* Container - WordPress layout */
+#main-content .container {
+  max-width: var(--size-container-max);
+  width: 100%;
+  padding: 0 var(--space-sm) !important;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+/* Section spacing - WordPress pattern */
+#main-content section {
+  padding: var(--space-xl) 0;
+}
+
+/* List styles - WordPress pattern */
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* WordPress specific list styling for benefits */
+ul.list li {
+  margin-bottom: var(--space-xs);
+}
+
+/* Button styles - WordPress yellow button */
+.btn_yellow {
+  background-color: var(--color-interactive-primary);
+  color: var(--color-text-primary);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-pill);
+  font-weight: var(--font-weight-strong);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: background-color var(--durationNormal) ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn_yellow:hover {
+  background-color: var(--color-interactive-primary-hover);
+}
+
+/* Flex utilities - WordPress uses these extensively */
+.flex {
+  display: flex;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-lg-center {
+  text-align: center;
+}
+
+/* Text nowrap utility from WordPress */
+.text-nowrap {
+  white-space: nowrap;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
 }

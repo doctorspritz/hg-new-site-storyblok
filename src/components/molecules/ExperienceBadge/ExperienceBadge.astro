@@ -1,0 +1,71 @@
+---
+/**
+ * ExperienceBadge Molecule
+ * Circular badge with number and label
+ */
+
+import { component } from '../../../tokens/component';
+
+interface Props {
+  years: string;
+  className?: string;
+}
+
+const { years, className = '' } = Astro.props;
+---
+
+<div class={`experience-badge ${className}`} role="group" aria-label={`${years} years of experience`}>
+  <div class="experience-badge__circle">
+    <span class="experience-badge__number">{years}</span>
+  </div>
+  <div class="experience-badge__text">
+    <span>Years<br/>of experience</span>
+  </div>
+</div>
+
+<style define:vars={{
+  numberColor: component.experienceBadge.colors.number,
+  textColor: component.experienceBadge.colors.text,
+  borderColor: component.experienceBadge.colors.border,
+  numberFontSize: component.experienceBadge.typography.numberFontSize,
+  numberLineHeight: component.experienceBadge.typography.numberLineHeight,
+  numberWeight: component.experienceBadge.typography.numberWeight,
+  textFontSize: component.experienceBadge.typography.textFontSize,
+  textLineHeight: component.experienceBadge.typography.textLineHeight,
+  textWeight: component.experienceBadge.typography.textWeight,
+  circleWidth: component.experienceBadge.dimensions.circleWidth,
+  circleHeight: component.experienceBadge.dimensions.circleHeight,
+  borderRadius: component.experienceBadge.dimensions.borderRadius,
+  borderWidth: component.experienceBadge.dimensions.borderWidth,
+  gap: component.experienceBadge.spacing.gap,
+}}>
+.experience-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+}
+
+.experience-badge__circle {
+  width: var(--circleWidth);
+  height: var(--circleHeight);
+  border: var(--borderWidth) solid var(--borderColor);
+  border-radius: var(--borderRadius);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.experience-badge__number {
+  color: var(--textColor);
+  font-size: var(--numberFontSize);
+  font-weight: var(--numberWeight);
+  line-height: var(--numberLineHeight);
+}
+
+.experience-badge__text {
+  color: var(--textColor);
+  font-size: var(--textFontSize);
+  font-weight: var(--textWeight);
+  line-height: var(--textLineHeight);
+}
+</style>

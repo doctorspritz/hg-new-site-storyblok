@@ -1,0 +1,303 @@
+---
+/**
+ * Organism: ReviewsSection
+ * Hunter Galloway Design System - Organism Component
+ *
+ * A reviews showcase using existing atoms and molecules (Heading, Badge, ReviewCard).
+ * No inner component CSS overrides; only section layout and spacing via tokens.
+ */
+import Container from '../atoms/Container.astro';
+import Heading from '../atoms/Heading.astro';
+import Paragraph from '../atoms/Paragraph.astro';
+import Badge from '../molecules/Badge/Badge.astro';
+import ReviewCard from '../molecules/ReviewCard/ReviewCard.astro';
+import Button from '../atoms/Button.astro';
+import Icon from '../atoms/Icon.astro';
+import IconButton from '../atoms/IconButton.astro';
+
+type Review = {
+  userName: string;
+  userAvatar: string;
+  userAvatarAlt?: string;
+  reviewText: string;
+  rating?: number;
+};
+
+interface Props {
+  heading?: string;
+  subheading?: string;
+  reviewCountText?: string; // e.g., '2000+ reviews'
+  reviews?: Review[];
+  id?: string;
+  class?: string;
+  score?: number;
+  layout?: 'grid' | 'carousel';
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+const {
+  heading = 'What our customers say',
+  subheading = '5.0 out of 5 stars on Google',
+  reviewCountText = '2000+ reviews',
+  reviews = [
+    {
+      userName: 'Julz',
+      userAvatar: '/images/team/mortgage-broker-brisbane-reviews-julz.jpg',
+      userAvatarAlt: 'Julz',
+      reviewText:
+        'The team at Hunter Galloway were amazing to deal with and made the whole process seamless. Highly recommend! ',
+      rating: 5,
+    },
+    {
+      userName: 'Michael',
+      userAvatar: '/images/team/mortgage-broker-brisbane-reviews-michael.jpg',
+      userAvatarAlt: 'Michael',
+      reviewText:
+        'Incredibly helpful and proactive. They found the right lender and kept me informed at every step.',
+      rating: 5,
+    },
+    {
+      userName: 'Ian',
+      userAvatar: '/images/team/mortgage-broker-brisbane-reviews-ian.jpg',
+      userAvatarAlt: 'Ian',
+      reviewText:
+        'Professional, responsive and a great outcome. The experience was stress-free from start to finish.',
+      rating: 5,
+    },
+  ],
+  id = 'reviews',
+  class: className = '',
+  score = 5,
+  layout = 'grid',
+  ctaLabel,
+  ctaHref,
+} = Astro.props as Props;
+---
+
+<section id={id} class:list={['hg-ReviewsSection', className]}>
+  <Container>
+    <div class="section-header">
+      <Heading level={2} size="fluid-3xl" align="center" marginBottom="md">
+        {heading}
+      </Heading>
+      <Paragraph color="subtle" class="section-subtitle">
+        {subheading}
+      </Paragraph>
+      <div class="section-badge">
+        <Badge
+          variant="review"
+          size="md"
+          provider="google"
+          countText={reviewCountText}
+          score={score}
+          showStars={true}
+        />
+      </div>
+    </div>
+
+    <div
+      class:list={[
+        layout === 'carousel'
+          ? 'reviews-wrapper is-carousel'
+          : 'reviews-wrapper',
+      ]}
+    >
+      <div
+        class:list={[layout === 'carousel' ? 'reviews-track' : 'reviews-grid']}
+        aria-label="Customer reviews"
+      >
+        {
+          reviews.map((r, i) => (
+            <div
+              class:list={['review-item', i === 1 && 'review-item--featured']}
+            >
+              <ReviewCard
+                userName={r.userName}
+                userAvatar={r.userAvatar}
+                userAvatarAlt={r.userAvatarAlt}
+                reviewText={r.reviewText}
+                rating={r.rating || 5}
+                variant={i === 1 ? 'featured' : 'default'}
+                ratingSize={i === 1 ? 'lg' : 'md'}
+                class={i === 1 ? 'featured' : ''}
+              />
+
+              {layout === 'carousel' && i === 1 && (
+                <div class="reviews-nav" aria-hidden="false">
+                  <div class="arrow-left">
+                    <IconButton
+                      ariaLabel="Scroll left"
+                      variant="secondary"
+                      size="md"
+                    >
+                      <Icon name="chevron-left" size="lg" />
+                    </IconButton>
+                  </div>
+                  <div class="arrow-right">
+                    <IconButton
+                      ariaLabel="Scroll right"
+                      variant="secondary"
+                      size="md"
+                    >
+                      <Icon name="chevron-right" size="lg" />
+                    </IconButton>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    {
+      ctaLabel && ctaHref && (
+        <div class="section-cta">
+          <Button href={ctaHref} variant="secondary" size="lg">
+            {ctaLabel}
+          </Button>
+        </div>
+      )
+    }
+  </Container>
+</section>
+
+<style>
+  .hg-ReviewsSection {
+    padding: var(--space-xl) 0;
+    background: var(--color-background-body);
+  }
+
+  .section-header {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+  }
+
+  .section-subtitle {
+    text-align: center;
+  }
+
+  .section-badge {
+    margin-top: var(--space-xs);
+  }
+
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+  }
+
+  .reviews-wrapper {
+    position: relative;
+
+    /* Ensure protruding avatar stays visible */
+    overflow: visible;
+
+    /* Make room above the cards for the featured avatar circle */
+    margin-top: calc(var(--height-lg) / 2);
+  }
+
+  .review-item {
+    position: relative;
+  }
+
+  /* Carousel/track layout */
+  .reviews-track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(var(--size-form-width-sm), 1fr);
+    gap: var(--space-md);
+
+    /* Add top padding so the featured avatar has room inside the track */
+    padding-top: calc(var(--height-lg) / 2);
+
+    /* Allow content to extend above and enable horizontal scroll */
+    overflow: auto visible;
+    scroll-snap-type: x mandatory;
+    padding-bottom: var(--space-sm);
+  }
+
+  /* Arrow navigation overlay (layout only; no atom overrides) */
+  .reviews-nav {
+    pointer-events: none;
+  }
+
+  .reviews-nav .arrow-left,
+  .reviews-nav .arrow-right {
+    pointer-events: auto;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: var(--z-index-sticky);
+  }
+
+  .reviews-nav .arrow-left {
+    left: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  .reviews-nav .arrow-right {
+    right: 0;
+    transform: translate(50%, -50%);
+  }
+
+  .section-cta {
+    display: grid;
+    place-items: center;
+    margin-top: var(--space-lg);
+  }
+
+  @media (--bp-lg) {
+    .reviews-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-md);
+    }
+  }
+
+  @media (--bp-sm) {
+    .reviews-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-md);
+    }
+  }
+
+  .is-carousel .hg-ReviewCard {
+    scroll-snap-align: start;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.hg-ReviewsSection').forEach((section) => {
+      const track = section.querySelector('.reviews-track');
+      if (!track) return;
+      const left = section.querySelector('.arrow-left');
+      const right = section.querySelector('.arrow-right');
+
+      const getAmount = () => {
+        const first = track.querySelector(':scope > *');
+        const cardWidth = first ? (first as HTMLElement).clientWidth : 0;
+        const viewport = (track as HTMLElement).clientWidth;
+        return Math.max(cardWidth, Math.floor(viewport * 0.8));
+      };
+
+      left?.addEventListener('click', (e) => {
+        e.preventDefault();
+        (track as HTMLElement).scrollBy({
+          left: -getAmount(),
+          behavior: 'smooth',
+        });
+      });
+      right?.addEventListener('click', (e) => {
+        e.preventDefault();
+        (track as HTMLElement).scrollBy({
+          left: getAmount(),
+          behavior: 'smooth',
+        });
+      });
+    });
+  });
+</script>

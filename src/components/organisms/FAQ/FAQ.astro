@@ -1,0 +1,16 @@
+---
+import Accordion from '../../molecules/Accordion/Accordion.astro';
+
+interface FAQItem { id: string; question: string; answerHtml: string }
+export interface Props { title?: string; items?: FAQItem[] }
+const { title = 'Frequently Asked Questions', items = [] } = Astro.props as Props;
+---
+<section class="hg-faq">
+  <h2 class="hg-faq__title">{title}</h2>
+  <Accordion items={items.map(i => ({ id: i.id, title: i.question, content: i.answerHtml }))} />
+</section>
+<style>
+.hg-faq__title { margin: 2rem 0 1rem 0; }
+</style>
+
+

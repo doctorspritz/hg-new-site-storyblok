@@ -1,0 +1,99 @@
+---
+export interface Props {
+  id?: string;
+  class?: string;
+}
+
+const {
+  id = `calculator-${Math.random().toString(36).slice(2, 9)}`,
+  class: className = '',
+  ...attrs
+} = Astro.props as Props;
+---
+
+<div id={id} class:list={['hg-Calculator', className]} {...attrs}>
+  <form class="calc-form">
+    <input id={`${id}-a`} type="number" class="calc-input" />
+    <select id={`${id}-op`} class="calc-select">
+      <option value="add">+</option>
+      <option value="subtract">−</option>
+      <option value="multiply">×</option>
+      <option value="divide">÷</option>
+    </select>
+    <input id={`${id}-b`} type="number" class="calc-input" />
+    <button type="submit" class="calc-button">=</button>
+    <output id={`${id}-result`} class="calc-result">0</output>
+  </form>
+</div>
+
+<script>
+  const root = document.getElementById('${id}');
+  if (root) {
+    const form = root.querySelector('.calc-form') as HTMLFormElement | null;
+    const inputA = root.querySelector('#${id}-a') as HTMLInputElement | null;
+    const inputB = root.querySelector('#${id}-b') as HTMLInputElement | null;
+    const op = root.querySelector('#${id}-op') as HTMLSelectElement | null;
+    const result = root.querySelector(
+      '#${id}-result',
+    ) as HTMLOutputElement | null;
+
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const a = parseFloat(inputA?.value || '0');
+      const b = parseFloat(inputB?.value || '0');
+      let r = 0;
+      switch (op?.value) {
+        case 'add':
+          r = a + b;
+          break;
+        case 'subtract':
+          r = a - b;
+          break;
+        case 'multiply':
+          r = a * b;
+          break;
+        case 'divide':
+          r = b !== 0 ? a / b : 0;
+          break;
+      }
+      if (result) {
+        result.value = String(r);
+        result.textContent = String(r);
+      }
+    });
+  }
+</script>
+
+<style>
+  .hg-Calculator {
+    padding: var(--space-md);
+    border: var(--border-width-md) var(--border-style-solid)
+      var(--color-border-default);
+    border-radius: var(--radius-md);
+    background-color: var(--color-background-body);
+  }
+
+  .calc-form {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+  }
+
+  .calc-input,
+  .calc-select,
+  .calc-result {
+    padding: var(--space-xs);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-default);
+    border-radius: var(--radius-sm);
+    min-width: var(--control-minwidth-md);
+  }
+
+  .calc-button {
+    padding: var(--space-xs) var(--space-sm);
+    background-color: var(--color-interactive-primary);
+    color: var(--color-text-inverse);
+    border: none;
+    border-radius: var(--radius-sm);
+  }
+</style>

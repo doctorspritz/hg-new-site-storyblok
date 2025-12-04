@@ -1,0 +1,63 @@
+---
+/**
+ * Molecule: MenuItem
+ * Single menu row with bullet + text (+ optional badge), using Link atom.
+ */
+import Link from '../../atoms/Link.astro';
+import Badge from '../../atoms/Badge.astro';
+import type { NavItem } from '../../navigation/types';
+
+interface Props {
+  item: NavItem;
+}
+
+const { item } = Astro.props as Props;
+---
+
+<Link
+  href={item.href}
+  variant="menu"
+  underline="hover"
+  class="hg-menu-item"
+  aria-label={item.label}
+>
+  <span class="bullet" aria-hidden="true"></span>
+  <span class="text">{item.label}</span>
+  {
+    item.badge && (
+      <Badge text={item.badge} size="sm" variant="success" class="badge" />
+    )
+  }
+</Link>
+
+<style>
+  .hg-menu-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    line-height: var(--line-height-normal);
+  }
+
+  /* Ensure the Link's internal label wraps our bullet + text inline */
+  :global(a.hg-Link.hg-menu-item > .link-label) {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .bullet {
+    width: var(--size-bullet-sm);
+    height: var(--size-bullet-sm);
+    border-radius: var(--radius-pill);
+    background: var(--color-interactive-primary);
+    flex: 0 0 auto;
+  }
+
+  .text {
+    font-size: var(--font-size-md);
+  }
+
+  .badge {
+    margin-left: var(--space-xs);
+  }
+</style>

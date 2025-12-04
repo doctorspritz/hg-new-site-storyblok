@@ -1,0 +1,88 @@
+---
+/**
+ * Molecule: Rating
+ * Displays a star-based rating using Icon atoms with optional text.
+ */
+import Icon from '../atoms/Icon.astro';
+
+interface Props {
+  /** Current rating value */
+  rating: number;
+  /** Maximum rating value */
+  max?: number;
+  /** Display numeric rating text */
+  showText?: boolean;
+  /** Size variant */
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  /** Color for filled stars (Icon color variants) */
+  color?:
+    | 'inherit'
+    | 'primary'
+    | 'secondary'
+    | 'success'
+    | 'warning'
+    | 'error'
+    | 'subtle';
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  rating = 0,
+  max = 5,
+  showText = true,
+  size = 'md',
+  color = 'warning',
+  class: className = '',
+} = Astro.props as Props;
+
+const stars = Array.from({ length: max });
+const label = `${rating} out of ${max} stars`;
+---
+
+<div
+  class:list={['hg-Rating', `hg-Rating--${size}`, className]}
+  aria-label={label}
+  role="img"
+>
+  {
+    stars.map((_, i) => (
+      <Icon
+        name={i < rating ? 'star' : 'star-outline'}
+        size={size}
+        color={i < rating ? color : 'secondary'}
+        alt=""
+        class="rating-star"
+      />
+    ))
+  }
+  {
+    showText && (
+      <span class="rating-text">
+        {rating}/{max}
+      </span>
+    )
+  }
+</div>
+
+<style>
+  .hg-Rating {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .rating-text {
+    margin-left: var(--space-xs);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-subtle);
+  }
+
+  .hg-Rating--lg .rating-text {
+    font-size: var(--font-size-md);
+  }
+
+  .hg-Rating--xl .rating-text {
+    font-size: var(--font-size-lg);
+  }
+</style>

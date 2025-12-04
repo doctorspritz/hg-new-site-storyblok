@@ -1,0 +1,157 @@
+---
+/**
+ * Molecule: TestimonialCard
+ * Displays a testimonial with avatar, quote, rating, and source attribution.
+ */
+import Image from '../atoms/Image.astro';
+import Heading from '../atoms/Heading.astro';
+import Paragraph from '../atoms/Paragraph.astro';
+import Rating from './Rating.astro';
+
+interface Props {
+  /** Testimonial quote text */
+  quote: string;
+  /** Name of the person giving the testimonial */
+  author: string;
+  /** Optional role or location for the author */
+  role?: string;
+  /** Optional avatar image source */
+  avatarSrc?: string;
+  /** Alt text for the avatar */
+  avatarAlt?: string;
+  /** Optional rating value */
+  rating?: number;
+  /** Optional source logo image */
+  sourceLogoSrc?: string;
+  /** Alt text for the source logo */
+  sourceLogoAlt?: string;
+  /** Display variant */
+  variant?: 'compact' | 'detailed';
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  quote,
+  author,
+  role,
+  avatarSrc,
+  avatarAlt = '',
+  rating,
+  sourceLogoSrc,
+  sourceLogoAlt = '',
+  variant = 'detailed',
+  class: className = '',
+} = Astro.props as Props;
+---
+
+<figure
+  class:list={[
+    'hg-TestimonialCard',
+    `hg-TestimonialCard--${variant}`,
+    className,
+  ]}
+>
+  {
+    avatarSrc && (
+      <div class="avatar">
+        <Image src={avatarSrc} alt={avatarAlt} radius="full" />
+      </div>
+    )
+  }
+  <figcaption class="content">
+    {
+      typeof rating === 'number' && (
+        <Rating rating={rating} showText={false} size="sm" class="rating" />
+      )
+    }
+    <blockquote class="quote">
+      <Paragraph>{quote}</Paragraph>
+    </blockquote>
+    <Heading level={3} size="md" class="author">{author}</Heading>
+    {role && <Paragraph class="role">{role}</Paragraph>}
+    {
+      sourceLogoSrc && (
+        <div class="source">
+          <Image src={sourceLogoSrc} alt={sourceLogoAlt} />
+        </div>
+      )
+    }
+  </figcaption>
+</figure>
+
+<style>
+  .hg-TestimonialCard {
+    display: flex;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-background-surface);
+    color: var(--color-text-body);
+  }
+
+  .hg-TestimonialCard--detailed {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .hg-TestimonialCard--compact {
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+  }
+
+  .avatar {
+    width: var(--space-xl);
+    height: var(--space-xl);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    flex: 1;
+  }
+
+  .hg-TestimonialCard--compact .content {
+    align-items: flex-start;
+  }
+
+  .rating {
+    margin-bottom: var(--space-xs);
+  }
+
+  .quote {
+    margin: 0;
+    font-style: italic;
+    color: var(--color-text-body);
+  }
+
+  .quote :global(p) {
+    margin: 0;
+  }
+
+  .author {
+    color: var(--color-text-heading);
+  }
+
+  .role {
+    color: var(--color-text-subtle);
+    font-size: var(--font-size-sm);
+  }
+
+  .source {
+    margin-top: var(--space-sm);
+    height: var(--space-lg);
+  }
+
+  .source :global(img) {
+    height: 100%;
+    width: auto;
+  }
+</style>

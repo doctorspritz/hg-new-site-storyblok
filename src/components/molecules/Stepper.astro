@@ -1,0 +1,167 @@
+---
+/**
+ * Molecule: Stepper
+ * Displays progress through a multi-step process.
+ *
+ * Props:
+ * - steps: Array<{ id: string; label: string; status?: 'complete' | 'current' | 'upcoming' }>
+ * - current: string (id of current step)
+ * - orientation: 'horizontal' | 'vertical' (default 'horizontal')
+ * - showProgress: boolean (optional progress bar)
+ */
+import Icon from '../atoms/Icon.astro';
+
+interface Step {
+  id: string;
+  label: string;
+  status?: 'complete' | 'current' | 'upcoming';
+}
+
+interface Props {
+  steps: Step[];
+  current: string;
+  orientation?: 'horizontal' | 'vertical';
+  showProgress?: boolean;
+}
+
+const {
+  steps = [],
+  current,
+  orientation = 'horizontal',
+  showProgress = false,
+} = Astro.props as Props;
+
+if (steps.length === 0) {
+  throw new Error('Stepper requires at least one step');
+}
+
+const currentIndex = steps.findIndex((s) => s.id === current);
+
+if (currentIndex === -1) {
+  throw new Error('Current step id not found in steps');
+}
+
+const computedSteps = steps.map((step, index) => {
+  const status =
+    step.status ||
+    (index < currentIndex
+      ? 'complete'
+      : index === currentIndex
+        ? 'current'
+        : 'upcoming');
+  return { ...step, status };
+});
+
+const orientationClass =
+  orientation === 'vertical'
+    ? 'hg-stepper--vertical'
+    : 'hg-stepper--horizontal';
+
+const progressPercent = ((currentIndex + 1) / steps.length) * 100;
+---
+
+<ol class={['hg-stepper', orientationClass].join(' ')}>
+  {
+    computedSteps.map((step, index) => (
+      <li
+        class={['hg-step', `hg-step--${step.status}`].join(' ')}
+        aria-current={step.status === 'current' ? 'step' : undefined}
+      >
+        <span class="hg-step-indicator">
+          {step.status === 'complete' ? (
+            <Icon name="checkmark" size="sm" color="inherit" />
+          ) : (
+            index + 1
+          )}
+        </span>
+        <span class="hg-step-label">{step.label}</span>
+      </li>
+    ))
+  }
+</ol>
+{
+  showProgress && (
+    <div
+      class="hg-stepper-progress"
+      role="progressbar"
+      aria-valuemin="1"
+      aria-valuemax={String(steps.length)}
+      aria-valuenow={String(currentIndex + 1)}
+    >
+      <div class="hg-stepper-progress-bar" data-progress={progressPercent} />
+    </div>
+  )
+}
+
+<style define:vars={{ progressPercent: `${progressPercent}%` }}>
+  .hg-stepper {
+    display: flex;
+    gap: var(--space-lg);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .hg-stepper--vertical {
+    flex-direction: column;
+  }
+
+  .hg-step {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--color-text-body);
+  }
+
+  .hg-step-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--space-md);
+    height: var(--space-md);
+    border-radius: var(--radius-pill);
+    border: var(--border-width-md) var(--border-style-solid)
+      var(--color-border-default);
+    background: var(--color-background-body);
+    color: var(--color-text-subtle);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-regular);
+  }
+
+  .hg-step--complete .hg-step-indicator {
+    background: var(--color-feedback-success);
+    border-color: var(--color-feedback-success);
+    color: var(--color-text-inverse);
+  }
+
+  .hg-step--current .hg-step-indicator {
+    border-color: var(--color-interactive-primary);
+    color: var(--color-text-heading);
+  }
+
+  .hg-step-label {
+    font-size: var(--font-size-md);
+  }
+
+  .hg-step--current .hg-step-label {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+  }
+
+  .hg-stepper-progress {
+    margin-top: var(--space-md);
+    width: 100%;
+    height: var(--space-xs);
+    background: var(--color-border-subtle);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+  }
+
+  .hg-stepper-progress-bar {
+    height: 100%;
+    background: var(--color-interactive-primary);
+    width: var(--progressPercent);
+    transition: width var(--transition-duration-base)
+      var(--transition-timing-function-ease);
+  }
+</style>

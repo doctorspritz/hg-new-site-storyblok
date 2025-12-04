@@ -1,0 +1,201 @@
+---
+/**
+ * Input Component
+ * Hunter Galloway Design System - Atomic Component
+ * 
+ * A flexible input component that supports various types, sizes, and states.
+ * Uses design tokens for consistent styling.
+ */
+
+import type { InputProps } from './Input.types';
+import { semantic } from '../../../tokens/semantic';
+
+interface Props extends InputProps {}
+
+const {
+  type = 'text',
+  size = 'md',
+  variant = 'default',
+  state = 'default',
+  placeholder,
+  value,
+  defaultValue,
+  name,
+  id,
+  required = false,
+  disabled = false,
+  readonly = false,
+  fullWidth = false,
+  class: additionalClasses = '',
+  autocomplete,
+  pattern,
+  min,
+  max,
+  step,
+  maxlength,
+  minlength,
+} = Astro.props;
+
+// Build CSS classes using semantic design tokens
+const inputClasses = [
+  'hg-input',
+  `hg-input--${size}`,
+  `hg-input--${variant}`,
+  `hg-input--${state}`,
+  disabled && 'hg-input--disabled',
+  readonly && 'hg-input--readonly',
+  fullWidth && 'hg-input--full-width',
+  additionalClasses,
+].filter(Boolean).join(' ');
+---
+
+<input 
+  type={type}
+  class={inputClasses}
+  placeholder={placeholder}
+  value={value}
+  name={name}
+  id={id}
+  required={required}
+  disabled={disabled}
+  readonly={readonly}
+  autocomplete={autocomplete}
+  pattern={pattern}
+  min={min}
+  max={max}
+  step={step}
+  maxlength={maxlength}
+  minlength={minlength}
+/>
+
+<style define:vars={{
+  surfacePrimary: semantic.color.surface.primary,
+  surfaceSecondary: semantic.color.surface.secondary,
+  borderPrimary: semantic.color.border.primary,
+  borderFocus: semantic.color.border.focus,
+  brandPrimary: semantic.color.brand.primary,
+  textSecondary: semantic.color.text.secondary,
+  statusSuccess: semantic.color.status.success,
+  statusError: semantic.color.status.error,
+  statusWarning: semantic.color.status.warning,
+  fontSizeSm: semantic.typography.size.sm,
+  fontSizeMd: semantic.typography.size.md,
+  fontSizeLg: semantic.typography.size.lg,
+  fontWeightBody: semantic.typography.weight.body,
+  spaceSm: semantic.space.sm,
+  spaceMd: semantic.space.md,
+  spaceLg: semantic.space.lg,
+  radiusMd: semantic.radius.md,
+  durationFast: semantic.duration.fast,
+}}}>
+/* Input component base styles using design tokens */
+.hg-input {
+  display: block;
+  font-weight: var(--fontWeightBody);
+  transition: all var(--durationFast) ease-in-out;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  font-family: inherit;
+}
+
+/* Size variants using semantic tokens */
+.hg-input--sm {
+  padding: calc(var(--spaceSm) * 0.75) var(--spaceSm);
+  font-size: var(--fontSizeSm);
+}
+
+.hg-input--md {
+  padding: var(--spaceSm) var(--spaceMd);
+  font-size: var(--fontSizeMd);
+}
+
+.hg-input--lg {
+  padding: var(--spaceMd) var(--spaceLg);
+  font-size: var(--fontSizeLg);
+}
+
+/* Variant styles using semantic tokens */
+.hg-input--default {
+  background-color: var(--surfacePrimary);
+  border: 1px solid var(--borderPrimary);
+  border-radius: var(--radiusMd);
+}
+
+.hg-input--filled {
+  background-color: var(--surfaceSecondary);
+  border: 1px solid transparent;
+  border-radius: var(--radiusMd);
+}
+
+.hg-input--outlined {
+  background-color: transparent;
+  border: 2px solid var(--borderPrimary);
+  border-radius: var(--radiusMd);
+}
+
+/* State styles using semantic tokens */
+.hg-input--default {
+  border-color: var(--borderPrimary);
+}
+
+.hg-input--default:focus {
+  border-color: var(--borderFocus);
+  box-shadow: 0 0 0 2px var(--brandPrimary);
+}
+
+.hg-input--error {
+  border-color: var(--statusError);
+}
+
+.hg-input--error:focus {
+  border-color: var(--statusError);
+  box-shadow: 0 0 0 2px var(--statusError);
+}
+
+.hg-input--success {
+  border-color: var(--statusSuccess);
+}
+
+.hg-input--success:focus {
+  border-color: var(--statusSuccess);
+  box-shadow: 0 0 0 2px var(--statusSuccess);
+}
+
+.hg-input--warning {
+  border-color: var(--statusWarning);
+}
+
+.hg-input--warning:focus {
+  border-color: var(--statusWarning);
+  box-shadow: 0 0 0 2px var(--statusWarning);
+}
+
+/* Additional state styles */
+.hg-input--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--surfaceSecondary);
+}
+
+.hg-input--readonly {
+  background-color: var(--surfaceSecondary);
+  cursor: default;
+}
+
+.hg-input--full-width {
+  width: 100%;
+}
+
+/* Placeholder styling using semantic tokens */
+.hg-input::placeholder {
+  color: var(--textSecondary);
+  opacity: 0.7;
+}
+
+/* Focus outline removal */
+.hg-input:focus {
+  outline: none;
+}
+</style>

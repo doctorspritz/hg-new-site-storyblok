@@ -1,0 +1,99 @@
+---
+/**
+ * StarRating Atom
+ * Hunter Galloway Design System - Atomic Component
+ * 
+ * Self-contained star rating display component.
+ * Follows atomic design - single responsibility, no slots, uses only primitives.
+ */
+
+import type { StarRatingProps } from './StarRating.types';
+import { semantic } from '../../../tokens/semantic';
+
+interface Props extends StarRatingProps {}
+
+const {
+  rating = 5,
+  max = 5,
+  size = 'md',
+  class: additionalClasses = '',
+} = Astro.props;
+
+// Ensure rating is within bounds
+const safeRating = Math.max(0, Math.min(rating, max));
+
+// Size configurations
+const sizeConfig = {
+  sm: { width: '14px', height: '14px' },
+  md: { width: '16px', height: '16px' },
+  lg: { width: '20px', height: '20px' },
+};
+
+const currentSize = sizeConfig[size];
+
+// Build CSS classes
+const starRatingClasses = [
+  'hg-star-rating',
+  `hg-star-rating--${size}`,
+  additionalClasses,
+].filter(Boolean).join(' ');
+---
+
+<div class={starRatingClasses}>
+  {Array.from({ length: max }, (_, index) => {
+    const isFilled = index < safeRating;
+    return (
+      <svg 
+        class={`hg-star-rating__star ${isFilled ? 'hg-star-rating__star--filled' : 'hg-star-rating__star--empty'}`}
+        width={currentSize.width} 
+        height={currentSize.height} 
+        viewBox="0 0 16 16" 
+        fill="none"
+        aria-hidden="true"
+      >
+        <path 
+          d="M8 0.5L10.163 5.174L15.5 5.974L11.75 9.726L12.663 15.5L8 13.174L3.337 15.5L4.25 9.726L0.5 5.974L5.837 5.174L8 0.5Z" 
+          fill={isFilled ? '#FDB948' : '#E5E5E5'} 
+        />
+      </svg>
+    );
+  })}
+</div>
+
+<style define:vars={{
+  gap: semantic.space.xs,
+}}>
+.hg-star-rating {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+}
+
+.hg-star-rating__star {
+  transition: all 0.2s ease;
+}
+
+.hg-star-rating__star--filled {
+  /* Filled stars use brand orange color */
+}
+
+.hg-star-rating__star--empty {
+  /* Empty stars use gray */
+}
+
+/* Size variants */
+.hg-star-rating--sm .hg-star-rating__star {
+  width: 14px;
+  height: 14px;
+}
+
+.hg-star-rating--md .hg-star-rating__star {
+  width: 16px;
+  height: 16px;
+}
+
+.hg-star-rating--lg .hg-star-rating__star {
+  width: 20px;
+  height: 20px;
+}
+</style>

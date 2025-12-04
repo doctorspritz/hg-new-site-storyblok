@@ -1,0 +1,103 @@
+---
+/**
+ * Loan Purpose Section - Exact WordPress Content
+ * Refactored to use Hunter Galloway Design System components
+ */
+import Typography from '../atoms/Typography/Typography.astro';
+import PurposeCard from '../molecules/PurposeCard/PurposeCard.astro';
+import { semantic } from '../../tokens/semantic';
+
+const loanPurposes = [
+  {
+    title: "Buy My First Home",
+    description: "Navigate your first home purchase confidently and stress-free with full guidance on each step.",
+    icon: "home-icon",
+    image: "/images/first-home.webp",
+    href: "/get-a-stress-free-first-home-loan/",
+    badge: "Most Popular",
+    variant: "peach"
+  },
+  {
+    title: "Refinance My Loan", 
+    description: "Reduce your home loan repayments and achieve financial flexibility.",
+    icon: "refinance-icon",
+    image: "/images/refinance.webp",
+    href: "/lower-your-rate"
+  },
+  {
+    title: "Upgrade My Home",
+    description: "Transition smoothly from the sale of your current home to securing financing for your new home",
+    icon: "upgrade-icon", 
+    image: "/images/upgrade.webp",
+    href: "/ready-to-upgrade/"
+  },
+  {
+    title: "Invest in Property",
+    description: "Get expert mortgage solutions with personalized service and exclusive options.",
+    icon: "invest-icon",
+    image: "/images/buy-luxury.webp", 
+    href: "/your-property-investment-journey/"
+  }
+];
+---
+
+<section class="hg-loan-purpose-section" id="loan-purpose">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="text-center">What do you need <span class="text-nowrap">a loan for?</span></h2>
+    </div>
+    
+    <div class="hg-purpose-grid">
+      {loanPurposes.map((purpose) => (
+        <PurposeCard
+          title={purpose.title}
+          description={purpose.description}
+          icon={purpose.icon}
+          image={purpose.image}
+          href={purpose.href}
+          badge={purpose.badge}
+          variant={purpose.variant || 'default'}
+          size="md"
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style define:vars={{
+  surfacePrimary: semantic.color.surface.primary,
+  textPrimary: semantic.color.text.primary,
+}}>
+/* Loan Purpose Section Styles - Using Design System */
+.hg-loan-purpose-section {
+  padding: 50px 0;
+  background: var(--surfacePrimary);
+}
+
+.section-header {
+  margin-bottom: 3rem;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 48px;
+  color: var(--textPrimary);
+}
+
+.hg-purpose-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .hg-purpose-grid {
+    flex-direction: column;
+    gap: 24px;
+  }
+}
+</style>

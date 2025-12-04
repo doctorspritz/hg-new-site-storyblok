@@ -1,0 +1,49 @@
+---
+/**
+ * Molecule: FeatureItemGroup
+ * A group of feature items displayed in a list format.
+ */
+import FeatureItem from './FeatureItem.astro';
+
+export interface FeatureOption {
+  id: string;
+  text: string;
+  tooltip?: string;
+  icon?: string;
+}
+
+export interface Props {
+  /** List of features to display */
+  features: FeatureOption[];
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const { features, class: className = '' } = Astro.props;
+---
+
+<div class:list={['hg-FeatureItemGroup', className]}>
+  {
+    features.map((feature) => (
+      <FeatureItem
+        text={feature.text}
+        tooltip={feature.tooltip}
+        icon={feature.icon}
+      />
+    ))
+  }
+</div>
+
+<style>
+  .hg-FeatureItemGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  @media (width <= 48rem) {
+    .hg-FeatureItemGroup {
+      gap: var(--space-xs);
+    }
+  }
+</style>

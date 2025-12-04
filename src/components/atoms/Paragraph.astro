@@ -1,0 +1,93 @@
+---
+/**
+ * Paragraph Atom
+ * Hunter Galloway Design System - Atomic Component
+ *
+ * A self-contained paragraph component for body text.
+ * Uses design tokens for all typography and color values.
+ */
+
+export interface Props {
+  /** Text size variant */
+  size?: 'sm' | 'md' | 'lg';
+  /** Color variant */
+  color?: 'body' | 'heading' | 'subtle' | 'inverse' | 'link';
+  /** Font weight variant */
+  weight?: 'regular' | 'bold';
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  size = 'md',
+  color = 'body',
+  weight = 'regular',
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const paragraphClasses = [
+  'hg-paragraph',
+  `hg-paragraph--${size}`,
+  `hg-paragraph--${color}`,
+  `hg-paragraph--${weight}`,
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<p class={paragraphClasses}>
+  <slot />
+</p>
+
+<style>
+  .hg-paragraph {
+    font-family: var(--font-family-base);
+    line-height: var(--line-height-normal);
+    margin: 0; /* Reset browser defaults */
+  }
+
+  /* Size variants using design tokens */
+  .hg-paragraph--sm {
+    font-size: var(--font-size-sm);
+  }
+
+  .hg-paragraph--md {
+    font-size: var(--font-size-md);
+  }
+
+  .hg-paragraph--lg {
+    font-size: var(--font-size-lg);
+  }
+
+  /* Weight variants using design tokens */
+  .hg-paragraph--regular {
+    font-weight: var(--font-weight-regular);
+  }
+
+  .hg-paragraph--bold {
+    font-weight: var(--font-weight-bold);
+  }
+
+  /* Color variants using design tokens */
+  .hg-paragraph--body {
+    color: var(--color-text-body);
+  }
+
+  .hg-paragraph--heading {
+    color: var(--color-text-heading);
+  }
+
+  .hg-paragraph--subtle {
+    color: var(--color-text-subtle);
+  }
+
+  .hg-paragraph--inverse {
+    color: var(--color-text-inverse);
+  }
+
+  .hg-paragraph--link {
+    color: var(--color-text-link);
+  }
+</style>

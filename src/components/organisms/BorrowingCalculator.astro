@@ -1,0 +1,562 @@
+---
+/**
+ * Organism: BorrowingCalculator
+ * Interactive borrowing capacity calculator that collects financial information
+ * and displays estimated borrowing capacity for potential homebuyers.
+ *
+ * @param title - Calculator title text
+ * @param description - Description text shown below title
+ * @param submitText - Text for submit button
+ * @param showResults - Whether to display results section
+ * @param class - Additional CSS classes
+ * @param id - Component ID for form targeting
+ */
+
+import InputField from '../atoms/InputField.astro';
+import SelectField from '../molecules/SelectField.astro';
+import Button from '../atoms/Button.astro';
+import RadioGroup from '../molecules/RadioGroup.astro';
+import Heading from '../atoms/Heading.astro';
+
+export interface Props {
+  class?: string;
+  id?: string;
+  title?: string;
+  description?: string;
+  submitText?: string;
+  showResults?: boolean;
+}
+
+const {
+  class: className = '',
+  id = 'borrowing-calculator',
+  title = 'Calculate my borrowing capacity',
+  description = 'Answer a few questions to estimate your borrowing capacity.',
+  submitText = 'Calculate my borrowing capacity',
+  showResults = false,
+} = Astro.props;
+
+// State for loading functionality
+const loading = false;
+
+// Australian states for the select dropdown
+const stateOptions = [
+  { label: 'New South Wales (NSW)', value: 'NSW' },
+  { label: 'Victoria (VIC)', value: 'VIC' },
+  { label: 'Queensland (QLD)', value: 'QLD' },
+  { label: 'Australian Capital Territory (ACT)', value: 'ACT' },
+  { label: 'Western Australia (WA)', value: 'WA' },
+  { label: 'South Australia (SA)', value: 'SA' },
+  { label: 'Tasmania (TAS)', value: 'TAS' },
+  { label: 'Northern Territory (NT)', value: 'NT' },
+];
+
+// Marital status options
+const maritalStatusOptions = [
+  { label: 'Couple', value: 'couple' },
+  { label: 'Single person', value: 'single' },
+];
+
+// First home buyer options
+const firstHomeBuyerOptions = [
+  { label: 'Yes', value: 'yes' },
+  { label: 'No', value: 'no' },
+];
+
+// Dependents count options
+const dependentsOptions = [
+  { label: 'I Don’t Have Dependants', value: '0' },
+  { label: '1', value: '1' },
+  { label: '2', value: '2' },
+  { label: '3+', value: '3' },
+];
+
+// Mock calculation results for display
+const mockResults = {
+  borrowingCapacity: 750000,
+  estimatedRepayment: 3200,
+  loanTerm: 30,
+};
+---
+
+<div class:list={['hg-BorrowingCalculator', className]} id={id}>
+  {
+    Astro.slots.has('header') && (
+      <div class="header-slot">
+        <slot name="header" />
+      </div>
+    )
+  }
+
+  <div class="calculator-content">
+    <Heading
+      level={2}
+      size="fluid-2xl"
+      class="calculator-title"
+      color="inverse"
+    >
+      {title}
+    </Heading>
+
+    {
+      description && (
+        <div class="calculator-description">
+          {Astro.slots.has('description') ? (
+            <slot name="description" />
+          ) : (
+            <p>{description}</p>
+          )}
+        </div>
+      )
+    }
+
+    <form
+      method="post"
+      novalidate
+      class:list={['calculator-form']}
+      role="form"
+      aria-label="Borrowing capacity calculator form"
+      onsubmit="event.preventDefault(); calculate(event);"
+    >
+      <div class="form-columns">
+        <div class="col">
+          <div class="form-group two-choice">
+            <RadioGroup
+              name="maritalStatus"
+              label="Are you applying as a couple or a single person?"
+              options={maritalStatusOptions}
+              required
+              variant="button"
+              orientation="horizontal"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="field-label" for="income"
+              >What's your total annual income before tax?</label
+            >
+            <div class="field-explainer-block">
+              <strong
+                >If you're applying as a couple, include your partner's income
+                too.</strong
+              ><br />
+              Include all types of income: bonuses, rental income, overtime etc.
+            </div>
+            <InputField
+              id="income"
+              name="income"
+              type="number"
+              placeholder="e.g. 50,000"
+              required
+              min="0"
+              step="1000"
+              prefixText="$"
+              autocomplete="off"
+              max="10000000"
+              pattern="[0-9]*"
+              size="sm"
+              variant="border"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="field-label" for="deposit"
+              >How much is your deposit?</label
+            >
+            <div class="field-explainer-block">
+              The amount you have saved for a deposit.
+            </div>
+            <InputField
+              id="deposit"
+              name="deposit"
+              type="number"
+              placeholder="e.g. 40,000"
+              min="0"
+              step="1000"
+              prefixText="$"
+              max="5000000"
+              size="sm"
+              variant="border"
+            />
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="form-group two-choice">
+            <RadioGroup
+              name="firstHomeBuyer"
+              label="Are you a first home owner?"
+              options={firstHomeBuyerOptions}
+              variant="button"
+              orientation="horizontal"
+            />
+          </div>
+
+          <div class="form-group dependents-group">
+            <RadioGroup
+              name="dependents"
+              label="How many dependants do you have?"
+              options={dependentsOptions}
+              variant="button"
+              orientation="horizontal"
+            />
+            <div class="helper-inline">
+              A dependant is anyone under the age of 18 who relies on you
+              financially.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <SelectField
+              id="state"
+              name="state"
+              label="What state are you buying in?"
+              options={stateOptions}
+              placeholder="Select a State"
+              size="sm"
+              variant="border"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <Button type="submit" variant="primary" size="md" disabled={loading}>
+          {submitText}
+        </Button>
+      </div>
+    </form>
+
+    {
+      showResults && (
+        <div class="results">
+          <Heading level={3} size="lg" class="results-title">
+            Your Borrowing Capacity
+          </Heading>
+
+          <div class="results-content">
+            <div class="result-item maximum-borrowing">
+              <span class="result-label">Maximum Borrowing Capacity</span>
+              <span class="result-value">
+                $
+                {mockResults.borrowingCapacity.toLocaleString('en-AU', {
+                  style: 'currency',
+                  currency: 'AUD',
+                  minimumFractionDigits: 0,
+                })}
+              </span>
+            </div>
+
+            <div class="result-item estimated-repayment">
+              <span class="result-label">Estimated Monthly Repayment</span>
+              <span class="result-value">
+                $
+                {mockResults.estimatedRepayment.toLocaleString('en-AU', {
+                  style: 'currency',
+                  currency: 'AUD',
+                  minimumFractionDigits: 0,
+                })}
+              </span>
+            </div>
+
+            <div class="result-item loan-details">
+              <span class="result-label">Loan Term</span>
+              <span class="result-value">{mockResults.loanTerm} years</span>
+            </div>
+          </div>
+        </div>
+      )
+    }
+  </div>
+
+  {
+    Astro.slots.has('footer') && (
+      <div class="footer-slot">
+        <slot name="footer" />
+      </div>
+    )
+  }
+</div>
+
+<script>
+  function calculate(event: Event) {
+    const form = event.target as HTMLFormElement;
+    const formData = new FormData(form);
+
+    // Extract form values
+    const income = parseInt((formData.get('income') as string) || '0');
+    const deposit = parseInt((formData.get('deposit') as string) || '0');
+    const maritalStatus = formData.get('maritalStatus') as string | null;
+    const dependents = parseInt((formData.get('dependents') as string) || '0');
+
+    // Simple borrowing capacity calculation
+    // This is a simplified version - real calculations would be more complex
+    let borrowingCapacity = income * 6; // 6x annual income as base
+
+    // Adjust for marital status
+    if (maritalStatus === 'couple') {
+      borrowingCapacity = borrowingCapacity * 1.2; // 20% increase for couples
+    }
+
+    // Reduce for dependents
+    borrowingCapacity = borrowingCapacity - dependents * 50000;
+
+    // Ensure minimum
+    borrowingCapacity = Math.max(borrowingCapacity, 0);
+
+    // Calculate estimated repayment (assuming 5% interest, 30 years)
+    const monthlyRate = 0.05 / 12;
+    const numberOfPayments = 30 * 12;
+    const estimatedRepayment =
+      (borrowingCapacity *
+        (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments))) /
+      (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+
+    console.log('Calculated borrowing capacity:', borrowingCapacity);
+    console.log('Estimated monthly repayment:', estimatedRepayment);
+
+    // In a real application, you would update the results section here
+    // For now, this is just client-side preparation for the calculation logic
+  }
+</script>
+
+<style>
+  /* Main Calculator Container */
+  .hg-BorrowingCalculator {
+    display: grid;
+    gap: var(--space-lg);
+    padding: var(--space-xl);
+    background-color: var(--color-background-brand-dark);
+    border-radius: var(--radius-2xl);
+    max-width: var(--size-container-narrow);
+    margin: var(--margin-2xs) auto;
+    color: var(--color-text-inverse);
+  }
+
+  /* Content Layout */
+  .calculator-content {
+    display: grid;
+    gap: var(--space-lg);
+  }
+
+  .calculator-title {
+    color: var(--color-text-inverse);
+    margin: var(--margin-2xs);
+    text-align: center;
+  }
+
+  .calculator-description {
+    color: var(--color-text-inverse);
+    text-align: center;
+    margin-bottom: var(--space-xl);
+  }
+
+  .calculator-form {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  /* Two-column layout */
+  .form-columns {
+    display: grid;
+    gap: var(--space-xl);
+    grid-template-columns: 1fr;
+  }
+
+  .form-columns .col {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  /* Make radio groups fill the column width */
+  .hg-BorrowingCalculator :global(.hg-RadioGroup .options) {
+    width: 100%;
+  }
+
+  /* Equal halves for 2-choice groups */
+  .two-choice :global(.hg-RadioGroup .options) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-sm);
+  }
+
+  /* Dependants on a single line (desktop) */
+  .dependents-group :global(.hg-RadioGroup .options) {
+    flex-wrap: nowrap;
+  }
+
+  /* Form Sections */
+  .form-section {
+    display: grid;
+    gap: var(--space-md);
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  .section-legend {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-inverse);
+    margin-bottom: var(--space-sm);
+    padding: 0;
+  }
+
+  .form-group {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .form-grid {
+    display: grid;
+    gap: var(--space-ml);
+    grid-template-columns: 1fr;
+  }
+
+  /* 2-column at ≥48rem */
+  @media (width >= 48rem) {
+    .form-columns {
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--space-xl);
+    }
+
+    .form-grid {
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--space-xl);
+    }
+  }
+
+  /* Form Actions */
+  .form-actions {
+    display: flex;
+    justify-content: center;
+    padding-top: var(--space-md);
+    border-top: 0;
+  }
+
+  /* Results Section */
+  .results {
+    display: grid;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background-color: var(--color-background-surface);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-default);
+    border-radius: var(--radius-md);
+    margin-top: var(--space-lg);
+  }
+
+  .results-title {
+    color: var(--color-text-inverse);
+    margin: var(--margin-2xs);
+  }
+
+  .results-content {
+    display: grid;
+    gap: var(--space-sm);
+  }
+
+  .result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm);
+    background-color: var(--color-surface);
+    border-radius: var(--radius-md);
+  }
+
+  .result-label {
+    color: var(--color-text-body);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .result-value {
+    color: var(--color-text-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+  }
+
+  /* Remove conflicting responsive design rules */
+
+  /* Focus States */
+  .calculator-form:focus-within {
+    outline: none;
+  }
+
+  .form-section:focus-within .section-legend {
+    color: var(--color-interactive-primary);
+  }
+
+  /* Error States */
+
+  /* State Management */
+  .is-loading {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  /* Dark theme overrides for nested components */
+  .hg-BorrowingCalculator :global(.hg-RadioGroup .group-label),
+  .hg-BorrowingCalculator :global(.hg-RadioGroup .helper),
+  .hg-BorrowingCalculator :global(.hg-InputField .label) {
+    color: var(--color-text-inverse);
+  }
+
+  .hg-BorrowingCalculator :global(.hg-Radio.variant-button .text) {
+    background-color: var(--color-background-body);
+    color: var(--color-text-body);
+    border-color: var(--color-border-default);
+    border-radius: var(--radius-sm);
+    padding: var(--space-sm) var(--space-md);
+    white-space: nowrap;
+  }
+
+  .hg-BorrowingCalculator :global(.hg-InputField .input),
+  .hg-BorrowingCalculator :global(.hg-InputField .control) {
+    background-color: var(--color-background-body);
+    border-color: var(--color-border-default);
+  }
+
+  .hg-BorrowingCalculator :global(.hg-InputField .input-bare) {
+    color: var(--color-text-body);
+  }
+
+  /* Select + helper override to white text labels */
+  .hg-BorrowingCalculator :global(.hg-SelectField .label),
+  .hg-BorrowingCalculator :global(.hg-SelectField .helper),
+  .hg-BorrowingCalculator :global(.hg-FieldMessage.helper) {
+    color: var(--color-text-inverse);
+    opacity: 0.9;
+  }
+
+  .hg-BorrowingCalculator :global(.hg-Select .select) {
+    background-color: var(--color-background-body);
+    border-color: var(--color-border-default);
+    color: var(--color-text-body);
+  }
+
+  /* Custom field labels/explainers (above inputs) */
+  .field-label {
+    display: block;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-inverse);
+    margin-bottom: var(--space-xs);
+  }
+
+  .field-explainer-block {
+    color: var(--color-text-inverse);
+    margin-bottom: var(--space-sm);
+  }
+
+  /* Error state for custom labels */
+  .form-group.is-invalid .field-label {
+    color: var(--color-feedback-error);
+  }
+
+  .helper-inline {
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-sm);
+    margin-top: var(--space-xs);
+    opacity: 0.9;
+  }
+</style>

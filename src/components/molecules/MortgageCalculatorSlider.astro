@@ -1,0 +1,134 @@
+---
+/**
+ * Molecule: MortgageCalculatorSlider
+ * Custom slider component specifically for the mortgage vs rent calculator
+ * Uses enhanced Slider atom with design token compliance
+ */
+import Slider from '../atoms/Slider.astro';
+
+export interface Props {
+  id?: string;
+  name?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  value?: number;
+  disabled?: boolean;
+  label?: string;
+  currency?: string;
+}
+
+const {
+  id,
+  name,
+  min = 100,
+  max = 2500,
+  step = 50,
+  value = 100,
+  disabled = false,
+  label = 'What is your weekly rent?',
+  currency = '$',
+} = Astro.props as Props;
+---
+
+<div class="hg-mortgage-calculator-slider">
+  <div class="slider-label-section">
+    <h4 class="slider-title">{label}</h4>
+    <p class="slider-description">
+      The rent you are currently paying for the property you live in.
+    </p>
+  </div>
+
+  <div class="slider-container">
+    <Slider
+      id={id}
+      name={name}
+      min={min}
+      max={max}
+      step={step}
+      value={value}
+      disabled={disabled}
+      showProgress={true}
+      showCaption={true}
+      captionFormat="currency"
+      currency={currency}
+      variant="filled"
+      size="md"
+      class="mortgage-slider"
+    />
+
+    <!-- Min/Max labels -->
+    <div class="slider-sides">
+      <div class="slider-side slider-min">{currency}{min}</div>
+      <div class="slider-side slider-max">{currency}{max}</div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .hg-mortgage-calculator-slider {
+    width: 100%;
+  }
+
+  .slider-label-section {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+  }
+
+  .slider-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-heading);
+    margin-bottom: var(--space-sm);
+    line-height: var(--line-height-normal);
+  }
+
+  .slider-description {
+    font-size: var(--font-size-md);
+    color: var(--color-text-subtle);
+    margin: 0;
+    line-height: var(--line-height-normal);
+  }
+
+  .slider-container {
+    position: relative;
+    width: 100%;
+    margin-top: var(--space-sm);
+  }
+
+  .slider-sides {
+    color: var(--color-text-body);
+    text-align: center;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-xs);
+    font-style: normal;
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: var(--space-sm);
+  }
+
+  .slider-side {
+    font-weight: var(--font-weight-bold);
+  }
+
+  /* Mobile responsive adjustments */
+  @media (--bp-md) {
+    .slider-title {
+      font-size: var(--font-size-md);
+      line-height: var(--line-height-normal);
+    }
+
+    .slider-description {
+      font-size: var(--font-size-sm);
+      line-height: var(--line-height-normal);
+    }
+
+    .slider-sides {
+      font-size: var(--font-size-xs);
+      line-height: var(--line-height-tight);
+    }
+  }
+</style>

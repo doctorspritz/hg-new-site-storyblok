@@ -1,0 +1,120 @@
+---
+/**
+ * Counter Atom
+ * Hunter Galloway Design System - Atomic Component
+ *
+ * Displays formatted numeric values for stats and KPIs.
+ * Uses design tokens and optional animation.
+ */
+
+export interface FormatOptions {
+  compact?: boolean;
+  prefix?: string;
+  suffix?: string;
+  decimals?: number;
+}
+
+export interface Props {
+  value: number | string;
+  format?: FormatOptions;
+  animate?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+}
+
+const {
+  value,
+  format = {},
+  animate = false,
+  size = 'md',
+  class: className = '',
+} = Astro.props;
+
+const numberValue =
+  typeof value === 'number' ? value : parseFloat(String(value));
+const { compact = false, prefix = '', suffix = '', decimals } = format;
+
+const formatter = new Intl.NumberFormat(undefined, {
+  notation: compact ? 'compact' : 'standard',
+  minimumFractionDigits: decimals,
+  maximumFractionDigits: decimals,
+});
+
+const formatted = `${prefix}${formatter.format(numberValue)}${suffix}`;
+const ariaLabel = `${prefix}${new Intl.NumberFormat(undefined, {
+  minimumFractionDigits: decimals,
+  maximumFractionDigits: decimals,
+}).format(numberValue)}${suffix}`;
+
+const counterClasses = ['hg-counter', `hg-counter--${size}`, className]
+  .filter(Boolean)
+  .join(' ');
+
+const id = `counter-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<span
+  id={id}
+  class={counterClasses}
+  aria-label={ariaLabel}
+  data-value={numberValue}
+  data-prefix={prefix}
+  data-suffix={suffix}
+  data-decimals={decimals ?? ''}
+  data-compact={compact}
+  data-animate={animate}
+>
+  {formatted}
+</span>
+<script>
+  const el = document.getElementById('${id}');
+  if (el) {
+    const animate = el.dataset.animate === 'true';
+    if (animate) {
+      const target = parseFloat(el.dataset.value || '0');
+      const prefix = el.dataset.prefix || '';
+      const suffix = el.dataset.suffix || '';
+      const decimals = el.dataset.decimals
+        ? parseInt(el.dataset.decimals)
+        : undefined;
+      const compact = el.dataset.compact === 'true';
+      const duration = 1000;
+      const formatter = new Intl.NumberFormat(undefined, {
+        notation: compact ? 'compact' : 'standard',
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      });
+      const startTime = performance.now();
+      function step(now: number) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const current = target * progress;
+        if (el) {
+          el.textContent = prefix + formatter.format(current) + suffix;
+        }
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+  }
+</script>
+
+<style>
+  .hg-counter {
+    font-family: var(--font-family-base);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-normal);
+    color: var(--color-text-heading);
+  }
+
+  .hg-counter--sm {
+    font-size: var(--font-size-md);
+  }
+
+  .hg-counter--md {
+    font-size: var(--font-size-2xl);
+  }
+
+  .hg-counter--lg {
+    font-size: var(--font-size-4xl);
+  }
+</style>

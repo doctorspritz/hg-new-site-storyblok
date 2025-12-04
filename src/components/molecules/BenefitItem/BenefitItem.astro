@@ -1,0 +1,84 @@
+---
+/**
+ * BenefitItem Molecule
+ * Combines checkmark icon with benefit text and optional tooltip
+ */
+
+import CheckmarkIcon from '../../atoms/CheckmarkIcon/CheckmarkIcon.astro';
+import { component } from '../../../tokens/component';
+
+interface Props {
+  text: string;
+  tooltip?: string;
+  className?: string;
+}
+
+const { text, tooltip, className = '' } = Astro.props;
+---
+
+<div class={`benefit-item ${className}`}>
+  <img alt="checkmark" src="/images/24_checkmark.svg" width="24" height="24" />
+  <div class="benefit-item__text">
+    {tooltip ? (
+      <span class="benefit-item__tooltip-trigger" data-tooltip={tooltip}>
+        {text}
+      </span>
+    ) : (
+      text
+    )}
+    {text === 'Market-leading' && ' loan approval rate in Australia of 97%'}
+    {text === '#1 rated' && ' Mortgage Broker in Brisbane'}
+  </div>
+</div>
+
+<style define:vars={{
+  textColor: component.benefitItem.colors.text,
+  fontSize: component.benefitItem.typography.fontSize,
+  lineHeight: component.benefitItem.typography.lineHeight,
+  weightNormal: component.benefitItem.typography.weightNormal,
+  weightSemibold: component.benefitItem.typography.weightSemibold,
+  gap: component.benefitItem.spacing.gap,
+  tooltipWidth: component.benefitItem.tooltip.width,
+  tooltipPadding: component.benefitItem.tooltip.padding,
+  tooltipBorderRadius: component.benefitItem.tooltip.borderRadius,
+  tooltipFontSize: component.benefitItem.tooltip.fontSize,
+  tooltipLineHeight: component.benefitItem.tooltip.lineHeight,
+  tooltipShadow: component.benefitItem.tooltip.shadow,
+}}>
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gap);
+}
+
+.benefit-item__text {
+  color: var(--textColor);
+  font-size: var(--fontSize);
+  font-family: 'Open Sans', sans-serif;
+  line-height: var(--lineHeight);
+}
+
+.benefit-item__tooltip-trigger {
+  font-weight: var(--weightSemibold);
+  text-decoration: underline;
+  cursor: help;
+  position: relative;
+}
+
+.benefit-item__tooltip-trigger:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  background: white;
+  color: var(--textColor);
+  padding: var(--tooltipPadding);
+  border-radius: var(--tooltipBorderRadius);
+  width: var(--tooltipWidth);
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  font-size: var(--tooltipFontSize);
+  line-height: var(--tooltipLineHeight);
+  box-shadow: var(--tooltipShadow);
+  white-space: normal;
+}
+</style>

@@ -1,0 +1,140 @@
+---
+/**
+ * Molecule: RentCalculatorCard
+ * A card containing the rent calculator slider header, slider, and calculate button
+ * Uses atomic design principles by composing atoms and molecules
+ */
+import Card from './Card.astro';
+import RentCalculatorSlider from '../RentCalculatorSlider.astro';
+import Button from '../../atoms/Button.astro';
+import Heading from '../../atoms/Heading.astro';
+import Paragraph from '../../atoms/Paragraph.astro';
+
+export interface Props {
+  /** Initial rent value */
+  initialValue?: number;
+  /** Minimum rent value */
+  minValue?: number;
+  /** Maximum rent value */
+  maxValue?: number;
+  /** Step size for slider */
+  step?: number;
+  /** Currency symbol */
+  currency?: string;
+  /** Card variant for styling */
+  variant?: 'default' | 'bordered' | 'elevated';
+  /** Card color variant */
+  colorVariant?:
+    | 'default'
+    | 'primary'
+    | 'gray'
+    | 'white'
+    | 'pale-yellow'
+    | 'pale-blue'
+    | 'dark'
+    | 'warm-cream';
+  /** Slider title */
+  sliderTitle?: string;
+  /** Slider description */
+  sliderDescription?: string;
+  /** Button text label */
+  buttonText?: string;
+}
+
+const {
+  initialValue = 100,
+  minValue = 100,
+  maxValue = 2500,
+  step = 50,
+  currency = '$',
+  variant = 'default',
+  colorVariant = 'gray',
+  sliderTitle = 'What is your weekly rent?',
+  sliderDescription = 'The rent you are currently paying for the property you live in.',
+  buttonText = 'Calculate',
+} = Astro.props as Props;
+---
+
+<Card
+  variant={variant}
+  colorVariant={colorVariant}
+  class="rent-calculator-card"
+>
+  <div class="rent-calculator-content">
+    <div class="slider-header">
+      <Heading level={3} size="xl" align="center">{sliderTitle}</Heading>
+      <Paragraph class="slider-subheading">{sliderDescription}</Paragraph>
+    </div>
+
+    <RentCalculatorSlider
+      min={minValue}
+      max={maxValue}
+      step={step}
+      value={initialValue}
+      currency={currency}
+      name="weeklyRent"
+    />
+
+    <div class="calculate-button-container">
+      <Button variant="primary" size="wide" type="button" label={buttonText} />
+    </div>
+  </div>
+</Card>
+
+<style>
+  .rent-calculator-card {
+    max-width: var(--size-container-modal-lg);
+    margin: 0 auto;
+  }
+
+  .rent-calculator-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+
+  .slider-header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+
+  .slider-subheading {
+    color: var(--color-text-body);
+    margin: 0;
+    font-size: var(--font-size-md);
+  }
+
+  .calculate-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-lg);
+  }
+
+  .calculate-button-container :global(.hg-Button) {
+    min-width: var(--control-minwidth-button);
+  }
+
+  /* Mobile responsive adjustments */
+  @media (width <= 48rem) {
+    .rent-calculator-content {
+      gap: var(--space-lg);
+    }
+
+    .slider-header {
+      gap: var(--space-md);
+      padding: 0 var(--space-md);
+    }
+
+    .calculate-button-container {
+      margin-top: var(--space-md);
+    }
+
+    .calculate-button-container :global(.hg-Button) {
+      width: 100%;
+      max-width: var(--size-container-modal-sm);
+    }
+  }
+</style>

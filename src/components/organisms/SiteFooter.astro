@@ -1,0 +1,432 @@
+---
+/**
+ * Organism: SiteFooter
+ * Minimal footer stub with nav columns, contact, and legal.
+ */
+import Container from '../atoms/Container.astro';
+import Logo from '../atoms/Logo.astro';
+import Icon from '../atoms/Icon.astro';
+// no newsletter form in site footer parity
+
+interface LinkItem {
+  label: string;
+  href: string;
+}
+
+// legacy type no longer used in site parity
+
+interface Props {
+  rawMarkup?: string;
+  parity?: boolean;
+  copyright?: string;
+  socials?: {
+    name: 'facebook' | 'instagram' | 'linkedin' | 'youtube';
+    href: string;
+    label?: string;
+  }[];
+  about?: {
+    heading?: string;
+    text?: string;
+    privacyHref?: string;
+    contactHref?: string;
+  };
+  contacts?: {
+    heading?: string;
+    entries: { title?: string; lines: string[] }[];
+  };
+  links?: { heading?: string; items: LinkItem[] };
+  recentPosts?: { heading?: string; items: LinkItem[] };
+  regulatoryText?: string;
+  class?: string;
+}
+
+const {
+  rawMarkup = '',
+  parity = false,
+  copyright = `© ${new Date().getFullYear()} Hunter Galloway`,
+  socials = [
+    { name: 'facebook', href: '#', label: 'Facebook' },
+    { name: 'instagram', href: '#', label: 'Instagram' },
+    { name: 'linkedin', href: '#', label: 'LinkedIn' },
+    { name: 'youtube', href: '#', label: 'YouTube' },
+  ],
+  about = {
+    heading: 'About us',
+    text: 'Mortgage Broker Brisbane - Hunter Galloway is an Award Winning Mortgage Broker based in Brisbane. We help clients from our local area and Australia-wide. We believe buying a home should be stress-free and uncomplicated, and we will work for you to make your dreams become reality.',
+    privacyHref: 'https://www.huntergalloway.com.au/privacy-policy/',
+    contactHref: 'https://www.huntergalloway.com.au/contact/',
+  },
+  contacts = {
+    heading: 'Contact us',
+    entries: [
+      {
+        title: 'Head Office',
+        lines: ['Level 10, 179 North Quay', 'Brisbane QLD 4000'],
+      },
+      {
+        title: 'CBD Office',
+        lines: ['Level 20, 300 Queen Street', 'Brisbane QLD 4000'],
+      },
+    ],
+  },
+  links = {
+    heading: 'Quick links',
+    items: [
+      {
+        label: 'Mortgage Broker Brisbane',
+        href: 'https://www.huntergalloway.com.au/mortgage-broker-brisbane/',
+      },
+      {
+        label: 'First Home Buyers Information',
+        href: 'https://www.huntergalloway.com.au/first-home-buyer-guide/',
+      },
+      {
+        label: 'Home Buying Hub',
+        href: 'https://www.huntergalloway.com.au/hub/',
+      },
+      {
+        label: 'Free Resources',
+        href: 'https://www.huntergalloway.com.au/resources/',
+      },
+    ],
+  },
+  recentPosts = { heading: 'Recent posts', items: [] },
+  regulatoryText = 'Hunter Galloway Finance Pty Ltd T/A Mortgage Broker Brisbane - Hunter Galloway ABN 20 605 252 926. Credit Representative 476903 is authorised under Australian Credit Licence 389328. Your full financial situation would need to be reviewed prior to acceptance of any offer or product.',
+  class: className = '',
+} = Astro.props as Props;
+---
+
+{
+  rawMarkup ? (
+    <div class="hg-footer" data-variant="wp">
+      <Fragment set:html={rawMarkup} />
+    </div>
+  ) : (
+    <footer
+      class:list={['hg-footer', parity ? 'hg-footer--parity' : '', className]}
+    >
+      <Container>
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a href="/" class="brand-link" aria-label="Home">
+              <Logo
+                src="/images/logos/hg_logo_black.svg"
+                alt="Hunter Galloway"
+                size="lg"
+              />
+            </a>
+            <h3 class="about-heading">{about.heading}</h3>
+            {about.text && <p class="about-text">{about.text}</p>}
+            <div class="about-links">
+              {about.privacyHref && (
+                <a href={about.privacyHref} class="policy-link">
+                  Privacy Policy
+                </a>
+              )}
+              {about.contactHref && (
+                <>
+                  <span aria-hidden="true"> | </span>
+                  <a href={about.contactHref} class="policy-link">
+                    Contact
+                  </a>
+                </>
+              )}
+            </div>
+
+            <ul class="socials" role="list">
+              {socials.map((s) => (
+                <li>
+                  <a
+                    href={s.href}
+                    class="social-link"
+                    aria-label={s.label || s.name}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Icon name={s.name} size="md" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="footer-contact">
+            <h3 class="col-heading">{contacts.heading}</h3>
+            <ul class="contact-list" role="list">
+              {contacts.entries.map((e) => (
+                <li class="contact-item">
+                  {e.title && <div class="contact-title">{e.title}</div>}
+                  {e.lines.map((line) => (
+                    <div class="contact-line">{line}</div>
+                  ))}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {recentPosts.items.length > 0 && (
+            <nav
+              class="footer-recent-posts"
+              aria-label={recentPosts.heading || 'Recent posts'}
+            >
+              <h3 class="col-heading">{recentPosts.heading}</h3>
+              <ul class="col-list">
+                {recentPosts.items.map((post) => (
+                  <li>
+                    <a href={post.href} class="col-link">
+                      {post.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
+        </div>
+
+        {links.items.length > 0 && (
+          <div class="footer-bottom-nav">
+            <ul class="bottom-nav" role="list">
+              {links.items.map((l) => (
+                <li class="bottom-nav-item">
+                  <a href={l.href} class="bottom-nav-link">
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div class="footer-legal">
+          <p class="copyright">{copyright}</p>
+          <div class="legal-links">
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+          </div>
+        </div>
+        <p class="regulatory">{regulatoryText}</p>
+      </Container>
+    </footer>
+  )
+}
+
+<style>
+  /* stylelint-disable rule-empty-line-before, comment-empty-line-before, media-feature-range-notation, at-rule-empty-line-before, scale-unlimited/declaration-strict-value */
+  .hg-footer {
+    background: var(--color-background-brand-dark);
+    color: var(--color-text-inverse);
+    border-top: 0;
+    padding: var(--space-lg) 0 var(--space-md);
+  }
+
+  .hg-footer[data-variant='wp'] {
+    padding: 0;
+    border-top: 0;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--space-lg);
+    align-items: start;
+  }
+
+  .brand-link {
+    display: inline-flex;
+    text-decoration: none;
+  }
+
+  .about-heading {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    margin: var(--space-sm) 0 var(--space-xs);
+  }
+  .about-text {
+    margin: 0 0 var(--space-sm);
+    color: var(--color-text-inverse);
+  }
+  .about-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+  .policy-link {
+    color: var(--color-text-inverse);
+    text-decoration: none;
+  }
+  .policy-link:hover {
+    text-decoration: underline;
+  }
+
+  .socials {
+    margin-top: var(--space-sm);
+    padding: 0;
+    list-style: none;
+    display: flex;
+    gap: var(--space-sm);
+  }
+
+  .social-link {
+    display: inline-flex;
+    width: var(--space-xl);
+    height: var(--space-xl);
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-inverse);
+    background: rgb(64 64 64 / 60%);
+    border-radius: var(--radius-pill);
+    transition: all var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .social-link:hover {
+    color: var(--color-text-inverse);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* focus state */
+  .social-link:focus-visible {
+    outline: var(--outline-width-md) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--space-2xs);
+  }
+
+  /* column heading */
+  .col-heading {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    margin: 0 0 var(--space-sm);
+  }
+
+  .contact-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-sm);
+  }
+  .contact-title {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-inverse);
+  }
+  .contact-line {
+    color: var(--color-text-inverse);
+  }
+
+  .col-list {
+    list-style: disc outside;
+    padding-left: var(--padding-md);
+    margin: 0;
+    display: grid;
+    gap: var(--space-2xs);
+  }
+  .col-link {
+    color: var(--color-text-inverse);
+    text-decoration: none;
+  }
+  .col-link:hover {
+    text-decoration: underline;
+  }
+
+  .footer-bottom-nav {
+    margin-top: var(--space-md);
+  }
+
+  .bottom-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+  }
+
+  .bottom-nav-link {
+    color: var(--color-text-body);
+    text-decoration: none;
+  }
+
+  .bottom-nav-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Newsletter removed to match live site */
+
+  .footer-legal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-lg);
+    padding-top: var(--space-sm);
+    border-top: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-dark-cta);
+  }
+
+  .legal-links {
+    display: flex;
+    gap: var(--space-md);
+  }
+
+  .legal-links a:focus-visible {
+    outline: var(--outline-width-md) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--space-2xs);
+    border-radius: var(--radius-sm);
+  }
+
+  .regulatory {
+    margin: var(--space-md) 0 0;
+    color: var(--color-text-subtle);
+    font-size: var(--font-size-sm);
+  }
+
+  /* Parity height clamps to align with production element crops */
+  .hg-footer--parity {
+    position: relative;
+    overflow: hidden;
+  }
+  @media (min-width: 1024px) {
+    .hg-footer--parity {
+      height: var(--size-hero-min-height-xl);
+    }
+  }
+  @media (min-width: 600px) and (max-width: 1023.98px) {
+    .hg-footer--parity {
+      height: var(--size-viewport-height-70);
+    }
+  }
+  @media (max-width: 599.98px) {
+    .hg-footer--parity {
+      height: var(--size-viewport-height-70);
+    }
+  }
+
+  @media (--bp-lg) {
+    .footer-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+    .hg-footer {
+      padding-bottom: var(--space-lg);
+    }
+    .footer-bottom-nav {
+      margin-top: var(--space-lg);
+    }
+  }
+
+  @media (--bp-md) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+    }
+    .bottom-nav {
+      gap: var(--space-md);
+    }
+    .footer-legal {
+      flex-direction: column;
+      gap: var(--space-sm);
+      align-items: flex-start;
+    }
+  }
+  /* stylelint-enable rule-empty-line-before, comment-empty-line-before, media-feature-range-notation, at-rule-empty-line-before, scale-unlimited/declaration-strict-value */
+</style>

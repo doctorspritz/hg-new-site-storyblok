@@ -1,0 +1,123 @@
+---
+/**
+ * Statistics Organism
+ * Hunter Galloway Design System - Organism Component
+ * 
+ * Composes Container, Typography atoms and StatCard molecules to create
+ * a statistics showcase section.
+ */
+import Container from '../atoms/Container/Container.astro';
+import Typography from '../atoms/Typography/Typography.astro';
+import StatCard from '../molecules/StatCard/StatCard.astro';
+import { component } from '../../tokens/component';
+
+interface Props {
+  /** Custom title for the section */
+  title?: string;
+  /** Array of statistics data */
+  stats?: Array<{number: string; description: string}>;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  title = "Why Hunter Galloway is the ultimate choice",
+  stats = [
+    {
+      number: "97%",
+      description: "Loan approval rate"
+    },
+    {
+      number: "14", 
+      description: "years of experience"
+    },
+    {
+      number: "2,000+",
+      description: "Happy customers" 
+    },
+    {
+      number: "30+",
+      description: "Banks and lenders we have direct access to"
+    }
+  ],
+  class: additionalClasses = '',
+} = Astro.props;
+
+// Build CSS classes
+const sectionClasses = [
+  'hg-statistics-section',
+  additionalClasses,
+].filter(Boolean).join(' ');
+---
+
+<section id="why_choose" class={sectionClasses}>
+  <Container>
+    <div class="hg-statistics__header">
+      <Typography 
+        element="h2" 
+        size="4xl" 
+        weight="heading" 
+        class="hg-statistics__title"
+      >
+        {title}
+      </Typography>
+    </div>
+    
+    <div class="hg-statistics__grid">
+      {stats.map((stat) => (
+        <StatCard
+          number={stat.number}
+          description={stat.description}
+          variant="default"
+        />
+      ))}
+    </div>
+  </Container>
+</section>
+
+<style define:vars={{
+  backgroundColor: component.statistics.colors.background,
+  paddingY: component.statistics.spacing.paddingY,
+  paddingYMobile: component.statistics.spacing.paddingYMobile,
+  titleMarginBottom: component.statistics.spacing.titleMarginBottom,
+  gap: component.statistics.layout.gap,
+  gapMobile: component.statistics.layout.gapMobile,
+  maxWidth: component.statistics.layout.maxWidth,
+}}>
+.hg-statistics-section {
+  padding: var(--paddingY) 0;
+  background: var(--backgroundColor);
+}
+
+.hg-statistics__header {
+  margin-bottom: var(--titleMarginBottom);
+  text-align: center;
+}
+
+.hg-statistics__title {
+  text-align: center;
+}
+
+.hg-statistics__grid {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: var(--gap);
+  flex-wrap: wrap;
+  max-width: var(--maxWidth);
+  margin: 0 auto;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .hg-statistics-section {
+    padding: var(--paddingYMobile) 0;
+  }
+  
+  .hg-statistics__grid {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gapMobile);
+  }
+}
+</style>

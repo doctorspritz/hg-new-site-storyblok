@@ -1,0 +1,204 @@
+---
+export interface FilterOption {
+  id: string;
+  value: string;
+  label: string;
+  disabled?: boolean;
+}
+
+export interface Props {
+  name: string;
+  label?: string;
+  options: FilterOption[];
+  selectedValues?: string[];
+  helperText?: string;
+  error?: string;
+  multiple?: boolean;
+  variant?: 'default' | 'compact';
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const {
+  name,
+  label,
+  options,
+  selectedValues = [],
+  helperText,
+  error,
+  multiple = true,
+  variant = 'default',
+  size = 'md',
+} = Astro.props;
+
+const groupId = `filter-group-${name}`;
+const hasError = !!error;
+
+const optionIds = options.map(
+  (option, index) => `${groupId}-${option.id || index}`,
+);
+---
+
+<div class="filter-group" data-variant={variant} data-size={size}>
+  {
+    label && (
+      <label for={groupId} class="filter-group-label" id={groupId}>
+        {label}
+      </label>
+    )
+  }
+
+  <div
+    class="filter-group-options"
+    role="group"
+    aria-labelledby={label ? groupId : undefined}
+  >
+    {
+      options.map((option, index) => {
+        const optionId = optionIds[index];
+        const isSelected = selectedValues.includes(option.value);
+        return (
+          <button
+            type="button"
+            class="filter-option"
+            data-selected={isSelected}
+            data-disabled={option.disabled}
+            disabled={option.disabled}
+            aria-pressed={isSelected}
+          >
+            <input
+              type={multiple ? 'checkbox' : 'radio'}
+              name={name}
+              id={optionId}
+              value={option.value}
+              checked={isSelected}
+              hidden
+            />
+            <span class="filter-label">{option.label}</span>
+          </button>
+        );
+      })
+    }
+  </div>
+
+  {
+    helperText && (
+      <div id={`${groupId}-helper`} class="helper-text" aria-live="polite">
+        {helperText}
+      </div>
+    )
+  }
+
+  {
+    hasError && (
+      <div class="error-message" role="alert" aria-live="assertive">
+        {error}
+      </div>
+    )
+  }
+</div>
+
+<script>
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    const option = target.closest('.filter-option') as HTMLElement | null;
+    if (!option) return;
+    if (option.dataset.disabled === 'true') return;
+    const input = option.querySelector('input') as HTMLInputElement | null;
+    if (!input) return;
+
+    if (input.type === 'radio') {
+      const group = option.closest('.filter-group-options');
+      group?.querySelectorAll('.filter-option').forEach((opt) => {
+        const optEl = opt as HTMLElement;
+        const i = optEl.querySelector('input') as HTMLInputElement;
+        i.checked = false;
+        optEl.dataset.selected = 'false';
+        optEl.setAttribute('aria-pressed', 'false');
+      });
+      input.checked = true;
+      option.dataset.selected = 'true';
+      option.setAttribute('aria-pressed', 'true');
+      return;
+    }
+
+    input.checked = !input.checked;
+    const selected = input.checked;
+    option.dataset.selected = String(selected);
+    option.setAttribute('aria-pressed', String(selected));
+  });
+</script>
+
+<style>
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    font-family: var(--font-family-base);
+  }
+
+  .filter-group-label {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-heading);
+    margin-bottom: var(--space-xs);
+  }
+
+  .filter-group-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  .filter-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-default);
+    background-color: var(--color-background-surface);
+    color: var(--color-text-body);
+    cursor: pointer;
+    transition: background-color var(--transition-duration-fast);
+  }
+
+  .filter-option[data-selected='true'] {
+    background-color: var(--color-interactive-selection-background);
+    border-color: var(--color-interactive-primary);
+    color: var(--color-interactive-primary);
+  }
+
+  .filter-option[data-disabled='true'] {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .helper-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-subtle);
+  }
+
+  .error-message {
+    font-size: var(--font-size-sm);
+    color: var(--color-feedback-error);
+    margin-top: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    background-color: var(--color-feedback-error);
+    border-radius: var(--radius-sm);
+    border-left: var(--border-width-sm) var(--border-style-solid)
+      var(--color-feedback-error);
+  }
+
+  .filter-group[data-variant='compact'] .filter-option {
+    padding: var(--space-2xs) var(--space-xs);
+  }
+
+  .filter-group[data-size='sm'] .filter-option {
+    font-size: var(--font-size-sm);
+  }
+
+  .filter-group[data-size='lg'] .filter-option {
+    font-size: var(--font-size-lg);
+  }
+</style>

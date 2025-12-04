@@ -1,0 +1,226 @@
+---
+/**
+ * Hero Organism
+ * Hunter Galloway Design System - Organism Component
+ * 
+ * Composes atoms and molecules to create a complete hero section.
+ * Uses Container, Typography, Button, Image atoms and BenefitList, ExperienceBadge molecules.
+ */
+
+import type { HeroProps } from './Hero.types';
+import Container from '../../atoms/Container/Container.astro';
+import Typography from '../../atoms/Typography/Typography.astro';
+import Button from '../../atoms/Button/Button.astro';
+import Image from '../../atoms/Image/Image.astro';
+import Icon from '../../atoms/Icon/Icon.astro';
+import BenefitList from '../../molecules/BenefitList/BenefitList.astro';
+import ExperienceBadge from '../../molecules/ExperienceBadge/ExperienceBadge.astro';
+import ReviewBadge from '../../molecules/ReviewBadge/ReviewBadge.astro';
+import { component } from '../../../tokens/component';
+
+interface Props extends HeroProps {}
+
+const {
+  title,
+  benefits,
+  ctaText,
+  ctaUrl,
+  imageUrl,
+  imageAlt,
+  features = [],
+  class: additionalClasses = '',
+} = Astro.props;
+
+// Build CSS classes
+const heroClasses = [
+  'hg-hero',
+  additionalClasses,
+].filter(Boolean).join(' ');
+---
+
+<section class={heroClasses}>
+  <Container>
+    <div class="hg-hero__inner">
+      <div class="hg-hero__content">
+        <Typography 
+          element="h1" 
+          size="4.5xl" 
+          weight="heading" 
+          class="hg-hero__title"
+        >
+          <Fragment set:html={title} />
+        </Typography>
+        
+        <div class="hg-hero__benefits">
+          <BenefitList items={benefits} />
+        </div>
+        
+        <div class="hg-hero__cta">
+          <Button 
+            text={ctaText}
+            variant="primary" 
+            size="lg" 
+            class="hg-hero__button"
+          />
+        </div>
+        
+        {features && features.length > 0 && (
+          <div class="hg-hero__features">
+            {features.map((feature) => (
+              feature.type === 'experience' ? (
+                <ExperienceBadge years={feature.text} />
+              ) : feature.type === 'reviews' ? (
+                <ReviewBadge 
+                  logoSrc={feature.logoSrc || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='108' height='40' viewBox='0 0 108 40'%3E%3Crect width='108' height='40' rx='8' fill='%234285F4'/%3E%3Ctext x='54' y='25' text-anchor='middle' fill='white' font-family='Arial, sans-serif' font-size='14' font-weight='bold'%3EGoogle%3C/text%3E%3C/svg%3E"}
+                  text={`${feature.text}<br/>${feature.label}`}
+                />
+              ) : null
+            ))}
+          </div>
+        )}
+      </div>
+      
+      <div class="hg-hero__media">
+        <Image 
+          src={imageUrl}
+          alt={imageAlt}
+          class="hg-hero__image"
+        />
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style define:vars={{
+  maxWidth: component.hero.layout.maxWidth,
+  contentMaxWidth: component.hero.layout.contentMaxWidth,
+  imageMaxWidth: component.hero.layout.imageMaxWidth,
+  gap: component.hero.layout.gap,
+  gapMobile: component.hero.layout.gapMobile,
+  titleSize: component.hero.typography.titleSize,
+  titleSizeMobile: component.hero.typography.titleSizeMobile,
+  titleWeight: component.hero.typography.titleWeight,
+  titleLineHeight: component.hero.typography.titleLineHeight,
+  titleColor: component.hero.typography.titleColor,
+  paddingY: component.hero.spacing.paddingY,
+  paddingYMobile: component.hero.spacing.paddingYMobile,
+  buttonMarginTop: component.hero.spacing.buttonMarginTop,
+  featuresGap: component.hero.spacing.featuresGap,
+  backgroundColor: component.hero.colors.background,
+}}>
+.hg-hero {
+  background: var(--backgroundColor);
+  padding: var(--paddingY) 0;
+  overflow: hidden;
+}
+
+.hg-hero__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  max-width: var(--maxWidth);
+  margin: 0 auto;
+}
+
+.hg-hero__content {
+  flex: 1;
+  max-width: var(--contentMaxWidth);
+}
+
+.hg-hero__title {
+  font-size: var(--titleSize) !important;
+  font-weight: var(--titleWeight) !important;
+  line-height: var(--titleLineHeight) !important;
+  color: var(--titleColor) !important;
+  margin-bottom: 32px !important;
+}
+
+.hg-hero__title b {
+  font-weight: 700;
+}
+
+.hg-hero__benefits {
+  margin-bottom: var(--buttonMarginTop);
+}
+
+.hg-hero__cta {
+  margin-bottom: var(--buttonMarginTop);
+}
+
+.hg-hero__button {
+  padding: 15px 32px !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  min-height: 48px !important;
+  border-radius: 33px !important;
+  background: #FDB948 !important;
+  color: #000 !important;
+  box-shadow: 0px 6px 12px rgba(43, 43, 43, 0.15) !important;
+  transition: all 0.35s ease !important;
+}
+
+.hg-hero__button:hover {
+  background: #E5A43F !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0px 8px 16px rgba(43, 43, 43, 0.2) !important;
+}
+
+.hg-hero__features {
+  display: flex;
+  align-items: center;
+  gap: var(--featuresGap);
+  margin-top: 32px;
+}
+
+.hg-hero__media {
+  flex: 1;
+  max-width: var(--imageMaxWidth);
+  display: flex;
+  justify-content: center;
+}
+
+.hg-hero__image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* Mobile responsive */
+@media (max-width: 1024px) {
+  .hg-hero {
+    padding: var(--paddingYMobile) 0;
+  }
+  
+  .hg-hero__inner {
+    flex-direction: column;
+    gap: var(--gapMobile);
+    text-align: center;
+  }
+  
+  .hg-hero__content {
+    max-width: 100%;
+    order: 1;
+  }
+  
+  .hg-hero__media {
+    max-width: 100%;
+    order: 2;
+  }
+  
+  .hg-hero__title {
+    font-size: var(--titleSizeMobile) !important;
+  }
+  
+  .hg-hero__features {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .hg-hero__features {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+</style>

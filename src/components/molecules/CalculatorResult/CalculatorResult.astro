@@ -1,0 +1,208 @@
+---
+/**
+ * Calculator Result Component
+ * Hunter Galloway Design System - Molecular Component
+ * 
+ * Displays calculation results with formatting and call-to-action.
+ * Used in various calculators throughout the application.
+ */
+
+import type { CalculatorResultProps } from './CalculatorResult.types';
+import Button from '../../atoms/Button/Button.astro';
+import Typography from '../../atoms/Typography/Typography.astro';
+import Container from '../../atoms/Container/Container.astro';
+import { semantic } from '../../../tokens/semantic';
+
+interface Props extends CalculatorResultProps {}
+
+const {
+  title,
+  amount,
+  description,
+  ctaText = "Get Pre-Approved Now",
+  ctaHref = "/get-free-assessment/",
+  visible = true,
+  variant = 'default',
+  class: additionalClasses = '',
+} = Astro.props;
+
+// Build CSS classes based on props
+const resultClasses = [
+  'hg-calculator-result',
+  `hg-calculator-result--${variant}`,
+  !visible && 'hg-calculator-result--hidden',
+  additionalClasses,
+].filter(Boolean).join(' ');
+---
+
+{visible && (
+  <div class={resultClasses}>
+    <Container class="hg-calculator-result__content">
+      <Typography 
+        as="h3" 
+        variant="h3" 
+        class="hg-calculator-result__title"
+      >
+        {title}
+      </Typography>
+      
+      <div class="hg-calculator-result__amount">
+        {amount}
+      </div>
+      
+      {description && (
+        <Typography 
+          as="p" 
+          variant="body" 
+          class="hg-calculator-result__description"
+        >
+          {description}
+        </Typography>
+      )}
+      
+      {ctaText && ctaHref && (
+        <div class="hg-calculator-result__cta">
+          <Button 
+            variant="primary"
+            size="md"
+            href={ctaHref}
+            class="hg-calculator-result__button"
+          >
+            {ctaText}
+          </Button>
+        </div>
+      )}
+    </Container>
+  </div>
+)}
+
+<style define:vars={{
+  brandPrimary: semantic.color.brand.primary,
+  surfaceSecondary: semantic.color.surface.secondary,
+  textPrimary: semantic.color.text.primary,
+  textSecondary: semantic.color.text.secondary,
+  fontSizeXl: semantic.typography.size.xl,
+  fontSizeXxl: semantic.typography.size.xxl,
+  fontWeightBold: semantic.typography.weight.bold,
+  fontWeightStrong: semantic.typography.weight.strong,
+  radiusMd: semantic.radius.md,
+  spaceMd: semantic.space.md,
+  spaceLg: semantic.space.lg,
+  spaceXl: semantic.space.xl,
+  durationNormal: semantic.duration.normal,
+}}>
+/* Calculator Result Styles */
+.hg-calculator-result {
+  background: var(--surfaceSecondary);
+  border-radius: var(--radiusMd);
+  padding: var(--spaceLg);
+  margin-top: var(--spaceLg);
+  text-align: center;
+  transition: all var(--durationNormal) ease;
+  box-shadow: 0 4px 12px rgba(43, 43, 43, 0.1);
+}
+
+.hg-calculator-result--hidden {
+  display: none;
+}
+
+.hg-calculator-result__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spaceMd);
+}
+
+.hg-calculator-result__title {
+  color: var(--textPrimary);
+  margin: 0;
+}
+
+.hg-calculator-result__amount {
+  font-size: var(--fontSizeXxl);
+  font-weight: var(--fontWeightBold);
+  color: var(--brandPrimary);
+  line-height: 1.2;
+  margin: var(--spaceMd) 0;
+}
+
+.hg-calculator-result__description {
+  color: var(--textSecondary);
+  text-align: center;
+  max-width: 600px;
+  margin: 0;
+}
+
+.hg-calculator-result__cta {
+  margin-top: var(--spaceMd);
+}
+
+/* Variant: Highlighted */
+.hg-calculator-result--highlighted {
+  background: linear-gradient(135deg, var(--brandPrimary), #f5c842);
+  color: var(--textPrimary);
+}
+
+.hg-calculator-result--highlighted .hg-calculator-result__title,
+.hg-calculator-result--highlighted .hg-calculator-result__description {
+  color: var(--textPrimary);
+}
+
+.hg-calculator-result--highlighted .hg-calculator-result__amount {
+  color: var(--textPrimary);
+  text-shadow: 1px 1px 2px rgba(43, 43, 43, 0.1);
+}
+
+/* Variant: Compact */
+.hg-calculator-result--compact {
+  padding: var(--spaceMd);
+  margin-top: var(--spaceMd);
+}
+
+.hg-calculator-result--compact .hg-calculator-result__amount {
+  font-size: var(--fontSizeXl);
+  margin: var(--spaceMd) 0;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .hg-calculator-result {
+    padding: var(--spaceMd);
+    margin-top: var(--spaceMd);
+  }
+  
+  .hg-calculator-result__amount {
+    font-size: var(--fontSizeXl);
+  }
+  
+  .hg-calculator-result__content {
+    gap: var(--spaceMd);
+  }
+}
+
+@media (max-width: 480px) {
+  .hg-calculator-result__amount {
+    font-size: var(--fontSizeXl);
+  }
+  
+  .hg-calculator-result__description {
+    font-size: 14px;
+  }
+}
+
+/* Animation for showing/hiding */
+.hg-calculator-result {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>

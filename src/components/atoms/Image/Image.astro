@@ -1,0 +1,48 @@
+---
+/**
+ * Image Atom
+ * Hunter Galloway Design System - Atomic Component
+ * 
+ * A self-contained image atom for consistent image display.
+ * No slots, focused on single responsibility.
+ */
+
+import type { ImageProps } from './Image.types';
+import { semantic } from '../../../tokens/semantic';
+
+interface Props extends ImageProps {}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  class: additionalClasses = '',
+} = Astro.props;
+
+// Build CSS classes
+const imageClasses = [
+  'hg-image',
+  additionalClasses,
+].filter(Boolean).join(' ');
+---
+
+<img 
+  src={src}
+  alt={alt}
+  width={width}
+  height={height}
+  class={imageClasses}
+  loading="lazy"
+/>
+
+<style define:vars={{
+  radiusSm: semantic.radius.sm,
+}}>
+.hg-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radiusSm);
+}
+</style>

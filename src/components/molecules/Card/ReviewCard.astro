@@ -1,0 +1,266 @@
+---
+/**
+ * Molecule: ReviewCard
+ * A specialized card component for displaying customer reviews.
+ * Features expandable text, star ratings, and focus/nonfocus variants.
+ * Combines Card molecule with atomic components for review display.
+ */
+import Card from './Card.astro';
+import Avatar from '../../atoms/Avatar.astro';
+import Heading from '../../atoms/Heading.astro';
+import Paragraph from '../../atoms/Paragraph.astro';
+import Link from '../../atoms/Link.astro';
+import Rating from '../Rating.astro';
+
+export interface Props {
+  /** User's name */
+  userName: string;
+  /** User's avatar image source */
+  userAvatar?: string;
+  /** Review text content */
+  reviewText: string;
+  /** Star rating (1-5) */
+  rating: number;
+  /** Visual variant for different contexts */
+  variant?: 'focus' | 'nonfocus';
+  /** Maximum length before showing "Read more" */
+  textTruncateLength?: number;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  userName,
+  userAvatar,
+  reviewText,
+  rating = 5,
+  variant = 'nonfocus',
+  textTruncateLength = 150,
+  class: className = '',
+} = Astro.props;
+
+// Determine if text should be truncated
+const shouldTruncate = reviewText.length > textTruncateLength;
+const truncatedText = shouldTruncate
+  ? reviewText.slice(0, textTruncateLength).trim() + '...'
+  : reviewText;
+
+// Generate unique ID for this review card (for future use if needed)
+// const reviewId = `review-${Math.random().toString(36).substring(2, 11)}`;
+---
+
+<Card
+  variant="elevated"
+  class:list={['hg-ReviewCard', `variant-${variant}`, className]}
+>
+  <div class="review-header">
+    <Avatar src={userAvatar} name={userName} size="md" shape="circle" />
+
+    <div class="user-info">
+      <Heading
+        level={3}
+        size="lg"
+        color={variant === 'focus' ? 'inverse' : 'default'}
+      >
+        {userName}
+      </Heading>
+    </div>
+  </div>
+
+  <div class="review-content">
+    <div class="review-text">
+      {
+        shouldTruncate ? (
+          <>
+            <Paragraph
+              size="md"
+              color={variant === 'focus' ? 'inverse' : 'body'}
+              class="truncated-text"
+            >
+              {truncatedText}
+            </Paragraph>
+            <Paragraph
+              size="md"
+              color={variant === 'focus' ? 'inverse' : 'body'}
+              class="full-text hidden"
+            >
+              {reviewText}
+            </Paragraph>
+            <Link
+              href="#"
+              variant="subtle"
+              underline="none"
+              class="read-more-toggle"
+              ariaLabel={`Expand review from ${userName}`}
+            >
+              <span class="more-text">Read more</span>
+              <span class="less-text hidden">Show less</span>
+            </Link>
+          </>
+        ) : (
+          <Paragraph size="md" color={variant === 'focus' ? 'inverse' : 'body'}>
+            {reviewText}
+          </Paragraph>
+        )
+      }
+    </div>
+
+    <div class="review-rating">
+      <Rating rating={rating} max={5} showText={false} size="sm" />
+    </div>
+  </div>
+</Card>
+
+<style>
+  .hg-ReviewCard {
+    max-width: var(--size-content-max-width-lg);
+    transition: transform var(--transition-duration-base)
+      var(--transition-timing-function-ease);
+  }
+
+  .hg-ReviewCard:hover {
+    transform: translateY(calc(var(--space-xs) * -1));
+  }
+
+  /* Variant styles */
+  .variant-focus {
+    background-color: var(--color-background-accent);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-background-accent);
+  }
+
+  .variant-nonfocus {
+    background-color: var(--color-background-body);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+  }
+
+  .review-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  .user-info {
+    flex: 1;
+  }
+
+  .review-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .review-text {
+    position: relative;
+  }
+
+  .full-text.hidden,
+  .less-text.hidden,
+  .more-text.hidden {
+    display: none;
+  }
+
+  .read-more-toggle {
+    display: inline-block;
+    margin-top: var(--space-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+  }
+
+  .variant-focus .read-more-toggle {
+    color: var(--color-text-inverse);
+  }
+
+  .variant-nonfocus .read-more-toggle {
+    color: var(--color-text-link);
+  }
+
+  .variant-focus .read-more-toggle:hover {
+    color: var(--color-interactive-primary);
+  }
+
+  .variant-nonfocus .read-more-toggle:hover {
+    color: var(--color-text-link-hover);
+  }
+
+  .review-rating {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  /* Override Rating component colors for focus variant */
+  .variant-focus .review-rating :global(.rating-star) {
+    color: var(--color-interactive-primary);
+  }
+
+  /* Responsive adjustments */
+  @media (width <= 48rem) {
+    .hg-ReviewCard {
+      max-width: 100%;
+    }
+
+    .review-header {
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+
+    .review-content {
+      gap: var(--space-md);
+    }
+  }
+
+  /* Interaction styles */
+  .hg-ReviewCard:focus-within {
+    outline: var(--border-width-md) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--border-width-sm);
+  }
+</style>
+
+<script>
+  // Enhanced script for read more/less functionality
+  document.addEventListener('DOMContentLoaded', function () {
+    const reviewCards = document.querySelectorAll('.hg-ReviewCard');
+
+    reviewCards.forEach((card) => {
+      const toggle = card.querySelector('.read-more-toggle');
+      if (!toggle) return;
+
+      const truncatedText = card.querySelector('.truncated-text');
+      const fullText = card.querySelector('.full-text');
+      const moreSpan = card.querySelector('.more-text');
+      const lessSpan = card.querySelector('.less-text');
+
+      if (!truncatedText || !fullText || !moreSpan || !lessSpan) return;
+
+      toggle.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        const isExpanded = !fullText.classList.contains('hidden');
+
+        if (isExpanded) {
+          // Collapse
+          fullText.classList.add('hidden');
+          truncatedText.classList.remove('hidden');
+          moreSpan.classList.remove('hidden');
+          lessSpan.classList.add('hidden');
+          toggle.setAttribute('aria-expanded', 'false');
+        } else {
+          // Expand
+          fullText.classList.remove('hidden');
+          truncatedText.classList.add('hidden');
+          moreSpan.classList.add('hidden');
+          lessSpan.classList.remove('hidden');
+          toggle.setAttribute('aria-expanded', 'true');
+        }
+      });
+
+      // Set initial aria-expanded state
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+</script>

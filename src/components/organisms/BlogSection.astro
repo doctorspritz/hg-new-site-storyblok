@@ -1,0 +1,101 @@
+---
+/**
+ * Organism: BlogSection (stub)
+ * Renders a simple grid of BlogCard molecules.
+ */
+import Container from '../atoms/Container.astro';
+import Heading from '../atoms/Heading.astro';
+import { default as BlogCard } from '../molecules/Card/BlogCard.astro';
+
+interface PostItem {
+  href?: string;
+  imageSrc?: string;
+  imageAlt?: string;
+  category?: string;
+  title: string;
+  excerpt?: string;
+  author?: string;
+  date?: string;
+  readingTime?: string;
+}
+
+interface Props {
+  heading?: string;
+  posts?: PostItem[];
+  class?: string;
+}
+
+const {
+  heading = 'Latest from the blog',
+  posts = [
+    {
+      href: '#',
+      title: 'How to prepare for home loan pre-approval',
+      excerpt:
+        'A quick checklist to get your documents in order and move fast.',
+      author: 'HG Team',
+      date: 'Aug 2024',
+      readingTime: '5 min read',
+    },
+    {
+      href: '#',
+      title: 'Mortgage vs Rent: what makes sense today?',
+      excerpt:
+        'We break down weekly rent vs repayments with real-world examples.',
+      author: 'HG Team',
+      date: 'Jul 2024',
+      readingTime: '6 min read',
+    },
+    {
+      href: '#',
+      title: 'First home buyer grants explained',
+      excerpt:
+        'Available grants, eligibility, and how to structure your deposit.',
+      author: 'HG Team',
+      date: 'Jun 2024',
+      readingTime: '4 min read',
+    },
+  ],
+  class: className = '',
+} = Astro.props as Props;
+---
+
+<section class:list={['hg-blog', className]}>
+  <Container>
+    <Heading level={2} size="fluid-3xl" align="center" class="title">
+      {heading}
+    </Heading>
+    <div class="grid">
+      {posts.map((p) => <BlogCard {...p} />)}
+    </div>
+  </Container>
+</section>
+
+<style>
+  .hg-blog {
+    padding: var(--space-xl) 0;
+    background: var(--color-background-body);
+  }
+
+  .title {
+    margin-bottom: var(--space-lg);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xl);
+  }
+
+  @media (--bp-lg) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (--bp-md) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,181 @@
+/**
+ * Typography Component Styles
+ * Hunter Galloway Design System - Atomic Component
+ * 
+ * CSS styles for the Typography component that ensure consistent
+ * text styling across the application.
+ * 
+ * Note: Using higher specificity selectors to override global styles
+ */
+
+/* Base Typography Component - High Specificity */
+.hg-typography.hg-typography {
+  /* Base typography styles with !important to ensure override */
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: var(--hg-font-family-body, 'Open Sans', system-ui, sans-serif) !important;
+  line-height: var(--hg-line-height-body, 1.5) !important;
+  color: var(--hg-color-text-primary, #1f2937) !important;
+  text-align: left !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  /* Reset any global styles that might interfere */
+  font-style: normal !important;
+  text-decoration: none !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+/* Font Size Variants - High Specificity */
+.hg-typography.hg-typography--xs {
+  font-size: var(--hg-font-size-xs, 0.75rem) !important;
+}
+
+.hg-typography.hg-typography--sm {
+  font-size: var(--hg-font-size-sm, 0.875rem) !important;
+}
+
+.hg-typography.hg-typography--md {
+  font-size: var(--hg-font-size-md, 1rem) !important;
+}
+
+.hg-typography.hg-typography--lg {
+  font-size: var(--hg-font-size-lg, 1.125rem) !important;
+}
+
+.hg-typography.hg-typography--xl {
+  font-size: var(--hg-font-size-xl, 1.25rem) !important;
+}
+
+.hg-typography.hg-typography--2xl {
+  font-size: var(--hg-font-size-2xl, 1.5rem) !important;
+}
+
+.hg-typography.hg-typography--3xl {
+  font-size: var(--hg-font-size-3xl, 1.875rem) !important;
+}
+
+.hg-typography.hg-typography--4xl {
+  font-size: var(--hg-font-size-4xl, 2.25rem) !important;
+}
+
+.hg-typography.hg-typography--4_5xl {
+  font-size: var(--hg-font-size-4_5xl, 2.5rem) !important;
+}
+
+.hg-typography.hg-typography--5xl {
+  font-size: var(--hg-font-size-5xl, 3rem) !important;
+}
+
+/* Font Weight Variants - High Specificity */
+.hg-typography.hg-typography--body {
+  font-weight: var(--hg-font-weight-body, 400) !important;
+}
+
+.hg-typography.hg-typography--emphasis {
+  font-weight: var(--hg-font-weight-emphasis, 500) !important;
+}
+
+.hg-typography.hg-typography--strong {
+  font-weight: var(--hg-font-weight-strong, 600) !important;
+}
+
+.hg-typography.hg-typography--heading {
+  font-weight: var(--hg-font-weight-heading, 700) !important;
+}
+
+.hg-typography.hg-typography--display {
+  font-weight: var(--hg-font-weight-display, 800) !important;
+}
+
+/* Color Variants - High Specificity */
+.hg-typography.hg-typography--primary {
+  color: var(--hg-color-text-primary, #1f2937) !important;
+}
+
+.hg-typography.hg-typography--secondary {
+  color: var(--hg-color-text-secondary, #4b5563) !important;
+}
+
+.hg-typography.hg-typography--tertiary {
+  color: var(--hg-color-text-tertiary, #6b7280) !important;
+}
+
+.hg-typography.hg-typography--inverse {
+  color: var(--hg-color-text-inverse, #ffffff) !important;
+}
+
+/* Text Alignment - High Specificity */
+.hg-typography.hg-typography--left {
+  text-align: left !important;
+}
+
+.hg-typography.hg-typography--center {
+  text-align: center !important;
+}
+
+.hg-typography.hg-typography--right {
+  text-align: right !important;
+}
+
+.hg-typography.hg-typography--justify {
+  text-align: justify !important;
+}
+
+/* Line Height Adjustments - High Specificity */
+.hg-typography.hg-typography--tight {
+  line-height: var(--hg-line-height-tight, 1.25) !important;
+}
+
+/* No Wrap - High Specificity */
+.hg-typography.hg-typography--no-wrap {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hg-typography.hg-typography--4_5xl {
+    font-size: var(--hg-font-size-4xl, 2.25rem) !important;
+  }
+  
+  .hg-typography.hg-typography--5xl {
+    font-size: var(--hg-font-size-4xl, 2.25rem) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .hg-typography.hg-typography--4xl {
+    font-size: var(--hg-font-size-3xl, 1.875rem) !important;
+  }
+  
+  .hg-typography.hg-typography--4_5xl {
+    font-size: var(--hg-font-size-3xl, 1.875rem) !important;
+  }
+  
+  .hg-typography.hg-typography--5xl {
+    font-size: var(--hg-font-size-3xl, 1.875rem) !important;
+  }
+}
+
+/* Additional specificity for heading elements */
+h1.hg-typography.hg-typography,
+h2.hg-typography.hg-typography,
+h3.hg-typography.hg-typography,
+h4.hg-typography.hg-typography,
+h5.hg-typography.hg-typography,
+h6.hg-typography.hg-typography {
+  /* Ensure heading elements get proper styling */
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Specific override for the atoms tab display */
+.component-demo .hg-typography.hg-typography {
+  /* Ensure proper display in design system */
+  display: block !important;
+  margin: 0.5rem 0 !important;
+  padding: 0 !important;
+}

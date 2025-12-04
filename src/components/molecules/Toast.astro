@@ -1,0 +1,158 @@
+---
+import Icon from '../atoms/Icon.astro';
+
+interface Props {
+  message: string;
+  variant?: 'info' | 'success' | 'warning' | 'error';
+  durationMs?: number;
+  dismissible?: boolean;
+  class?: string;
+}
+
+const {
+  message,
+  variant = 'info',
+  durationMs,
+  dismissible = false,
+  class: className = '',
+} = Astro.props as Props;
+
+const toastClasses = [
+  'hg-toast',
+  `hg-toast--${variant}`,
+  { 'is-dismissible': dismissible },
+  className,
+].filter(Boolean);
+
+const ariaLive = variant === 'error' ? 'assertive' : 'polite';
+const statusRole = variant === 'error' ? 'alert' : 'status';
+---
+
+<div
+  class:list={toastClasses}
+  role={statusRole}
+  aria-live={ariaLive}
+  tabindex="-1"
+  data-toast-message={message}
+  data-duration={durationMs}
+>
+  <span class="toast-message">{message}</span>
+  {
+    dismissible && (
+      <button
+        type="button"
+        class="toast-dismiss"
+        aria-label="Dismiss notification"
+        data-action="dismiss"
+      >
+        <Icon name="close" size="sm" color="inherit" />
+      </button>
+    )
+  }
+</div>
+
+<script>
+  const currentScript = document.currentScript;
+  if (currentScript) {
+    const toast = currentScript.previousElementSibling as HTMLElement;
+    if (toast) {
+      toast.focus();
+      const duration = parseInt(toast.dataset.duration || '0');
+      if (!isNaN(duration) && duration > 0) {
+        setTimeout(() => {
+          toast.dispatchEvent(
+            new CustomEvent('toast:dismiss', {
+              detail: {
+                message: toast.dataset.toastMessage || '',
+                element: toast,
+              },
+              bubbles: true,
+            }),
+          );
+          toast.remove();
+        }, duration);
+      }
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    const btn = target?.closest('[data-action="dismiss"]');
+    if (!btn) return;
+    const toastEl = btn.closest('.hg-toast') as HTMLElement;
+    if (!toastEl) return;
+    toastEl.dispatchEvent(
+      new CustomEvent('toast:dismiss', {
+        detail: {
+          message: toastEl.dataset.toastMessage || '',
+          element: toastEl,
+        },
+        bubbles: true,
+      }),
+    );
+    if (!e.defaultPrevented) {
+      toastEl.remove();
+    }
+  });
+</script>
+
+<style>
+  .hg-toast {
+    position: fixed;
+    top: var(--space-lg);
+    right: var(--space-lg);
+    z-index: var(--z-index-sticky);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-md);
+  }
+
+  .hg-toast--info {
+    background-color: var(--color-feedback-info);
+    color: var(--color-text-inverse);
+  }
+
+  .hg-toast--success {
+    background-color: var(--color-feedback-success);
+    color: var(--color-text-inverse);
+  }
+
+  .hg-toast--warning {
+    background-color: var(--color-feedback-warning);
+    color: var(--color-text-body);
+  }
+
+  .hg-toast--error {
+    background-color: var(--color-feedback-error);
+    color: var(--color-text-inverse);
+  }
+
+  .toast-dismiss {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: var(--space-xs);
+    border-radius: var(--radius-sm);
+    transition: background-color var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .toast-dismiss:hover {
+    background-color: var(--color-overlay-subtle);
+  }
+
+  .toast-dismiss:focus-visible {
+    outline: var(--outline-width-sm) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--border-width-sm);
+    background-color: var(--color-overlay-subtle);
+  }
+</style>

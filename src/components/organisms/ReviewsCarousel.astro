@@ -1,0 +1,136 @@
+---
+/**
+ * Organism: ReviewsCarousel (stub)
+ * Simple horizontal scroll of review cards with a heading.
+ */
+import Container from '../atoms/Container.astro';
+import Heading from '../atoms/Heading.astro';
+import Paragraph from '../atoms/Paragraph.astro';
+
+interface ReviewItem {
+  author: string;
+  text: string;
+  rating?: number; // 1-5
+}
+
+interface Props {
+  heading?: string;
+  subheading?: string;
+  reviews?: ReviewItem[];
+  class?: string;
+}
+
+const {
+  heading = 'Based on 2000+ reviews',
+  subheading = 'Our customers rate us 5.0 stars on Google',
+  reviews = [
+    {
+      author: 'Happy Customer',
+      text: 'The team at Hunter Galloway made the loan process simple and stress-free. Highly recommend!',
+      rating: 5,
+    },
+    {
+      author: 'First Home Buyer',
+      text: 'Clear guidance from start to finish. I felt supported and informed at every step.',
+      rating: 5,
+    },
+    {
+      author: 'Investor',
+      text: 'Professional, responsive, and got me a great outcome. Will use again.',
+      rating: 5,
+    },
+  ],
+  class: className = '',
+} = Astro.props as Props;
+---
+
+<section class:list={['hg-reviews', className]}>
+  <Container>
+    <div class="header">
+      <img src="/images/icons/google.svg" alt="Google" class="logo" />
+      <div class="titles">
+        <Heading level={2} size="fluid-2xl" class="title">{heading}</Heading>
+        <Paragraph size="md" color="subtle" class="subtitle">
+          {subheading}
+        </Paragraph>
+      </div>
+    </div>
+
+    <div class="track" aria-label="Customer reviews">
+      {
+        reviews.map((r) => (
+          <article class="review">
+            <div class="stars" aria-label={`${r.rating || 5} star rating`}>
+              {'★★★★★'.slice(0, r.rating || 5)}
+            </div>
+            <p class="text">{r.text}</p>
+            <p class="author">— {r.author}</p>
+          </article>
+        ))
+      }
+    </div>
+  </Container>
+</section>
+
+<style>
+  .hg-reviews {
+    padding: var(--space-xl) 0;
+    background: var(--color-background-body);
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  .logo {
+    width: var(--space-xl);
+    height: var(--space-xl);
+  }
+
+  .titles .title {
+    margin: 0;
+  }
+
+  .track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(var(--size-form-width-sm), 1fr);
+    gap: var(--space-md);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: var(--space-sm);
+  }
+
+  .review {
+    background: var(--color-surface);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    scroll-snap-align: start;
+  }
+
+  .stars {
+    color: var(--color-feedback-warning);
+    margin-bottom: var(--space-sm);
+  }
+
+  .text {
+    margin: 0 0 var(--space-sm);
+  }
+
+  .author {
+    color: var(--color-text-subtle);
+    margin: 0;
+  }
+
+  @media (--bp-md) {
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

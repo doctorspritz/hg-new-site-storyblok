@@ -1,0 +1,71 @@
+---
+/**
+ * Atom: Spinner
+ * Loading indicator component with accessible labeling.
+ */
+interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'inverse';
+  ariaLabel?: string;
+}
+
+const { size = 'md', variant = 'primary', ariaLabel } = Astro.props as Props;
+
+const a11yProps: Record<string, string> = ariaLabel
+  ? { role: 'status', 'aria-label': ariaLabel }
+  : { 'aria-hidden': 'true' };
+---
+
+<div
+  class:list={['hg-Spinner', `size-${size}`, `variant-${variant}`]}
+  {...a11yProps}
+>
+</div>
+
+<style>
+  .hg-Spinner {
+    border-radius: var(--radius-pill);
+    border-style: var(--border-style-solid);
+    animation: spin var(--transition-duration-base) linear infinite;
+  }
+
+  .size-sm {
+    width: var(--space-sm);
+    height: var(--space-sm);
+    border-width: var(--border-width-sm);
+  }
+
+  .size-md {
+    width: var(--space-md);
+    height: var(--space-md);
+    border-width: var(--border-width-md);
+  }
+
+  .size-lg {
+    width: var(--space-lg);
+    height: var(--space-lg);
+    border-width: var(--border-width-md);
+  }
+
+  .variant-primary {
+    border-color: var(--color-interactive-primary);
+    border-top-color: var(--color-background-body);
+  }
+
+  .variant-inverse {
+    border-color: var(--color-text-inverse);
+    border-top-color: var(--color-background-primary);
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hg-Spinner {
+      animation: none;
+    }
+  }
+</style>

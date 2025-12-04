@@ -1,0 +1,35 @@
+---
+/**
+ * Molecule: FooterLink
+ * Small inline footer link with arrow.
+ */
+import Link from '../../atoms/Link.astro';
+import Icon from '../../atoms/Icon.astro';
+
+interface Props {
+  label: string;
+  href: string;
+  class?: string;
+}
+
+const { label, href, class: className = '' } = Astro.props as Props;
+---
+
+<Link
+  href={href}
+  variant="default"
+  underline="dashed-text"
+  class:list={['hg-footer-link', className].filter(Boolean)}
+>
+  {label}
+  <Icon name="arrow-right" size="xs" />
+</Link>
+
+<style>
+  .hg-footer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    color: var(--color-text-body);
+  }
+</style>

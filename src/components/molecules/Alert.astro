@@ -1,0 +1,127 @@
+---
+/**
+ * Molecule: Alert
+ * Informational message box with color variants and optional dismiss button.
+ */
+import Icon from '../atoms/Icon.astro';
+
+interface Props {
+  /** Alert message text */
+  message: string;
+  /** Color variant */
+  variant?: 'info' | 'success' | 'warning' | 'error';
+  /** Show dismiss button */
+  dismissible?: boolean;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  message,
+  variant = 'info',
+  dismissible = false,
+  class: className = '',
+} = Astro.props as Props;
+
+const alertClasses = [
+  'hg-alert',
+  `hg-alert--${variant}`,
+  { 'is-dismissible': dismissible },
+  className,
+].filter(Boolean);
+---
+
+<div class:list={alertClasses} role="alert" data-alert-message={message}>
+  <span class="alert-message">{message}</span>
+  {
+    dismissible && (
+      <button
+        type="button"
+        class="alert-dismiss"
+        aria-label="Dismiss alert"
+        data-action="dismiss"
+      >
+        <Icon name="close" size="sm" color="inherit" />
+      </button>
+    )
+  }
+</div>
+
+<script>
+  document.addEventListener('click', (e) => {
+    const target = e.target as Element | null;
+    const dismissBtn = target?.closest('[data-action="dismiss"]');
+    if (!dismissBtn) return;
+
+    const alert = dismissBtn.closest('.hg-alert') as HTMLElement | null;
+    if (!alert) return;
+
+    alert.dispatchEvent(
+      new CustomEvent('alert:dismiss', {
+        detail: { message: alert.dataset.alertMessage, element: alert },
+        bubbles: true,
+      }),
+    );
+
+    if (!e.defaultPrevented) {
+      alert.remove();
+    }
+  });
+</script>
+
+<style>
+  .hg-alert {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-md);
+  }
+
+  .hg-alert--info {
+    background-color: var(--color-feedback-info);
+    color: var(--color-text-inverse);
+  }
+
+  .hg-alert--success {
+    background-color: var(--color-feedback-success);
+    color: var(--color-text-inverse);
+  }
+
+  .hg-alert--warning {
+    background-color: var(--color-feedback-warning);
+    color: var(--color-text-body);
+  }
+
+  .hg-alert--error {
+    background-color: var(--color-feedback-error);
+    color: var(--color-text-inverse);
+  }
+
+  .alert-dismiss {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: var(--space-xs);
+    border-radius: var(--radius-sm);
+    transition: background-color var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .alert-dismiss:hover {
+    background-color: var(--color-background-accent);
+  }
+
+  .alert-dismiss:focus-visible {
+    outline: var(--outline-width-sm) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--space-2xs);
+    background-color: var(--color-background-accent);
+  }
+</style>

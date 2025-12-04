@@ -1,0 +1,57 @@
+---
+/**
+ * Organism: PropertyMap
+ * Composes the PropertyMapCard molecule into a section container.
+ */
+import Container from '../atoms/Container.astro';
+import PropertyMapCard from '../molecules/Card/PropertyMapCard.astro';
+
+export interface Props {
+  /** Override title */
+  title?: string;
+  /** Override description */
+  description?: string;
+  /** Button text */
+  buttonText?: string;
+  /** Button URL */
+  buttonHref?: string;
+  /** Background image */
+  backgroundImage?: string;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  title = 'Looking for property in Brisbane?',
+  description = 'Compare where to live, invest and buy in 2024 on our interactive map',
+  buttonText = 'Explore map',
+  buttonHref = '/suburbs-map/',
+  backgroundImage = '/images/to-map.svg',
+  class: className = '',
+} = Astro.props as Props;
+---
+
+<section class:list={['hg-PropertyMap', className]}>
+  <Container>
+    <PropertyMapCard
+      title={title}
+      description={description}
+      buttonText={buttonText}
+      buttonHref={buttonHref}
+      backgroundImage={backgroundImage}
+    />
+  </Container>
+</section>
+
+<style>
+  .hg-PropertyMap {
+    padding: var(--space-xl) 0;
+    background-color: var(--color-background-body);
+  }
+
+  @media (--bp-md) {
+    .hg-PropertyMap {
+      padding: var(--space-lg) 0;
+    }
+  }
+</style>

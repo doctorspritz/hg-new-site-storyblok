@@ -1,0 +1,191 @@
+---
+/**
+ * Molecule: Stat
+ * Displays a prominent value with a descriptive label and optional icon.
+ */
+import Heading from '../atoms/Heading.astro';
+import Paragraph from '../atoms/Paragraph.astro';
+import Icon from '../atoms/Icon.astro';
+
+interface Props {
+  /** Statistic value to display */
+  value: string | number;
+  /** Descriptive label for the statistic */
+  label?: string;
+  /** Optional multi-line label */
+  labelLines?: string[];
+  /** Optional icon name */
+  icon?: string;
+  /** External SVG icon source */
+  iconSrc?: string;
+  iconAlt?: string;
+  /** Inline layout for badge-like presentation */
+  inline?: boolean;
+  /** Shape style for value */
+  shape?: 'plain' | 'circle' | 'circle-outline';
+  /** Icon size token */
+  iconSize?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  /** Whether to show the numeric value */
+  showValue?: boolean;
+}
+
+const {
+  value,
+  label,
+  labelLines,
+  icon,
+  iconSrc,
+  iconAlt = '',
+  inline = false,
+  shape = 'plain',
+  iconSize = 'lg',
+  showValue = true,
+} = Astro.props as Props;
+
+// Map icon size to the Icon atom's supported sizes
+const iconSizeForIcon = (iconSize === '2xl' ? 'xl' : iconSize) as
+  | 'xs'
+  | 'sm'
+  | 'md'
+  | 'lg'
+  | 'xl';
+---
+
+<div class:list={['hg-stat', inline ? 'inline' : '']}>
+  {
+    iconSrc ? (
+      <img
+        src={iconSrc}
+        alt={iconAlt}
+        class:list={['stat-icon-img', `icon-size-${iconSize}`]}
+      />
+    ) : (
+      icon && (
+        <Icon
+          name={icon}
+          size={iconSizeForIcon}
+          class:list={['stat-icon', `icon-size-${iconSizeForIcon}`]}
+        />
+      )
+    )
+  }
+  {
+    showValue && (
+      <Heading
+        level={3}
+        size="3xl"
+        color={
+          shape === 'circle' || shape === 'circle-outline'
+            ? 'primary'
+            : 'default'
+        }
+        class:list={[
+          'stat-value',
+          shape === 'circle' ? 'circle' : '',
+          shape === 'circle-outline' ? 'circle-outline' : '',
+        ]}
+      >
+        {value}
+      </Heading>
+    )
+  }
+  {
+    labelLines && labelLines.length > 0 ? (
+      <Paragraph size="md" color="subtle" class="stat-label">
+        <span class="line">{labelLines[0]}</span>
+        {labelLines[1] && (
+          <>
+            <br />
+            <span class="line">{labelLines[1]}</span>
+          </>
+        )}
+      </Paragraph>
+    ) : (
+      <Paragraph size="md" color="subtle" class="stat-label">
+        {label}
+      </Paragraph>
+    )
+  }
+</div>
+
+<style>
+  .hg-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+
+  .hg-stat.inline {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .hg-stat.inline .stat-value,
+  .hg-stat.inline .stat-label {
+    margin: 0;
+  }
+
+  .hg-stat.inline .stat-value {
+    flex-shrink: 0;
+  }
+
+  .stat-icon {
+    color: var(--color-text-subtle);
+  }
+
+  .stat-icon-img {
+    object-fit: contain;
+  }
+
+  /* Icon size tokens */
+  .icon-size-sm {
+    width: var(--space-sm);
+    height: var(--space-sm);
+  }
+
+  .icon-size-md {
+    width: var(--space-md);
+    height: var(--space-md);
+  }
+
+  .icon-size-lg {
+    width: var(--space-lg);
+    height: var(--space-lg);
+  }
+
+  .icon-size-xl {
+    width: var(--space-xl);
+    height: var(--space-xl);
+  }
+
+  .icon-size-2xl {
+    width: calc(var(--space-xl) * 2);
+    height: calc(var(--space-xl) * 2);
+  }
+
+  .stat-value.circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-on-primary);
+    background: var(--color-interactive-primary);
+    border-radius: var(--radius-pill);
+    width: calc(var(--space-xl) * 2);
+    height: calc(var(--space-xl) * 2);
+  }
+
+  .hg-stat .stat-value.circle-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-interactive-primary);
+    background: transparent;
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-interactive-primary);
+    border-radius: var(--radius-pill);
+    width: calc(var(--space-xl) * 2);
+    height: calc(var(--space-xl) * 2);
+  }
+</style>

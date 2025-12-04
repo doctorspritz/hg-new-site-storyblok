@@ -1,0 +1,113 @@
+---
+/**
+ * Divider Atom
+ * Hunter Galloway Design System - Atomic Component
+ *
+ * A self-contained divider component for visual separation.
+ * Uses design tokens for all styling values.
+ */
+
+export interface Props {
+  /** Orientation of the divider */
+  orientation?: 'horizontal' | 'vertical';
+  /** Thickness variant */
+  thickness?: 'thin' | 'medium' | 'thick';
+  /** Color variant */
+  variant?: 'default' | 'subtle' | 'focus';
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  orientation = 'horizontal',
+  thickness = 'thin',
+  variant = 'default',
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const dividerClasses = [
+  'hg-divider',
+  `hg-divider--${orientation}`,
+  `hg-divider--${thickness}`,
+  `hg-divider--${variant}`,
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<hr class={dividerClasses} />
+
+<style>
+  .hg-divider {
+    border: 0;
+    margin: 0;
+  }
+
+  /* Horizontal dividers */
+  .hg-divider--horizontal {
+    width: 100%;
+    height: 0;
+    border-top-style: solid;
+  }
+
+  /* Vertical dividers */
+  .hg-divider--vertical {
+    display: inline-block;
+    width: 0;
+    height: var(--space-lg);
+    border-left-style: solid;
+    vertical-align: middle;
+  }
+
+  /* Thickness variants using design tokens */
+  .hg-divider--thin.hg-divider--horizontal {
+    border-top-width: var(--border-width-sm);
+  }
+
+  .hg-divider--thin.hg-divider--vertical {
+    border-left-width: var(--border-width-sm);
+  }
+
+  .hg-divider--medium.hg-divider--horizontal {
+    border-top-width: var(--border-width-md);
+  }
+
+  .hg-divider--medium.hg-divider--vertical {
+    border-left-width: var(--border-width-md);
+  }
+
+  .hg-divider--thick.hg-divider--horizontal {
+    border-top-width: var(--border-width-lg);
+  }
+
+  .hg-divider--thick.hg-divider--vertical {
+    border-left-width: var(--border-width-lg);
+  }
+
+  /* Color variants using design tokens */
+  .hg-divider--default.hg-divider--horizontal {
+    border-top-color: var(--color-border-default);
+  }
+
+  .hg-divider--default.hg-divider--vertical {
+    border-left-color: var(--color-border-default);
+  }
+
+  .hg-divider--subtle.hg-divider--horizontal {
+    border-top-color: var(--color-border-subtle);
+  }
+
+  .hg-divider--subtle.hg-divider--vertical {
+    border-left-color: var(--color-border-subtle);
+  }
+
+  .hg-divider--focus.hg-divider--horizontal {
+    border-top-color: var(--color-border-focus);
+  }
+
+  .hg-divider--focus.hg-divider--vertical {
+    border-left-color: var(--color-border-focus);
+  }
+</style>

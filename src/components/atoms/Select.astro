@@ -1,0 +1,168 @@
+---
+/**
+ * Atom: Select
+ * Styled native select element with size variants.
+ */
+interface Option {
+  label: string;
+  value: string;
+  disabled?: boolean;
+}
+
+interface Props {
+  id?: string;
+  name?: string;
+  value?: string;
+  options?: Option[];
+  placeholder?: string;
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'border' | 'no-border';
+  disabled?: boolean;
+  required?: boolean;
+  invalid?: boolean;
+}
+
+const {
+  id,
+  name,
+  value,
+  options = [],
+  placeholder,
+  size = 'md',
+  variant = 'border',
+  disabled = false,
+  required = false,
+  invalid = false,
+  ...rest
+} = Astro.props as Props & Record<string, any>;
+
+const computedId = id ?? name ?? 'select';
+---
+
+<div
+  class:list={[
+    'hg-Select',
+    `size-${size}`,
+    `variant-${variant}`,
+    { 'is-disabled': disabled, 'is-invalid': invalid },
+  ]}
+>
+  <select
+    id={computedId}
+    name={name}
+    class="select"
+    disabled={disabled}
+    required={required}
+    aria-invalid={invalid}
+    value={value}
+    {...rest}
+  >
+    {
+      placeholder && (
+        <option
+          value=""
+          disabled
+          hidden
+          selected={value == null || value === ''}
+        >
+          {placeholder}
+        </option>
+      )
+    }
+    {
+      options.map((opt) => (
+        <option
+          value={opt.value}
+          disabled={opt.disabled}
+          selected={value === opt.value}
+        >
+          {opt.label}
+        </option>
+      ))
+    }
+  </select>
+  <span class="icon" aria-hidden="true">▾</span>
+</div>
+
+<style>
+  .hg-Select {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .select {
+    width: 100%;
+    appearance: none;
+    color: var(--color-text-body);
+    background-color: var(--color-surface);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-form);
+    border-radius: var(--radius-md);
+    line-height: var(--line-height-normal);
+    outline: none;
+    transition: border-color var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+    padding: var(--space-sm);
+  }
+
+  .select:hover {
+    border-color: var(--color-border-focus);
+  }
+
+  .select:focus {
+    border-color: var(--color-border-focus);
+  }
+
+  .select:disabled {
+    background-color: var(--color-interactive-disabled);
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+  }
+
+  .icon {
+    position: absolute;
+    right: var(--space-md);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-subtle);
+    pointer-events: none;
+  }
+
+  .size-sm .select {
+    font-size: var(--font-size-sm);
+
+    /* Use consistent HG form padding with space for dropdown icon */
+    padding: var(--space-sm) var(--space-xl) var(--space-sm) var(--space-sm);
+  }
+
+  .size-md .select {
+    font-size: var(--font-size-md);
+
+    /* Use consistent HG form padding with space for dropdown icon */
+    padding: var(--space-sm) var(--space-xl) var(--space-sm) var(--space-sm);
+  }
+
+  .size-lg .select {
+    font-size: var(--font-size-lg);
+
+    /* Use consistent HG form padding with space for dropdown icon */
+    padding: var(--space-sm) var(--space-xl) var(--space-sm) var(--space-sm);
+  }
+
+  .variant-no-border .select {
+    border: none;
+    background-color: var(--color-background-body);
+    color: var(--color-text-body);
+    border-radius: var(--radius-md);
+  }
+
+  .is-invalid .select {
+    border-color: var(--color-feedback-error);
+  }
+
+  .variant-no-border.is-invalid .select {
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-feedback-error);
+  }
+</style>

@@ -1,0 +1,31 @@
+---
+export interface Props {
+  text?: string;
+  href?: string;
+  src?: string;
+  srcset?: string;
+  alt?: string;
+  title?: string;
+  value?: string;
+  placeholder?: string;
+  ariaLabel?: string;
+}
+const {
+  text = '',
+  href = '#',
+  src = '',
+  srcset = '',
+  alt = '',
+  title = '',
+  value = '',
+  placeholder = '',
+  ariaLabel = '',
+} = Astro.props;
+---
+
+<input
+  class="quiz-form__input quiz-form__input_money quiz-step_price-input"
+  name="step-1-1-1-property"
+  readonly="readonly"
+  type="text"
+/>

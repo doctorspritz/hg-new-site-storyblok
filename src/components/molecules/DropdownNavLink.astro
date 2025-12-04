@@ -1,0 +1,123 @@
+---
+/**
+ * Molecule: DropdownNavLink
+ * Navigation link with dropdown indicator chevron.
+ *
+ * Combines:
+ * - Link atom (with navigation variant and dashed underline)
+ * - Icon atom (chevron-down)
+ *
+ * Features:
+ * - Dashed underline styling
+ * - Dropdown chevron icon
+ * - Proper spacing and alignment
+ * - Hover and focus states
+ */
+
+import Link from '../atoms/Link.astro';
+import Icon from '../atoms/Icon.astro';
+
+interface Props {
+  /** Link destination */
+  href: string;
+  /** Link text content */
+  text: string;
+  /** Show dropdown chevron icon */
+  hasDropdown?: boolean;
+  /** Active state */
+  active?: boolean;
+  /** Additional CSS classes */
+  class?: string;
+  /** Additional HTML attributes */
+  [key: string]: any;
+}
+
+const {
+  href,
+  text,
+  hasDropdown = true,
+  active = false,
+  class: className = '',
+  ...attrs
+} = Astro.props as Props;
+
+// Build CSS classes
+const linkClasses = [
+  'hg-dropdown-nav-link',
+  { 'has-dropdown': hasDropdown },
+  { 'is-active': active },
+  className,
+].filter(Boolean);
+---
+
+<Link
+  href={href}
+  variant="navigation"
+  underline="dashed-text"
+  class:list={linkClasses}
+  {...attrs}
+>
+  <span class="link-text">{text}</span>
+  {hasDropdown && <Icon name="chevron-down" size="md" class="dropdown-icon" />}
+</Link>
+
+<style>
+  .hg-dropdown-nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    white-space: nowrap; /* prevent wrapping onto two lines */
+  }
+
+  .link-text {
+    position: relative;
+    z-index: 2;
+    display: inline-block;
+  }
+
+  /* Uses Link atom's navigation defaults; override here if needed */
+
+  .dropdown-icon {
+    color: var(--color-text-heading);
+    transition: transform var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+    flex-shrink: 0;
+    margin-left: var(--space-2xs);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--space-sm);
+    min-height: var(--space-sm);
+  }
+
+  .dropdown-icon svg {
+    display: block;
+    fill: currentcolor;
+  }
+
+  /* Dropdown icon animation on hover */
+  .hg-dropdown-nav-link:hover .dropdown-icon {
+    transform: translateY(var(--transform-hover-subtle));
+  }
+
+  /* Active state styling */
+  .hg-dropdown-nav-link.is-active .dropdown-icon {
+    color: var(--color-text-heading);
+  }
+
+  /* Focus state */
+  .hg-dropdown-nav-link:focus-visible {
+    outline: var(--outline-width-md) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--space-2xs);
+    border-radius: var(--radius-sm);
+  }
+
+  /* Ensure proper alignment when has dropdown */
+  .hg-dropdown-nav-link.has-dropdown {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+</style>

@@ -1,0 +1,388 @@
+---
+/**
+ * Mortgage vs Rent Calculator Organism
+ * Hunter Galloway Design System - Organism Component
+ * 
+ * Complete calculator that allows users to compare mortgage payments with rent.
+ * Built using atomic components following the design system.
+ */
+
+import Container from '../../atoms/Container/Container.astro';
+import Typography from '../../atoms/Typography/Typography.astro';
+import Button from '../../atoms/Button/Button.astro';
+import Icon from '../../atoms/Icon/Icon.astro';
+import CalculatorResult from '../../molecules/CalculatorResult/CalculatorResult.astro';
+import { semantic } from '../../../tokens/semantic';
+
+// Calculator configuration
+const calculatorConfig = {
+  min: 100,
+  max: 2500,
+  step: 50,
+  defaultValue: 100
+};
+---
+
+<section class="hg-mortgage-rent-calculator" id="mortagevsrent">
+  <Container class="hg-calculator__container">
+    <div class="hg-calculator__header">
+      <Typography as="h2" variant="h2" class="hg-calculator__title">
+        Compare your current rent with your mortgage payment
+      </Typography>
+      <Typography as="p" variant="body-lg" class="hg-calculator__description">
+        Your mortgage payment could be lower than your current rent.
+      </Typography>
+    </div>
+
+    <div class="hg-calculator__content">
+      <div class="hg-calculator__form">
+        <Typography as="h4" variant="h4" class="hg-calculator__form-title">
+          What is your weekly rent?
+        </Typography>
+        <Typography as="p" variant="body" class="hg-calculator__form-description">
+          The rent you are currently paying for the property you live in.
+        </Typography>
+
+        <div class="hg-calculator__slider-container">
+          <!-- Custom range slider -->
+          <div class="hg-slider-wrapper">
+            <label for="weekly-rent-slider" class="visually-hidden">Weekly rent</label>
+            <input 
+              type="range" 
+              min={calculatorConfig.min}
+              max={calculatorConfig.max}
+              value={calculatorConfig.defaultValue}
+              step={calculatorConfig.step}
+              class="hg-slider"
+              id="weekly-rent-slider"
+              data-calculator="mortgage-rent"
+              aria-valuemin={String(calculatorConfig.min)}
+              aria-valuemax={String(calculatorConfig.max)}
+              aria-label="Weekly rent"
+            />
+            <div class="hg-slider-track"></div>
+            <div class="hg-slider-value" id="slider-value">
+              ${calculatorConfig.defaultValue}
+            </div>
+            <div class="hg-slider-labels">
+              <span class="hg-slider-label hg-slider-label--min">
+                ${calculatorConfig.min}
+              </span>
+              <span class="hg-slider-label hg-slider-label--max">
+                ${calculatorConfig.max}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hg-calculator__button-container">
+          <Button 
+            variant="primary"
+            size="lg"
+            class="hg-calculator__button"
+            id="calculate-button"
+            ariaLabel="Calculate mortgage estimate"
+          >
+            Calculate
+            <Icon name="arrow-right" size="sm" class="hg-calculator__button-icon" />
+          </Button>
+        </div>
+      </div>
+
+      <!-- Results will be shown dynamically -->
+      <div class="hg-calculator__result" id="calculator-result" style="display: none;">
+        <div class="hg-calculator-result">
+          <Container class="hg-calculator-result__content">
+            <Typography as="h3" variant="h3" class="hg-calculator-result__title">
+              Your Potential Weekly Mortgage Payment
+            </Typography>
+            
+            <div class="hg-calculator-result__amount" id="result-amount">
+              $425
+            </div>
+            
+            <Typography as="p" variant="body" class="hg-calculator-result__description" id="result-description">
+              Based on your weekly rent of $500, your potential mortgage payment could be around $425 per week.
+            </Typography>
+            
+            <div class="hg-calculator-result__cta">
+              <Button 
+                variant="primary"
+                size="md"
+                href="/get-free-assessment/"
+                class="hg-calculator-result__button"
+              >
+                Get Pre-Approved Now
+              </Button>
+            </div>
+          </Container>
+        </div>
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style define:vars={{
+  brandPrimary: semantic.color.brand.primary,
+  brandPrimaryHover: semantic.color.interactive.primaryHover,
+  surfacePrimary: semantic.color.surface.primary,
+  surfaceSecondary: semantic.color.surface.secondary,
+  textPrimary: semantic.color.text.primary,
+  textSecondary: semantic.color.text.secondary,
+  fontSizeMd: semantic.typography.size.md,
+  fontSizeLg: semantic.typography.size.lg,
+  fontSizeXl: semantic.typography.size.xl,
+  fontSizeXxl: semantic.typography.size.xxl,
+  fontWeightBold: semantic.typography.weight.bold,
+  fontWeightStrong: semantic.typography.weight.strong,
+  radiusMd: semantic.radius.md,
+  radiusLg: semantic.radius.lg,
+  spaceMd: semantic.space.md,
+  spaceLg: semantic.space.lg,
+  spaceXl: semantic.space.xl,
+  durationNormal: semantic.duration.normal,
+  shadowCard: semantic.shadow.card,
+  shadowProminent: semantic.shadow.prominent,
+  borderPrimary: semantic.color.border.primary,
+}}>
+/* Mortgage vs Rent Calculator Styles */
+.hg-mortgage-rent-calculator {
+  padding: var(--spaceXl) 0;
+  text-align: center;
+}
+
+.hg-calculator__container { max-width: 960px; margin: 0 auto; }
+
+.hg-calculator__header {
+  margin-bottom: var(--spaceXl);
+}
+
+.hg-calculator__title {
+  color: var(--textPrimary);
+  margin-bottom: var(--spaceMd);
+}
+
+.hg-calculator__description {
+  color: var(--textSecondary);
+  margin: 0;
+}
+
+.hg-calculator__content { background: var(--surfaceSecondary); border-radius: var(--radiusLg); padding: var(--spaceXl); box-shadow: none; }
+
+.hg-calculator__form {
+  margin-bottom: var(--spaceXl);
+}
+
+.hg-calculator__form-title {
+  color: var(--textPrimary);
+  margin-bottom: var(--spaceMd);
+}
+
+.hg-calculator__form-description {
+  color: var(--textSecondary);
+  margin-bottom: var(--spaceXl);
+}
+
+/* Custom Slider Styling - WordPress Exact Match */
+.hg-slider-wrapper { position: relative; padding: 32px 0 var(--spaceLg); margin: var(--spaceXl) 0; }
+
+.hg-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; background: var(--borderPrimary); border-radius: 3px; outline: none; cursor: pointer; position: relative; z-index: 2; }
+
+.hg-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; background: var(--brandPrimary); border-radius: 50%; cursor: pointer; transition: all var(--durationNormal) ease; box-shadow: var(--shadowCard); }
+
+.hg-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadowProminent);
+}
+
+.hg-slider::-moz-range-thumb { width: 24px; height: 24px; background: var(--brandPrimary); border-radius: 50%; cursor: pointer; border: none; transition: all var(--durationNormal) ease; box-shadow: var(--shadowCard); }
+
+.hg-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadowProminent);
+}
+
+/* Slider value display */
+.hg-slider-value { position: absolute; top: -36px; left: 50%; transform: translateX(-50%); background: var(--surfacePrimary); color: var(--textPrimary); padding: 6px 12px; border-radius: var(--radiusMd); border: 1px solid var(--borderPrimary); font-size: var(--fontSizeMd); font-weight: var(--fontWeightBold); white-space: nowrap; pointer-events: none; z-index: 3; }
+
+.hg-slider-value::after { content: none; }
+
+/* Slider labels */
+.hg-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--spaceMd);
+}
+
+.hg-slider-label {
+  font-size: 14px;
+  color: var(--textSecondary);
+  font-weight: var(--fontWeightStrong);
+}
+
+/* Button container */
+.hg-calculator__button-container {
+  margin-top: var(--spaceXl);
+}
+
+.hg-calculator__button {
+  min-width: 200px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Result styling */
+.hg-calculator-result {
+  background: var(--surfaceSecondary);
+  border-radius: var(--radiusMd);
+  padding: var(--spaceXl);
+  margin-top: var(--spaceXl);
+  text-align: center;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.hg-calculator-result__title {
+  color: var(--textPrimary);
+  margin-bottom: var(--spaceMd);
+}
+
+.hg-calculator-result__amount {
+  font-size: var(--fontSizeXxl);
+  font-weight: var(--fontWeightBold);
+  color: var(--brandPrimary);
+  line-height: 1.2;
+  margin: var(--spaceMd) 0;
+}
+
+.hg-calculator-result__description {
+  color: var(--textSecondary);
+  margin-bottom: var(--spaceXl);
+}
+
+.hg-calculator-result__cta {
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .hg-calculator__content {
+    padding: var(--spaceLg);
+  }
+  
+  .hg-slider-value {
+    font-size: var(--fontSizeMd);
+    padding: 6px 12px;
+  }
+  
+  .hg-calculator-result__amount {
+    font-size: var(--fontSizeXl);
+  }
+}
+
+@media (max-width: 480px) {
+  .hg-mortgage-rent-calculator {
+    padding: var(--spaceLg) 0;
+  }
+  
+  .hg-calculator__content {
+    padding: var(--spaceMd);
+  }
+  
+  .hg-slider::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .hg-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .hg-calculator-result {
+    padding: var(--spaceLg);
+  }
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
+
+<script>
+// Mortgage vs Rent Calculator functionality
+document.addEventListener('DOMContentLoaded', () => {
+  const slider = document.getElementById('weekly-rent-slider') as HTMLInputElement;
+  const valueDisplay = document.getElementById('slider-value');
+  const calculateButton = document.getElementById('calculate-button');
+  const resultContainer = document.getElementById('calculator-result');
+  const resultAmount = document.getElementById('result-amount');
+  const resultDescription = document.getElementById('result-description');
+  
+  if (!slider || !valueDisplay || !calculateButton || !resultContainer || !resultAmount || !resultDescription) {
+    return;
+  }
+  
+  // Update slider value display and position
+  const updateSliderValue = () => {
+    const value = parseInt(slider.value);
+    const min = parseInt(slider.min);
+    const max = parseInt(slider.max);
+    const percentage = ((value - min) / (max - min)) * 100;
+    
+    // Update value display
+    valueDisplay.textContent = `$${value}`;
+    
+    // Position the value display above the thumb, clamped at edges like WP
+    valueDisplay.style.left = `${percentage}%`;
+    if (percentage <= 5) {
+      valueDisplay.style.transform = 'translateX(0)';
+    } else if (percentage >= 95) {
+      valueDisplay.style.transform = 'translateX(-100%)';
+    } else {
+      valueDisplay.style.transform = 'translateX(-50%)';
+    }
+    
+    // Hide result when value changes
+    resultContainer.style.display = 'none';
+  };
+  
+  // Calculate mortgage estimate
+  const calculateMortgage = () => {
+    const weeklyRent = parseInt(slider.value);
+    // Simple calculation - weekly rent to potential weekly mortgage payment
+    // This matches the WordPress behavior (typically 15% lower)
+    const estimatedMortgage = Math.round(weeklyRent * 0.85);
+    
+    // Update result display
+    resultAmount.textContent = `$${estimatedMortgage}`;
+    resultDescription.textContent = `Based on your weekly rent of $${weeklyRent}, your potential mortgage payment could be around $${estimatedMortgage} per week.`;
+    
+    // Show result
+    resultContainer.style.display = 'block';
+    
+    // Scroll to result
+    resultContainer.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'nearest' 
+    });
+  };
+  
+  // Event listeners
+  slider.addEventListener('input', updateSliderValue);
+  calculateButton.addEventListener('click', calculateMortgage);
+  
+  // Initialize
+  updateSliderValue();
+});
+</script>

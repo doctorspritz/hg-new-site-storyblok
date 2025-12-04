@@ -1,0 +1,386 @@
+---
+/**
+ * Header Organism - Refactored for Atomic Design
+ * 
+ * Properly composes atoms and molecules:
+ * - Logo atom for branding
+ * - NavItem/NavLink molecules for navigation
+ * - Button atom for CTAs
+ * - Icon atoms for visual elements
+ * - Input atom for search
+ * - NavDropdown molecules for mega menus
+ * - PhoneLink molecule for contact
+ * - Container atom for layout
+ */
+
+import Container from '../atoms/Container/Container.astro';
+import Logo from '../atoms/Logo/Logo.astro';
+import Button from '../atoms/Button/Button.astro';
+import Icon from '../atoms/Icon/Icon.astro';
+import Input from '../atoms/Input/Input.astro';
+import NavItem from '../molecules/NavItem/NavItem.astro';
+import NavLink from '../molecules/NavLink/NavLink.astro';
+import PhoneLink from '../molecules/PhoneLink/PhoneLink.astro';
+import NavDropdown from '../molecules/NavDropdown/NavDropdown.astro';
+import { semantic } from '../../tokens/semantic';
+
+// Menu structure - organisms can have complex data but should compose atoms/molecules
+const menuItems = [
+  {
+    label: 'Home Loans',
+    type: 'mega',
+    columns: [
+      {
+        heading: 'Your Goal',
+        links: [
+          { label: 'Buying First Home', url: '/buying-first-home' },
+          { label: 'Property Renovation', url: '/property-renovation' },
+          { label: 'Refinancing A Loan', url: '/refinancing-a-loan' },
+          { label: 'Investing In Property', url: '/investing-in-property' },
+        ],
+      },
+      {
+        heading: 'Loan Types',
+        links: [
+          { label: 'Home Guarantee Scheme', url: '/home-guarantee-scheme' },
+          { label: 'Green Home Loans', url: '/green-home-loans' },
+          { label: 'No Deposit Home Loans', url: '/no-deposit-home-loans' },
+          { label: 'Home Equity Loans', url: '/home-equity-loans' },
+        ],
+      },
+      {
+        heading: 'Home Loans For',
+        links: [
+          { label: 'Home Loans For Doctors', url: '/home-loans-for-doctors' },
+          { label: 'Self-Employed Home Loans', url: '/self-employed-home-loans' },
+          { label: 'Home Loans For Nurses', url: '/home-loans-for-nurses' },
+          { label: 'Home Loans For Accountants', url: '/home-loans-for-accountants' },
+        ],
+      },
+    ],
+  },
+  {
+    label: 'Calculators',
+    type: 'mega',
+    columns: [
+      {
+        heading: 'Calculators',
+        links: [
+          { label: 'Mortgage Calculator', url: '/mortgage-calculator', badge: 'Popular' },
+          { label: 'Deposit Calculator', url: '/deposit-calculator' },
+          { label: 'Mortgage Vs Rent Calculator', url: '/mortgage-vs-rent-calculator' },
+          { label: 'Extra Repayments Calculator', url: '/extra-repayments-calculator' },
+        ],
+      },
+      {
+        heading: '',
+        links: [
+          { label: 'Equity Calculator', url: '/equity-calculator' },
+          { label: 'LMI Calculator', url: '/lmi-calculator' },
+          { label: 'YTD Calculator', url: '/ytd-calculator' },
+          { label: 'LVR Calculator', url: '/lvr-calculator' },
+        ],
+      },
+    ],
+    promo: {
+      title: 'Get A Home Affordability Report',
+      description: 'Calculate Your Mortgage Capacity And Get Personal Mortgage Report For Free',
+      cta: { label: 'Start', url: '/affordability-report' },
+    },
+  },
+  {
+    label: 'Resources',
+    type: 'mega',
+    columns: [
+      {
+        heading: 'Guides',
+        links: [
+          { label: 'First Home Buyers Guide', url: '/first-home-buyers-guide' },
+          { label: 'Refinancing Guide', url: '/refinancing-guide' },
+          { label: 'Renovation Guide', url: '/renovation-guide' },
+          { label: 'Property Investment Guide', url: '/property-investment-guide' },
+        ],
+      },
+      {
+        heading: 'Blog',
+        links: [
+          { label: 'Brisbane Floodwise Property Report', url: '/brisbane-floodwise-property-report' },
+          { label: 'Barefoot Investor Bank Accounts', url: '/barefoot-investor-bank-accounts' },
+          { label: 'Stamp Duty Calculator Queensland', url: '/stamp-duty-calculator-queensland' },
+        ],
+        readMore: { label: 'Read Blog', url: '/blog' },
+      },
+    ],
+    promoImage: {
+      imageUrl: '/images/hecs-debt-home-loan.jpg',
+      title: 'Does HECS Debt Affect Your Home Loan? [And What To Do About It]',
+      url: '/does-hecs-debt-affect-your-home-loan',
+    },
+  },
+  {
+    label: 'Contact',
+    url: '/contact',
+  },
+  {
+    label: 'About Us',
+    type: 'mega',
+    columns: [
+      {
+        heading: 'About Us',
+        links: [
+          { label: 'Mortgage Broker Brisbane', url: '/mortgage-broker-brisbane' },
+          { label: 'What We Do', url: '/what-we-do' },
+          { label: 'Who We Help', url: '/who-we-help' },
+          { label: 'Our Team', url: '/our-team' },
+        ],
+      },
+    ],
+  },
+];
+---
+
+<header class="hg-header" id="header">
+  <Container>
+    <nav class="hg-nav">
+      <Logo size="header" />
+      <ul class="hg-nav-menu">
+        {menuItems.map((item) => (
+          <NavItem hasDropdown={item.type === 'mega'}>
+            <NavLink 
+              href={item.url || '#'} 
+              hasDropdown={item.type === 'mega'}
+              showChevron={item.type === 'mega'}
+              chevronDirection="down"
+            >
+              {item.label}
+            </NavLink>
+            {item.type === 'mega' && (
+              <NavDropdown
+                columns={item.columns}
+                promo={item.promo}
+                promoImage={item.promoImage}
+              />
+            )}
+          </NavItem>
+        ))}
+      </ul>
+      <div class="hg-nav-actions">
+        <button class="hg-search-toggle" aria-label="Search">
+          <Icon name="search" size="sm" color="inherit" />
+        </button>
+        <PhoneLink />
+        <Button text="Get Free Assessment" variant="primary" size="md" class="hg-header-cta" />
+        <button id="mobile-menu-toggle" class="hg-mobile-toggle" aria-label="Menu">
+          <Icon name="menu" size="md" color="inherit" />
+        </button>
+      </div>
+    </nav>
+  </Container>
+  <div class="hg-search-form" id="search-form">
+    <Container>
+      <form class="hg-search-form__inner">
+        <Input 
+          type="search" 
+          placeholder="Search..." 
+          name="search"
+          class="hg-search-input"
+        />
+        <button type="button" class="hg-search-close" aria-label="Close search">
+          <Icon name="close" size="sm" color="inherit" />
+        </button>
+      </form>
+    </Container>
+  </div>
+  <div id="mobile-menu" class="hg-mobile-menu">
+    <div class="hg-mobile-menu__header">
+      <button class="hg-mobile-back" style="display: none;" aria-label="Back">
+        <Icon name="arrow-left" size="sm" color="inherit" />
+        <span>Back</span>
+      </button>
+      <span class="hg-mobile-title">Menu</span>
+      <button class="hg-mobile-close" aria-label="Close menu">
+        <Icon name="close" size="md" color="inherit" />
+      </button>
+    </div>
+    <div class="hg-mobile-menu__content">
+      <ul class="hg-mobile-menu-list">
+        {menuItems.map((item) => (
+          <li class="hg-mobile-menu-item">
+            <NavLink 
+              href={item.url || '#'} 
+              showChevron={item.type === 'mega'}
+              chevronDirection="right"
+              class="hg-mobile-menu-link"
+            >
+              {item.label}
+            </NavLink>
+          </li>
+        ))}
+      </ul>
+      <div class="hg-mobile-cta">
+        <Button text="Get a Free Assessment" variant="primary" size="md" class="hg-mobile-cta-button" />
+      </div>
+    </div>
+  </div>
+  <div class="hg-mobile-backdrop" id="mobile-backdrop"></div>
+</header>
+
+<style define:vars={{
+  brandPrimary: semantic.color.brand.primary,
+  textPrimary: semantic.color.text.primary,
+  surfaceWhite: semantic.color.surface.white,
+  surfaceSecondary: semantic.color.surface.secondary,
+  borderPrimary: semantic.color.border.primary,
+  shadowHeader: semantic.shadow.header,
+  shadowHeaderFixed: semantic.shadow.headerFixed,
+  durationNormal: semantic.duration.normal,
+  fontSizeMd: semantic.typography.size.md,
+  fontWeightEmphasis: semantic.typography.weight.emphasis,
+}}>
+/* (Styles identical to legacy header) */
+.hg-header { background-color: var(--surfaceWhite); box-shadow: var(--shadowHeader); position: sticky; top: 0; z-index: 1000; transition: all var(--durationNormal) ease; }
+.hg-header.fixed { box-shadow: var(--shadowHeaderFixed); }
+.hg-nav { display: flex; align-items: center; justify-content: space-between; padding: 30px 0; min-height: 80px; }
+.hg-nav-menu { display: none; list-style: none; margin: 0; padding: 0; align-items: center; gap: 40px; }
+.hg-nav-item { position: relative; }
+.hg-nav-item:hover .hg-dropdown { pointer-events: auto; }
+.hg-nav-link { display: flex; align-items: center; gap: 6px; color: var(--textPrimary); font-weight: 700; font-size: .95rem; text-decoration: none; letter-spacing: -0.02em; transition: color .2s ease; padding: 10px 0; position: relative; }
+.hg-nav-link:hover { color: var(--brandPrimary); }
+.hg-nav-item:hover .hg-nav-link { color: var(--brandPrimary); }
+.hg-nav-link:after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--brandPrimary); transform: scaleX(0); transition: transform .2s ease; }
+.hg-nav-item:hover .hg-nav-link:after { transform: scaleX(1); }
+
+/* Ensure only one dropdown is visible at a time */
+.hg-dropdown { display: none !important; background: var(--color-surface-primary) !important; box-shadow: var(--shadow-lg) !important; }
+
+.hg-dropdown.visible {
+  display: block !important;
+}
+
+/* Prevent dropdown overlap issues */
+.hg-nav-item {
+  z-index: 1001;
+}
+
+.hg-nav-item:hover {
+  z-index: 1002;
+}
+
+/* Ensure dropdowns are properly positioned */
+.hg-nav-item .hg-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: var(--color-surface-primary);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Override any problematic styles that might force visibility */
+.hg-nav-item .hg-dropdown:not(.visible) {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  display: none !important;
+}
+.hg-nav-actions { display: flex; align-items: center; gap: 16px; }
+.hg-search-toggle { background: none; border: none; color: var(--textPrimary); cursor: pointer; padding: 8px; border-radius: 50%; transition: background-color var(--durationNormal) ease; }
+.hg-search-toggle:hover { background-color: var(--surfaceSecondary); }
+.hg-header-cta { display: none; }
+.hg-mobile-toggle { display: none; background: none; border: none; color: var(--textPrimary); cursor: pointer; padding: 8px; font-weight: 600; font-size: 15px; }
+.hg-search-form { position: absolute; top: 100%; left: 0; right: 0; background: var(--surfaceSecondary); padding: 20px 0; transform: translateY(-100%); opacity: 0; visibility: hidden; transition: all .5s ease; z-index: 999; }
+.hg-search-form.visible { transform: translateY(0); opacity: 1; visibility: visible; }
+.hg-search-form__inner { display: flex; align-items: center; gap: 16px; max-width: 600px; margin: 0 auto; }
+.hg-search-input { flex: 1; padding: 12px 20px; border: 1px solid var(--borderPrimary); border-radius: 25px; font-size: 15px; outline: none; }
+.hg-search-close { background: none; border: none; cursor: pointer; padding: 8px; color: var(--textPrimary); }
+.hg-mobile-menu { position: fixed; top: 0; right: 0; width: 100%; max-width: 400px; height: 100vh; background: var(--surfaceWhite); transform: translateX(100%); transition: transform .35s ease; z-index: 1001; overflow-y: auto; }
+.hg-mobile-menu.visible { transform: translateX(0); }
+.hg-mobile-menu__header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--borderPrimary); min-height: 70px; }
+.hg-mobile-title { font-weight: 600; font-size: 18px; color: var(--textPrimary); }
+.hg-mobile-back, .hg-mobile-close { background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 15px; color: var(--textPrimary); padding: 8px; }
+.hg-mobile-menu__content { padding: 24px; }
+.hg-mobile-menu-list { list-style: none; margin: 0; padding: 0; }
+.hg-mobile-menu-item { border-bottom: 1px solid var(--borderPrimary); }
+.hg-mobile-menu-item:last-child { border-bottom: none; }
+.hg-mobile-menu-link { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; color: var(--textPrimary); font-weight: 600; font-size: 15px; text-decoration: none; transition: color var(--durationNormal) ease; }
+.hg-mobile-menu-link:hover { color: var(--brandPrimary); }
+.hg-mobile-cta { margin-top: 30px; padding-top: 30px; border-top: 1px solid var(--borderPrimary); }
+.hg-mobile-cta-button { width: 100%; justify-content: center; }
+@media (min-width: 992px) { .hg-nav-menu { display: flex; } .hg-mobile-toggle { display: none; } .hg-nav { padding: 30px 0; } }
+@media (max-width: 992px) { .hg-mobile-toggle { display: block; } .hg-nav { padding: 13px 0; min-height: 57px; } .hg-header { position: fixed; } }
+@media (min-width: 1200px) { .hg-header-cta { display: block; } }
+@media (max-width: 1250px) { .hg-nav-actions { gap: 12px; } }
+@media (max-width: 782px) { .admin-bar .hg-header.fixed { top: 46px; } }
+@media (min-width: 783px) { .admin-bar .hg-header.fixed { top: 32px; } }
+</style>
+
+<script>
+// Legacy header behavior
+const header = document.getElementById('header');
+const mobileToggle = document.getElementById('mobile-menu-toggle');
+const mobileMenu = document.getElementById('mobile-menu');
+const mobileBackdrop = document.getElementById('mobile-backdrop');
+const searchToggle = document.querySelector('.hg-search-toggle');
+const searchForm = document.getElementById('search-form');
+const searchClose = document.querySelector('.hg-search-close');
+const mobileClose = document.querySelector('.hg-mobile-close');
+
+let ticking = false;
+function updateHeader() { if (window.scrollY > 20) header?.classList.add('fixed'); else header?.classList.remove('fixed'); ticking = false; }
+function requestTick() { if (!ticking) { requestAnimationFrame(updateHeader); ticking = true; } }
+window.addEventListener('scroll', requestTick);
+
+function openMobileMenu() { mobileMenu?.classList.add('visible'); mobileBackdrop?.classList.add('visible'); document.body.style.overflow = 'hidden'; }
+function closeMobileMenu() { mobileMenu?.classList.remove('visible'); mobileBackdrop?.classList.remove('visible'); document.body.style.overflow = ''; }
+mobileToggle?.addEventListener('click', openMobileMenu);
+mobileClose?.addEventListener('click', closeMobileMenu);
+mobileBackdrop?.addEventListener('click', closeMobileMenu);
+
+function toggleSearch() { const isVisible = searchForm?.classList.contains('visible'); if (isVisible) { searchForm?.classList.remove('visible'); } else { searchForm?.classList.add('visible'); setTimeout(() => { const searchInput = document.querySelector('.hg-search-input'); searchInput?.focus(); }, 500); } }
+searchToggle?.addEventListener('click', toggleSearch);
+searchClose?.addEventListener('click', toggleSearch);
+
+const navItems = document.querySelectorAll('.hg-nav-item');
+navItems.forEach(item => {
+  const dropdown = item.querySelector('.hg-dropdown');
+  let dropdownTimeout;
+  if (dropdown) {
+    item.addEventListener('mouseenter', () => { 
+      // Hide all other dropdowns first
+      document.querySelectorAll('.hg-dropdown').forEach(d => {
+        if (d !== dropdown) {
+          d.classList.remove('visible');
+        }
+      });
+      clearTimeout(dropdownTimeout); 
+      dropdown.classList.add('visible'); 
+    });
+    item.addEventListener('mouseleave', () => { 
+      clearTimeout(dropdownTimeout); 
+      dropdownTimeout = setTimeout(() => { 
+        dropdown.classList.remove('visible'); 
+      }, 200); 
+    });
+    dropdown.addEventListener('mouseenter', () => { 
+      clearTimeout(dropdownTimeout); 
+      dropdown.classList.add('visible'); 
+    });
+    dropdown.addEventListener('mouseleave', () => { 
+      clearTimeout(dropdownTimeout); 
+      dropdownTimeout = setTimeout(() => { 
+        dropdown.classList.remove('visible'); 
+      }, 200); 
+    });
+  }
+});
+
+// Ensure all dropdowns are hidden on page load
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.hg-dropdown').forEach(dropdown => {
+    dropdown.classList.remove('visible');
+  });
+});
+
+document.addEventListener('touchmove', (e) => { if (mobileMenu?.classList.contains('visible')) { if (!e.target?.closest('.hg-mobile-menu')) { e.preventDefault(); } } }, { passive: false });
+</script>

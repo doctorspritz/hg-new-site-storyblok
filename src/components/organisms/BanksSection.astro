@@ -1,0 +1,89 @@
+---
+/**
+ * Banks Section Organism
+ * Hunter Galloway Design System - Organism Component
+ *
+ * A section displaying bank/lender logos in a responsive flex layout.
+ * Combines Container atom, Heading atom, and LogoGrid molecule.
+ * Follows the exact structure from Hunter Galloway homepage.
+ */
+
+import Container from '../atoms/Container.astro';
+import LogoGrid from '../molecules/LogoGrid.astro';
+
+export interface BankSpec {
+  /** Bank logo source URL */
+  src: string;
+  /** Alt text for the bank logo */
+  alt: string;
+  /** Bank name for accessibility */
+  bankName?: string;
+  /** Unique identifier for the bank */
+  id?: string | number;
+}
+
+export interface Props {
+  /** Section heading text */
+  heading?: string;
+  /** Array of bank specifications */
+  banks: BankSpec[];
+  /** Background variant */
+  background?: 'white' | 'gray' | 'transparent';
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  heading = 'We offer flexibility and best rates due to the variety of banks & lender networks we work with',
+  banks,
+  background = 'white',
+  class: className = '',
+} = Astro.props;
+
+const sectionClasses = [
+  'hg-banks-section',
+  `hg-banks-section--bg-${background}`,
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+
+// Convert bank specs to logo items for LogoGrid
+const logoItems = banks.map((bank) => ({
+  src: bank.src,
+  alt: bank.alt,
+  href: undefined, // Banks don't have clickable links
+}));
+---
+
+<section class={sectionClasses}>
+  <Container>
+    <LogoGrid
+      title={heading}
+      logos={logoItems}
+      layout="grid"
+      interactive={false}
+      useBankItems={true}
+      class="hg-banks-section-grid"
+    />
+  </Container>
+</section>
+
+<style>
+  .hg-banks-section {
+    padding: var(--space-xl) 0;
+  }
+
+  /* Background variants */
+  .hg-banks-section--bg-white {
+    background-color: var(--color-background-body);
+  }
+
+  .hg-banks-section--bg-gray {
+    background-color: var(--color-surface);
+  }
+
+  .hg-banks-section--bg-transparent {
+    background-color: transparent;
+  }
+</style>

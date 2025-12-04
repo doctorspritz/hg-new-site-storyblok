@@ -1,0 +1,49 @@
+---
+/**
+ * Typography Component
+ * Hunter Galloway Design System - Atomic Component
+ * 
+ * A focused, single-responsibility typography component that ensures
+ * consistent text styling across the application.
+ * 
+ * Atomic Design Principles:
+ * - Single responsibility: Only handles typography styling
+ * - Composable: Can be combined with other atoms
+ * - Reusable: Consistent API across the system
+ * - Token-driven: Uses design system tokens
+ */
+
+import type { TypographyProps } from './Typography.types';
+import './Typography.css';
+
+interface Props extends TypographyProps {}
+
+const {
+  element = 'p',
+  size = 'md',
+  color = 'primary',
+  align = 'left',
+  weight = 'body',
+  noWrap = false,
+  class: additionalClasses = '',
+} = Astro.props;
+
+// Build BEM-style CSS classes for atomic design
+const sizeClass = size === '4.5xl' ? '4_5xl' : size;
+const textClasses = [
+  'hg-typography',
+  `hg-typography--${sizeClass}`,
+  `hg-typography--${weight}`,
+  `hg-typography--${color}`,
+  `hg-typography--${align}`,
+  noWrap && 'hg-typography--nowrap',
+  additionalClasses,
+].filter(Boolean).join(' ');
+
+// Dynamic component rendering for semantic HTML
+const Element = element;
+---
+
+<Element class={textClasses}>
+  <slot />
+</Element>

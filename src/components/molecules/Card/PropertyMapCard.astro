@@ -1,0 +1,113 @@
+---
+/**
+ * Molecule: PropertyMapCard
+ * A specialized card component for property mapping features.
+ * Combines Card molecule with specific atomic components for property information.
+ */
+import Card from './Card.astro';
+import Heading from '../../atoms/Heading.astro';
+import Paragraph from '../../atoms/Paragraph.astro';
+import FeatureItemGroup from '../FeatureItemGroup.astro';
+import Button from '../../atoms/Button.astro';
+import type { FeatureOption } from '../FeatureItemGroup.astro';
+
+export interface Props {
+  /** Card title */
+  title?: string;
+  /** Card description */
+  description?: string;
+  /** List of property features to display */
+  features?: FeatureOption[];
+  /** Button text */
+  buttonText?: string;
+  /** Button link URL */
+  buttonHref?: string;
+  /** Background image source */
+  backgroundImage?: string;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  title = 'Looking for property in Brisbane?',
+  description = 'Compare where to live, invest and buy in 2024 on our interactive map',
+  features = [
+    { id: 'housing-prices', text: 'Housing prices in the area' },
+    { id: 'transport', text: 'Distance to the nearest public transport' },
+    { id: 'schools', text: 'Overview of schools' },
+    { id: 'amenities', text: 'Availability of green zones and cafes/bars' },
+  ],
+  buttonText = 'Explore map',
+  buttonHref = '#',
+  backgroundImage = '/assets/images/to-map.svg',
+  class: className = '',
+} = Astro.props;
+---
+
+<Card
+  variant="elevated"
+  colorVariant="gray"
+  backgroundImage={backgroundImage}
+  backgroundImageAlt="Interactive property map"
+  backgroundImageVariant="mobile-fullscreen"
+  class:list={['hg-PropertyMapCard', className]}
+>
+  <div class="property-map-content">
+    <Heading level={2} size="fluid-3xl" color="default">
+      {title}
+    </Heading>
+
+    <Paragraph size="md" color="body" class="description">
+      {description}
+    </Paragraph>
+
+    <FeatureItemGroup features={features} class="features-list" />
+
+    <Button
+      href={buttonHref}
+      variant="primary"
+      size="wide"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="explore-button"
+    >
+      {buttonText}
+    </Button>
+  </div>
+</Card>
+
+<style>
+  .hg-PropertyMapCard {
+    margin: var(--space-xl) 0;
+  }
+
+  .property-map-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .description {
+    margin-bottom: var(--space-sm);
+  }
+
+  .features-list {
+    margin-bottom: var(--space-md);
+  }
+
+  .explore-button {
+    align-self: flex-start;
+    margin-top: var(--space-sm);
+  }
+
+  /* Mobile-specific styles */
+  @media (--bp-md) {
+    .hg-PropertyMapCard {
+      margin: var(--space-lg) 0;
+    }
+
+    .property-map-content {
+      gap: var(--space-md);
+    }
+  }
+</style>

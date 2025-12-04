@@ -1,0 +1,55 @@
+---
+/**
+ * Molecule: FeatureCard (scaffold)
+ * Icon + heading + short copy. Variants: elevated | outlined.
+ */
+import Card from './Card.astro';
+import Icon from '../../atoms/Icon.astro';
+
+interface Props {
+  icon?: string;
+  title: string;
+  description?: string;
+  href?: string;
+  variant?: 'elevated' | 'outlined' | 'default';
+  class?: string;
+}
+
+const {
+  icon,
+  title,
+  description,
+  href,
+  variant = 'default',
+  class: className = '',
+} = Astro.props as Props;
+---
+
+<Card class:list={[`hg-FeatureCard`, `variant-${variant}`, className]}>
+  {
+    icon && (
+      <div class="icon">
+        <Icon name={icon} />
+      </div>
+    )
+  }
+  <h3 class="title">{href ? <a href={href}>{title}</a> : title}</h3>
+  {description && <p class="desc">{description}</p>}
+</Card>
+
+<style>
+  .hg-FeatureCard .icon {
+    color: var(--color-text-link);
+    margin-bottom: var(--space-sm);
+  }
+
+  .hg-FeatureCard .title {
+    margin: 0 0 var(--space-xs);
+    color: var(--color-text-heading);
+  }
+
+  .hg-FeatureCard .desc {
+    margin: 0;
+    color: var(--color-text-body);
+  }
+</style>

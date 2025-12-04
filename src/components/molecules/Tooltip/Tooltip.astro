@@ -1,0 +1,195 @@
+---
+/**
+ * Tooltip Component
+ * Hunter Galloway Design System - Molecular Component
+ * 
+ * A flexible tooltip component that can wrap any content and show helpful information on hover.
+ * Used throughout the application for providing additional context.
+ */
+
+import type { TooltipProps } from './Tooltip.types';
+
+interface Props extends TooltipProps {}
+
+const {
+  content,
+  position = 'top',
+  size = 'md',
+  visible = false,
+  delay = 200,
+  class: additionalClasses = '',
+} = Astro.props;
+
+// Position configurations
+const positionConfigs = {
+  top: {
+    tooltip: 'bottom-full left-1/2 transform -translate-x-1/2 mb-2',
+    arrow: 'top-full left-1/2 transform -translate-x-1/2 border-t-tooltip-bg border-4 border-transparent',
+  },
+  bottom: {
+    tooltip: 'top-full left-1/2 transform -translate-x-1/2 mt-2',
+    arrow: 'bottom-full left-1/2 transform -translate-x-1/2 border-b-tooltip-bg border-4 border-transparent',
+  },
+  left: {
+    tooltip: 'right-full top-1/2 transform -translate-y-1/2 mr-2',
+    arrow: 'left-full top-1/2 transform -translate-y-1/2 border-l-tooltip-bg border-4 border-transparent',
+  },
+  right: {
+    tooltip: 'left-full top-1/2 transform -translate-y-1/2 ml-2',
+    arrow: 'right-full top-1/2 transform -translate-y-1/2 border-r-tooltip-bg border-4 border-transparent',
+  },
+};
+
+// Size configurations
+const sizeClasses = {
+  sm: 'px-2 py-1 text-xs max-w-48',
+  md: 'px-3 py-2 text-sm max-w-64',
+  lg: 'px-4 py-3 text-base max-w-80',
+};
+
+// Build CSS classes
+const tooltipClasses = [
+  'hg-tooltip',
+  'absolute',
+  'bg-tooltip-bg',
+  'text-tooltip-text',
+  'rounded-sm',
+  'whitespace-nowrap',
+  'pointer-events-none',
+  'z-tooltip',
+  'transition-all duration-normal',
+  visible ? 'opacity-100 visible' : 'opacity-0 invisible',
+  positionConfigs[position].tooltip,
+  sizeClasses[size],
+  additionalClasses,
+].filter(Boolean).join(' ');
+
+const arrowClasses = [
+  'hg-tooltip-arrow',
+  'absolute',
+  positionConfigs[position].arrow,
+].join(' ');
+---
+
+<div class="hg-tooltip-wrapper relative inline-block" data-tooltip-delay={delay}>
+  <!-- Trigger Content (slotted) -->
+  <div class="hg-tooltip-trigger">
+    <slot />
+  </div>
+  
+  <!-- Tooltip -->
+  <div 
+    class={tooltipClasses}
+    role="tooltip"
+    aria-hidden={!visible}
+  >
+    {content}
+    <!-- Tooltip Arrow -->
+    <div class={arrowClasses}></div>
+  </div>
+</div>
+
+<style>
+/* Tooltip component styles */
+.hg-tooltip-wrapper {
+  /* Ensure proper stacking context */
+  position: relative;
+}
+
+.hg-tooltip-trigger {
+  /* Make trigger focusable for keyboard accessibility */
+  cursor: help;
+}
+
+.hg-tooltip {
+  /* Use design token colors */
+  background-color: var(--hg-tooltip-bg);
+  color: var(--hg-tooltip-text);
+  z-index: var(--hg-z-tooltip);
+  
+  /* Enhanced shadow */
+  box-shadow: var(--hg-shadow-tooltip);
+  
+  /* Smooth transitions */
+  transition: opacity var(--hg-transition-normal), visibility var(--hg-transition-normal);
+}
+
+/* Hover and focus states */
+.hg-tooltip-wrapper:hover .hg-tooltip,
+.hg-tooltip-wrapper:focus-within .hg-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Arrow styling using design tokens */
+.hg-tooltip-arrow {
+  border-color: transparent;
+}
+
+/* Position-specific arrow colors */
+[data-position="top"] .hg-tooltip-arrow {
+  border-top-color: var(--hg-tooltip-bg);
+}
+
+[data-position="bottom"] .hg-tooltip-arrow {
+  border-bottom-color: var(--hg-tooltip-bg);
+}
+
+[data-position="left"] .hg-tooltip-arrow {
+  border-left-color: var(--hg-tooltip-bg);
+}
+
+[data-position="right"] .hg-tooltip-arrow {
+  border-right-color: var(--hg-tooltip-bg);
+}
+</style>
+
+<script>
+// Tooltip functionality with delay and accessibility
+document.addEventListener('DOMContentLoaded', () => {
+  const tooltipWrappers = document.querySelectorAll('.hg-tooltip-wrapper');
+  
+  tooltipWrappers.forEach(wrapper => {
+    const tooltip = wrapper.querySelector('.hg-tooltip');
+    const trigger = wrapper.querySelector('.hg-tooltip-trigger');
+    const delay = parseInt(wrapper.getAttribute('data-tooltip-delay') || '200');
+    
+    let showTimeout: number;
+    let hideTimeout: number;
+    
+    // Show tooltip with delay
+    const showTooltip = () => {
+      clearTimeout(hideTimeout);
+      showTimeout = window.setTimeout(() => {
+        tooltip?.classList.remove('opacity-0', 'invisible');
+        tooltip?.classList.add('opacity-100', 'visible');
+        tooltip?.setAttribute('aria-hidden', 'false');
+      }, delay);
+    };
+    
+    // Hide tooltip immediately
+    const hideTooltip = () => {
+      clearTimeout(showTimeout);
+      hideTimeout = window.setTimeout(() => {
+        tooltip?.classList.remove('opacity-100', 'visible');
+        tooltip?.classList.add('opacity-0', 'invisible');
+        tooltip?.setAttribute('aria-hidden', 'true');
+      }, 50);
+    };
+    
+    // Mouse events
+    wrapper.addEventListener('mouseenter', showTooltip);
+    wrapper.addEventListener('mouseleave', hideTooltip);
+    
+    // Keyboard accessibility
+    trigger?.addEventListener('focus', showTooltip);
+    trigger?.addEventListener('blur', hideTooltip);
+    
+    // Touch events for mobile
+    wrapper.addEventListener('touchstart', showTooltip);
+    wrapper.addEventListener('touchend', () => {
+      setTimeout(hideTooltip, 2000); // Auto-hide on mobile after 2s
+    });
+  });
+});
+</script>

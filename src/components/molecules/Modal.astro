@@ -1,0 +1,379 @@
+---
+export interface Props {
+  id: string;
+  title?: string;
+  open?: boolean;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  closeOnBackdrop?: boolean;
+  closeOnEscape?: boolean;
+  showCloseButton?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  title,
+  open = false,
+  size = 'md',
+  closeOnBackdrop = true,
+  closeOnEscape = true,
+  showCloseButton = true,
+  class: className,
+  ...attrs
+} = Astro.props;
+
+const sizeClasses = {
+  sm: 'modal-sm',
+  md: 'modal-md',
+  lg: 'modal-lg',
+  xl: 'modal-xl',
+  full: 'modal-full',
+};
+---
+
+<div
+  class:list={['modal', { 'modal-open': open }, className]}
+  id={id}
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby={title ? `${id}-title` : undefined}
+  data-close-on-backdrop={closeOnBackdrop}
+  data-close-on-escape={closeOnEscape}
+  {...attrs}
+>
+  <div class="modal-backdrop" aria-hidden="true"></div>
+  <div class:list={['modal-dialog', sizeClasses[size]]}>
+    <div class="modal-content">
+      {
+        title && (
+          <div class="modal-header">
+            <h2 id={`${id}-title`} class="modal-title">
+              {title}
+            </h2>
+            {showCloseButton && (
+              <button
+                type="button"
+                class="modal-close"
+                aria-label="Close modal"
+                data-modal-close
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            )}
+          </div>
+        )
+      }
+      <div class="modal-body">
+        <slot />
+      </div>
+      <slot name="footer">
+        <div class="modal-footer">
+          <slot name="actions" />
+        </div>
+      </slot>
+    </div>
+  </div>
+</div>
+
+<style>
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-index-modal);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg);
+    overflow-y: auto;
+  }
+
+  .modal-open {
+    display: flex;
+  }
+
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: var(--color-overlay-subtle);
+    backdrop-filter: blur(var(--blur-overlay-subtle));
+    animation: fade-in 0.2s ease-out;
+  }
+
+  .modal-dialog {
+    position: relative;
+    width: 100%;
+    max-height: calc(100vh - var(--space-xl) * 2);
+    margin: auto;
+    animation: slide-in 0.3s ease-out;
+  }
+
+  .modal-sm {
+    max-width: var(--size-container-modal-sm);
+  }
+
+  .modal-md {
+    max-width: var(--size-container-modal-md);
+  }
+
+  .modal-lg {
+    max-width: var(--size-container-modal-lg);
+  }
+
+  .modal-xl {
+    max-width: var(--size-container-wide);
+  }
+
+  .modal-full {
+    max-width: calc(100vw - var(--space-xl) * 2);
+    height: calc(100vh - var(--space-xl) * 2);
+  }
+
+  .modal-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-height: inherit;
+    background-color: var(--color-background-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg);
+    border-bottom: var(--border-width-sm) solid var(--color-border-subtle);
+  }
+
+  .modal-title {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-heading);
+  }
+
+  .modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--space-xl);
+    height: var(--space-xl);
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    transition: all var(--transition-duration-base);
+  }
+
+  .modal-close:hover {
+    background-color: var(--color-surface);
+    color: var(--color-text-body);
+  }
+
+  .modal-close:focus-visible {
+    outline: var(--outline-width-md) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--space-2xs);
+  }
+
+  .modal-body {
+    flex: 1;
+    padding: var(--space-lg);
+    overflow-y: auto;
+  }
+
+  .modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    border-top: var(--border-width-sm) solid var(--color-border-subtle);
+  }
+
+  .modal-footer:empty {
+    display: none;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-in {
+    from {
+      transform: translateY(calc(var(--transform-modal-entrance) * -1));
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @media (--bp-sm) {
+    .modal {
+      padding: var(--space-md);
+    }
+
+    .modal-dialog {
+      max-height: calc(100vh - var(--space-md) * 2);
+    }
+
+    .modal-full {
+      max-width: calc(100vw - var(--space-md) * 2);
+      height: calc(100vh - var(--space-md) * 2);
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+      padding: var(--space-md);
+    }
+  }
+</style>
+
+<script>
+  class ModalController {
+    constructor() {
+      this.init();
+    }
+
+    init() {
+      // Handle modal triggers
+      document.addEventListener('click', (e) => {
+        const trigger = (e.target as HTMLElement).closest(
+          '[data-modal-trigger]',
+        );
+        if (trigger) {
+          const modalId = trigger.getAttribute('data-modal-trigger');
+          if (modalId) {
+            this.openModal(modalId);
+          }
+        }
+
+        // Handle close buttons
+        const closeBtn = (e.target as HTMLElement).closest(
+          '[data-modal-close]',
+        );
+        if (closeBtn) {
+          const modal = closeBtn.closest('.modal');
+          if (modal) {
+            this.closeModal(modal.id);
+          }
+        }
+      });
+
+      // Handle backdrop clicks
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (target.classList.contains('modal-backdrop')) {
+          const modal = target.closest('.modal');
+          if (
+            modal &&
+            modal.getAttribute('data-close-on-backdrop') === 'true'
+          ) {
+            this.closeModal(modal.id);
+          }
+        }
+      });
+
+      // Handle escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          const openModals = document.querySelectorAll('.modal-open');
+          openModals.forEach((modal) => {
+            if (modal.getAttribute('data-close-on-escape') === 'true') {
+              this.closeModal(modal.id);
+            }
+          });
+        }
+      });
+
+      // Handle programmatic open/close
+      window.addEventListener('modal:open', ((e: CustomEvent) => {
+        if (e.detail?.id) {
+          this.openModal(e.detail.id);
+        }
+      }) as EventListener);
+
+      window.addEventListener('modal:close', ((e: CustomEvent) => {
+        if (e.detail?.id) {
+          this.closeModal(e.detail.id);
+        }
+      }) as EventListener);
+    }
+
+    openModal(id: string) {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.add('modal-open');
+        document.body.style.overflow = 'hidden';
+
+        // Focus management
+        const focusableElements = modal.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        );
+        if (focusableElements.length > 0) {
+          (focusableElements[0] as HTMLElement).focus();
+        }
+
+        // Dispatch event
+        window.dispatchEvent(
+          new CustomEvent('modal:opened', { detail: { id } }),
+        );
+      }
+    }
+
+    closeModal(id: string) {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.remove('modal-open');
+        document.body.style.overflow = '';
+
+        // Return focus to trigger if exists
+        const trigger = document.querySelector(
+          `[data-modal-trigger="${id}"]`,
+        ) as HTMLElement;
+        if (trigger) {
+          trigger.focus();
+        }
+
+        // Dispatch event
+        window.dispatchEvent(
+          new CustomEvent('modal:closed', { detail: { id } }),
+        );
+      }
+    }
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new ModalController());
+  } else {
+    new ModalController();
+  }
+</script>

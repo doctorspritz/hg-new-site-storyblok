@@ -1,0 +1,99 @@
+---
+/**
+ * Molecule: FormField
+ * Generic field wrapper that renders a label, a slotted control, and helper/error text.
+ */
+import Label from '../atoms/Label.astro';
+
+interface Props {
+  id?: string;
+  label?: string;
+  required?: boolean;
+  helper?: string;
+  error?: string;
+  orientation?: 'vertical' | 'horizontal';
+}
+
+const {
+  id,
+  label,
+  required = false,
+  helper,
+  error,
+  orientation = 'vertical',
+} = Astro.props as Props;
+
+const describedById = helper
+  ? `${id}-helper`
+  : error
+    ? `${id}-error`
+    : undefined;
+---
+
+<div
+  class:list={[
+    'hg-FormField',
+    `orientation-${orientation}`,
+    { 'is-invalid': !!error },
+  ]}
+>
+  {
+    label && (
+      <div class="field-label">
+        <Label forId={id} text={label} required={required} />
+      </div>
+    )
+  }
+  <div class="field-control" aria-describedby={describedById}>
+    <slot />
+  </div>
+  {
+    helper && !error && (
+      <div id={`${id}-helper`} class="field-helper" role="note">
+        {helper}
+      </div>
+    )
+  }
+  {
+    error && (
+      <div id={`${id}-error`} class="field-error" role="alert">
+        {error}
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .hg-FormField {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .orientation-horizontal {
+    grid-template-columns: minmax(var(--control-minwidth-button), 1fr) 2fr;
+    align-items: center;
+  }
+
+  .field-label {
+    color: var(--color-text-heading);
+  }
+
+  .orientation-horizontal .field-label {
+    align-self: start;
+    padding-top: var(--space-2xs);
+  }
+
+  .field-helper {
+    color: var(--color-text-subtle);
+    font-size: var(--font-size-sm);
+  }
+
+  .field-error {
+    color: var(--color-feedback-error);
+    font-size: var(--font-size-sm);
+  }
+
+  .is-invalid .field-label {
+    color: var(--color-feedback-error);
+  }
+</style>

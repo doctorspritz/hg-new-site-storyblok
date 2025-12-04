@@ -1,0 +1,280 @@
+---
+import Heading from '../atoms/Heading.astro';
+import Paragraph from '../atoms/Paragraph.astro';
+import Button from '../atoms/Button.astro';
+import FeatureItem from '../molecules/FeatureItem.astro';
+
+interface Feature {
+  text: string;
+  tooltip?: string;
+  highlightText?: string;
+}
+
+interface CTA {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  label?: string;
+  title: string;
+  subtitle?: string;
+  features?: Feature[];
+  cta?: CTA | null;
+  note?: string;
+  bgDesktop: string; // absolute or relative URL
+  bgMobile?: string; // optional mobile URL
+}
+
+const {
+  label = '',
+  title,
+  subtitle = '',
+  features = [],
+  cta = null,
+  note = '',
+  bgDesktop,
+  bgMobile = '',
+} = Astro.props as Props;
+
+// Emit background URLs as CSS variables; the CSS decides which to use
+const styleVars = [
+  `--bg-desktop: url('${bgDesktop}')`,
+  bgMobile ? `--bg-mobile: url('${bgMobile}')` : '',
+]
+  .filter(Boolean)
+  .join('; ');
+---
+
+<section class="hg-hero" style={styleVars}>
+  <div class="container">
+    <div class="content">
+      {
+        label && (
+          <p class="strapline">
+            <span>{label}</span>
+            <svg
+              class="glow"
+              xmlns="http://www.w3.org/2000/svg"
+              width="116"
+              height="54"
+              viewBox="0 0 116 54"
+              fill="none"
+              aria-hidden="true"
+            >
+              <g filter="url(#f0)">
+                <ellipse cx="58" cy="27" rx="46" ry="15" fill="#00838A" />
+              </g>
+              <defs>
+                <filter
+                  id="f0"
+                  x="0"
+                  y="0"
+                  width="116"
+                  height="54"
+                  filterUnits="userSpaceOnUse"
+                  color-interpolation-filters="sRGB"
+                >
+                  <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                  <feBlend
+                    in="SourceGraphic"
+                    in2="BackgroundImageFix"
+                    result="shape"
+                  />
+                  <feGaussianBlur stdDeviation="6" result="blur" />
+                </filter>
+              </defs>
+            </svg>
+          </p>
+        )
+      }
+
+      <Heading level={1} color="inverse" class="title">{title}</Heading>
+
+      {
+        subtitle && (
+          <Paragraph color="inverse" class="subtitle">
+            {subtitle}
+          </Paragraph>
+        )
+      }
+
+      {(subtitle || features.length) && <hr class="divider" />}
+
+      {
+        features.length > 0 && (
+          <ul class="features" role="list">
+            {features.map((f) => (
+              <li>
+                <FeatureItem
+                  text={f.text}
+                  tooltip={f.tooltip}
+                  highlightText={f.highlightText}
+                  iconSrc="/images/icons/check-circle-amber.svg"
+                  iconAlt=""
+                />
+              </li>
+            ))}
+          </ul>
+        )
+      }
+
+      {
+        cta && (
+          <div class="actions">
+            <Button href={cta.href} variant="primary" size="wide">
+              {cta.label}
+            </Button>
+          </div>
+        )
+      }
+
+      {note && <p class="note">{note}</p>}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* stylelint-disable color-function-alias-notation, color-function-notation, alpha-value-notation, media-feature-range-notation, at-rule-empty-line-before, rule-empty-line-before, comment-empty-line-before, scale-unlimited/declaration-strict-value */
+  .hg-hero {
+    position: relative;
+    isolation: isolate;
+    contain: layout paint;
+    font-family: var(--font-family-base);
+    color: var(--color-text-inverse);
+
+    /* Background layering: teal sweep + image */
+    background-image:
+      linear-gradient(
+        270deg,
+        rgba(48, 147, 152, 0) 40%,
+        rgba(48, 147, 152, 0.7) 60%,
+        rgb(48, 147, 152) 70%
+      ),
+      var(--bg-desktop);
+    background-size: cover, cover;
+    background-position:
+      0% 0%,
+      100% 50%;
+
+    /* Subtle dark veil for readability (no extra overlay by default) */
+    min-height: var(--size-hero-min-height-lg);
+    padding: var(--padding-xl) var(--padding-md);
+  }
+
+  .hg-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.1),
+      rgba(0, 0, 0, 0.1)
+    );
+    z-index: 0;
+  }
+
+  .hg-hero .container {
+    max-width: var(--size-container-wide);
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hg-hero .content {
+    max-width: var(--size-content-max-width-lg);
+  }
+
+  .strapline {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--color-text-inverse);
+    opacity: 0.9;
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .strapline .glow {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .title {
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-fluid-hero-title);
+    font-weight: var(--font-weight-extrabold);
+    line-height: var(--line-height-tight);
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .subtitle {
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-fluid-hero-subtitle);
+    opacity: 0.95;
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .divider {
+    height: 0;
+    border: 0;
+    border-top: 1px dashed rgba(255, 255, 255, 0.5);
+    margin: var(--space-sm) 0 var(--space-md);
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+    margin: 0 0 var(--space-md) 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Ensure feature text is white within the hero */
+  .features .hg-FeatureItem .content {
+    color: var(--color-text-inverse);
+  }
+
+  .actions {
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .note {
+    color: var(--color-text-inverse);
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  /* Tablet min-height parity */
+  @media (min-width: 600px) and (max-width: 1023.98px) {
+    .hg-hero {
+      min-height: var(--size-hero-min-height-xl);
+    }
+  }
+
+  /* Desktop left offset to match WP capture */
+  @media (min-width: 1024px) {
+    .hg-hero {
+      padding-left: var(--padding-2xl);
+    }
+  }
+
+  /* Mobile min-height and background */
+  @media (max-width: 599.98px) {
+    .hg-hero {
+      min-height: var(--size-viewport-height-70);
+      background-image:
+        linear-gradient(
+          270deg,
+          rgba(48, 147, 152, 0) 40%,
+          rgba(48, 147, 152, 0.7) 60%,
+          rgb(48, 147, 152) 70%
+        ),
+        var(--bg-mobile, var(--bg-desktop));
+      background-position:
+        0% 0%,
+        50% 50%;
+    }
+  }
+</style>
+<!-- stylelint-enable color-function-alias-notation, color-function-notation, alpha-value-notation, media-feature-range-notation, at-rule-empty-line-before, rule-empty-line-before, comment-empty-line-before, scale-unlimited/declaration-strict-value -->

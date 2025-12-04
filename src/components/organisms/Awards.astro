@@ -1,0 +1,108 @@
+---
+/**
+ * Awards Organism
+ * Hunter Galloway Design System - Organism Component
+ * 
+ * Composes Container atom and AwardItem molecules to create
+ * an awards showcase section with proper spacing.
+ */
+import Container from '../atoms/Container/Container.astro';
+import AwardItem from '../molecules/AwardItem/AwardItem.astro';
+import { component } from '../../tokens/component';
+
+const awards = [
+  {
+    id: '1',
+    image: '/images/2019_001.png',
+    alt: 'FBAA Award 2019',
+    tooltip: 'FBAA Broker of the Year in 2019'
+  },
+  {
+    id: '2', 
+    image: '/images/2019_002.png',
+    alt: 'FBAA Award 2019',
+    tooltip: 'FBAA Broker of the Year in 2019'
+  },
+  {
+    id: '3',
+    image: 'https://www.huntergalloway.com.au/wp-content/uploads/2024/12/2024-qld-nt-broker-of-the-year-hunter-galloway.png',
+    alt: 'EA Award 2024',
+    tooltip: 'EA Broker of the Year in 2024'
+  },
+  {
+    id: '4',
+    image: 'https://www.huntergalloway.com.au/wp-content/uploads/2024/12/QLD-NT-brokerage-of-the-year-under-5-brokers-hunter-galloway.png', 
+    alt: 'EA Brokerage Award 2024',
+    tooltip: 'EA Brokerage of the Year ≤ 5 Brokers in 2024'
+  },
+  {
+    id: '5',
+    image: '/images/awards/Mortgage-Broker-Brisbane-Hunter-Galloway-Award-2024.webp',
+    alt: 'ThreeBest Award 2024',
+    tooltip: 'ThreeBest Best Business of 2024'
+  },
+  {
+    id: '6',
+    image: '/images/best-mortgage-broker-2019.png',
+    alt: 'TheAdviser Award 2019',
+    tooltip: 'TheAdviser TOP 25 Brokerage 2019'
+  }
+];
+---
+
+<section class="hg-awards-section">
+  <Container>
+    <div class="hg-awards-grid">
+      {awards.map((award) => (
+        <AwardItem
+          id={award.id}
+          image={award.image}
+          alt={award.alt}
+          tooltip={award.tooltip}
+          size="md"
+        />
+      ))}
+    </div>
+  </Container>
+</section>
+
+<style define:vars={{
+  backgroundColor: component.awards.colors.background,
+  paddingY: component.awards.spacing.paddingY,
+  paddingYMobile: component.awards.spacing.paddingYMobile,
+  gap: component.awards.layout.gap,
+  gapTablet: component.awards.layout.gapTablet,
+  gapMobile: component.awards.layout.gapMobile,
+  maxWidth: component.awards.layout.maxWidth,
+}}>
+.hg-awards-section {
+  padding: var(--paddingY) 0;
+  background: var(--backgroundColor);
+}
+
+.hg-awards-grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--gap);
+  flex-wrap: wrap;
+  max-width: var(--maxWidth);
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .hg-awards-grid {
+    gap: var(--gapTablet);
+  }
+}
+
+@media (max-width: 768px) {
+  .hg-awards-section {
+    padding: var(--paddingYMobile) 0;
+  }
+  
+  .hg-awards-grid {
+    gap: var(--gapMobile);
+  }
+}
+</style>

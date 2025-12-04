@@ -1,0 +1,104 @@
+---
+/**
+ * Atom: Avatar
+ * Displays a user image or initials fallback. Token-driven sizes and shapes.
+ */
+interface Props {
+  src?: string;
+  alt?: string;
+  name?: string; // used to derive initials
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  shape?: 'circle' | 'square';
+  class?: string;
+}
+
+const {
+  src,
+  alt = '',
+  name = '',
+  size = 'md',
+  shape = 'circle',
+  class: className = '',
+} = Astro.props as Props;
+
+function getInitials(fullName: string): string {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '';
+  const first = parts[0]?.[0] ?? '';
+  const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? '') : '';
+  return (first + last).toUpperCase();
+}
+
+const initials = src ? '' : getInitials(name);
+---
+
+<div
+  class:list={['hg-Avatar', `size-${size}`, `shape-${shape}`, className]}
+  aria-label={alt || name}
+>
+  {
+    src ? (
+      <img src={src} alt={alt || name} />
+    ) : (
+      <span class="initials">{initials}</span>
+    )
+  }
+</div>
+
+<style>
+  .hg-Avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-background-surface);
+    color: var(--color-text-heading);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+    overflow: hidden;
+  }
+
+  .hg-Avatar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .initials {
+    font-weight: var(--font-weight-bold);
+  }
+
+  /* Sizes */
+  .hg-Avatar.size-sm {
+    width: var(--size-icon-sm);
+    height: var(--size-icon-sm);
+    font-size: var(--font-size-sm);
+  }
+
+  .hg-Avatar.size-md {
+    width: var(--size-icon-md);
+    height: var(--size-icon-md);
+    font-size: var(--font-size-md);
+  }
+
+  .hg-Avatar.size-lg {
+    width: var(--size-icon-lg);
+    height: var(--size-icon-lg);
+    font-size: var(--font-size-lg);
+  }
+
+  .hg-Avatar.size-xl {
+    width: var(--size-icon-lg);
+    height: var(--size-icon-lg);
+    font-size: var(--font-size-xl);
+  }
+
+  /* Shapes */
+  .hg-Avatar.shape-circle {
+    border-radius: var(--radius-pill);
+  }
+
+  .hg-Avatar.shape-square {
+    border-radius: var(--radius-md);
+  }
+</style>

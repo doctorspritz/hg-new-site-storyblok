@@ -1,0 +1,80 @@
+---
+/**
+ * Molecule: MediaObject
+ * Displays an image alongside textual content.
+ * Combines Image, Heading, and Paragraph atoms.
+ *
+ * Layout: [image] text
+ * States: default, orientation right
+ * Accessibility: requires meaningful alt text for the image
+ */
+import Image from '../atoms/Image.astro';
+import Heading from '../atoms/Heading.astro';
+import Paragraph from '../atoms/Paragraph.astro';
+
+interface Props {
+  /** Image source URL */
+  imageSrc: string;
+  /** Image alt text */
+  imageAlt: string;
+  /** Heading text */
+  heading: string;
+  /** Semantic heading level */
+  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
+  /** Paragraph text */
+  body: string;
+  /** Image position */
+  orientation?: 'left' | 'right';
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  imageSrc,
+  imageAlt,
+  heading,
+  headingLevel = 3,
+  body,
+  orientation = 'left',
+  class: className = '',
+} = Astro.props as Props;
+---
+
+<div class:list={['hg-MediaObject', `orientation-${orientation}`, className]}>
+  <div class="media">
+    <Image src={imageSrc} alt={imageAlt} class="media-image" />
+  </div>
+  <div class="content">
+    <Heading level={headingLevel} class="media-heading">{heading}</Heading>
+    <Paragraph class="media-body">{body}</Paragraph>
+  </div>
+</div>
+
+<style>
+  .hg-MediaObject {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+
+  .hg-MediaObject.orientation-right {
+    flex-direction: row-reverse;
+  }
+
+  .media {
+    flex-shrink: 0;
+  }
+
+  .media-image {
+    width: calc(var(--space-xl) * 2);
+    height: calc(var(--space-xl) * 2);
+    border-radius: var(--radius-md);
+    object-fit: cover;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+</style>

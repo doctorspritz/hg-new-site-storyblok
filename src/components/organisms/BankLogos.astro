@@ -1,0 +1,119 @@
+---
+/**
+ * BankLogos Organism
+ * Hunter Galloway Design System - Organism Component
+ * 
+ * Composes Container, Typography atoms and BankLogo molecules to create
+ * a lender network showcase section.
+ */
+
+import type { BankData } from '../molecules/BankLogo/BankLogo.types';
+import Container from '../atoms/Container/Container.astro';
+import Typography from '../atoms/Typography/Typography.astro';
+import BankLogo from '../molecules/BankLogo/BankLogo.astro';
+import { component } from '../../tokens/component';
+
+interface Props {
+  /** Custom title for the section */
+  title?: string;
+  /** Array of bank data */
+  banks?: BankData[];
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  title = "We offer flexibility and best rates due to the variety of banks & lender networks we work with",
+  banks = [
+    { src: '/images/logos/fm.svg', alt: 'FM' },
+    { src: '/images/logos/bw.svg', alt: 'BW' },
+    { src: '/images/logos/teachers-mutual-bank.png', alt: 'Teachers Mutual Bank' },
+    { src: '/images/logos/westpac_logo.svg', alt: 'Westpac' },
+    { src: '/images/logos/george.svg', alt: 'George' },
+    { src: '/images/logos/macq_logo.png', alt: 'Macquarie Bank', class: 'icon_macq_logo' },
+    { src: '/images/logos/mebank.jpg', alt: 'ME Bank' },
+    { src: '/images/logos/nab.svg', alt: 'NAB' },
+    { src: '/images/logos/ing.svg', alt: 'ING' },
+    { src: '/images/logos/suncorp.svg', alt: 'Suncorp' },
+    { src: '/images/logos/anz.svg', alt: 'ANZ' },
+    { src: 'https://assets-global.website-files.com/6136b19c6ce8df83584ee2cf/6147e7a162f7c8729cdffb97_bank-of-queensland-limited-boq-vector-logo%20copy-2.png', alt: 'Bank of Queensland' },
+    { src: '/images/logos/cb.svg', alt: 'CB' },
+    { src: 'https://www.auswidebank.com.au/Client_Theme/imgs/auswide-bank-logo.png', alt: 'Auswide Bank' }
+  ],
+  class: additionalClasses = '',
+} = Astro.props;
+
+// Build CSS classes
+const sectionClasses = [
+  'hg-bank-logos',
+  additionalClasses,
+].filter(Boolean).join(' ');
+---
+
+<section class={sectionClasses}>
+  <Container>
+    <div class="hg-bank-logos__content">
+      <Typography 
+        element="h2" 
+        size="2xl" 
+        weight="heading" 
+        class="hg-bank-logos__title"
+      >
+        <Fragment set:html={title} />
+      </Typography>
+      
+      <div class="hg-bank-logos__grid">
+        {banks.map((bank) => (
+          <BankLogo 
+            src={bank.src}
+            alt={bank.alt}
+            class={bank.class}
+          />
+        ))}
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style define:vars={{
+  backgroundColor: component.bankLogos.colors.background,
+  paddingY: component.bankLogos.spacing.paddingY,
+  titleMarginBottom: component.bankLogos.spacing.titleMarginBottom,
+  titleMaxWidth: component.bankLogos.title.maxWidth,
+  gridMaxWidth: component.bankLogos.layout.maxWidth,
+  gridGap: component.bankLogos.layout.gap,
+  gridGapMobile: component.bankLogos.layout.gapMobile,
+}}>
+.hg-bank-logos {
+  padding: var(--paddingY) 0;
+  background: var(--backgroundColor);
+}
+
+.hg-bank-logos__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hg-bank-logos__title {
+  margin-bottom: var(--titleMarginBottom) !important;
+  max-width: var(--titleMaxWidth);
+  text-align: center;
+}
+
+.hg-bank-logos__grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--gridGap);
+  max-width: var(--gridMaxWidth);
+  margin: var(--titleMarginBottom) auto 0 auto;
+}
+
+@media (max-width: 768px) {
+  .hg-bank-logos__grid {
+    gap: var(--gridGapMobile);
+  }
+}
+</style>

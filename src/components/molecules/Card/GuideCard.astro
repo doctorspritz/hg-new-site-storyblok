@@ -1,0 +1,82 @@
+---
+/**
+ * Molecule: GuideCard
+ * Hero image card with category tag and support for long titles.
+ * Variants: standard | featured.
+ */
+import Card from './Card.astro';
+import Image from '../../atoms/Image.astro';
+import Badge from '../../atoms/Badge.astro';
+
+interface Props {
+  title: string;
+  category?: string;
+  imageSrc: string;
+  imageAlt?: string;
+  href?: string;
+  variant?: 'standard' | 'featured';
+  class?: string;
+}
+
+const {
+  title,
+  category,
+  imageSrc,
+  imageAlt = '',
+  href,
+  variant = 'standard',
+  class: className = '',
+} = Astro.props as Props;
+---
+
+<Card class:list={[`hg-GuideCard`, `variant-${variant}`, className]}>
+  <a href={href} class="media" aria-label={title}>
+    <Image src={imageSrc} alt={imageAlt} />
+    {
+      category && (
+        <div class="category">
+          <Badge text={category} variant="info" />
+        </div>
+      )
+    }
+  </a>
+  <div class="body">
+    <h3 class="title">{href ? <a href={href}>{title}</a> : title}</h3>
+    <slot />
+  </div>
+</Card>
+
+<style>
+  .hg-GuideCard .media {
+    position: relative;
+    display: block;
+  }
+
+  .hg-GuideCard .category {
+    position: absolute;
+    top: var(--space-sm);
+    left: var(--space-sm);
+  }
+
+  .hg-GuideCard .body {
+    padding-top: var(--space-md);
+  }
+
+  .hg-GuideCard .title {
+    margin: 0 0 var(--space-sm);
+    color: var(--color-text-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-normal);
+    overflow-wrap: anywhere;
+  }
+
+  .hg-GuideCard.variant-featured .title {
+    font-size: var(--font-size-2xl);
+  }
+
+  /* Use larger border radius for featured variant */
+  .hg-GuideCard.variant-featured {
+    border-radius: var(--radius-xl);
+  }
+</style>

@@ -1,0 +1,76 @@
+---
+/**
+ * Atom: ProgressBar
+ * Accessible progress indicator using design tokens.
+ */
+export interface Props {
+  value: number;
+  label?: string;
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+}
+
+const {
+  value = 50,
+  label,
+  size = 'md',
+  class: className = '',
+} = Astro.props as Props;
+
+const clamped = Math.max(0, Math.min(100, value));
+const labelId = label
+  ? `progressbar-label-${Math.random().toString(36).slice(2, 8)}`
+  : undefined;
+---
+
+<div class:list={['hg-ProgressBar', `size-${size}`, className]}>
+  {
+    label && (
+      <span id={labelId} class="sr-only">
+        {label}
+      </span>
+    )
+  }
+  <div
+    class="track"
+    role="progressbar"
+    aria-valuenow={clamped}
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-labelledby={label ? labelId : undefined}
+  >
+    <div class="fill" style={`width:${clamped}%`}></div>
+  </div>
+</div>
+
+<style>
+  .hg-ProgressBar {
+    width: 100%;
+  }
+
+  .hg-ProgressBar .track {
+    width: 100%;
+    background-color: var(--color-background-surface);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+  }
+
+  .hg-ProgressBar .fill {
+    height: 100%;
+    background-color: var(--color-interactive-primary);
+    transition: width var(--transition-duration-base)
+      var(--transition-timing-function-ease);
+  }
+
+  .hg-ProgressBar.size-sm .track {
+    height: var(--space-xs);
+  }
+
+  .hg-ProgressBar.size-md .track {
+    height: var(--space-sm);
+  }
+
+  .hg-ProgressBar.size-lg .track {
+    height: var(--space-md);
+  }
+</style>

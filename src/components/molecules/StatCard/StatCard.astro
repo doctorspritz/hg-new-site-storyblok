@@ -1,0 +1,88 @@
+---
+/**
+ * StatCard Molecule
+ * Hunter Galloway Design System - Molecular Component
+ * 
+ * Composes Typography atoms to create statistic display cards.
+ * Used in Statistics organism for showcasing key metrics.
+ */
+
+import type { StatCardProps } from './StatCard.types';
+import Typography from '../../atoms/Typography/Typography.astro';
+import { semantic } from '../../../tokens/semantic';
+import { component } from '../../../tokens/component';
+
+interface Props extends StatCardProps {}
+
+const {
+  number,
+  description,
+  variant = 'default',
+  class: additionalClasses = '',
+} = Astro.props;
+---
+
+<div class={`hg-stat-card hg-stat-card--${variant} ${additionalClasses}`}>
+  <Typography 
+    element="p" 
+    size="5xl" 
+    weight="display" 
+    class="hg-stat-card__number"
+  >
+    {number}
+  </Typography>
+  
+  <Typography 
+    element="p" 
+    size="md" 
+    weight="emphasis" 
+    class="hg-stat-card__description"
+  >
+    {description}
+  </Typography>
+</div>
+
+<style define:vars={{
+  background: component.card.stat.background,
+  borderRadius: component.card.stat.borderRadius,
+  padding: semantic.space.xl,
+  paddingX: semantic.space.md,
+  transition: component.card.stat.transition,
+  hoverTransform: component.card.stat.hoverTransform,
+  minWidth: component.card.stat.minWidth,
+  maxWidth: component.card.stat.maxWidth,
+  maxWidthMobile: component.card.stat.maxWidthMobile,
+  marginBottom: semantic.space.sm,
+}}>
+.hg-stat-card {
+  text-align: center;
+  flex: 1;
+  min-width: var(--minWidth);
+  max-width: var(--maxWidth);
+  background: var(--background);
+  padding: var(--padding) var(--paddingX);
+  border-radius: var(--borderRadius);
+  transition: transform var(--transition) ease;
+}
+
+.hg-stat-card:hover {
+  transform: var(--hoverTransform);
+}
+
+.hg-stat-card__number {
+  margin: 0 0 var(--marginBottom) 0 !important;
+}
+
+.hg-stat-card__description {
+  margin: 0 !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .hg-stat-card {
+    min-width: auto;
+    max-width: var(--maxWidthMobile);
+    width: 100%;
+  }
+}
+</style>

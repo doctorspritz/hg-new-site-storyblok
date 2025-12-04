@@ -1,0 +1,115 @@
+---
+/**
+ * Molecule: BlogCard (scaffold)
+ * Tokenized blog article card with image, badge, title, excerpt and meta.
+ */
+import Card from './Card.astro';
+import Image from '../../atoms/Image.astro';
+import Badge from '../../atoms/Badge.astro';
+
+interface Props {
+  href?: string;
+  imageSrc?: string;
+  imageAlt?: string;
+  category?: string;
+  title: string;
+  excerpt?: string;
+  author?: string;
+  date?: string;
+  readingTime?: string;
+  variant?: 'standard' | 'featured' | 'list';
+  class?: string;
+}
+
+const {
+  href,
+  imageSrc,
+  imageAlt = '',
+  category,
+  title,
+  excerpt,
+  author,
+  date,
+  readingTime,
+  variant = 'standard',
+  class: className = '',
+} = Astro.props as Props;
+---
+
+<Card class:list={[`hg-BlogCard`, `variant-${variant}`, className]}>
+  {
+    imageSrc && (
+      <a href={href} class="media" aria-label={title}>
+        <Image src={imageSrc} alt={imageAlt} />
+      </a>
+    )
+  }
+  <div class="body">
+    {
+      category && (
+        <div class="eyebrow">
+          <Badge text={category} variant="info" />
+        </div>
+      )
+    }
+    <h3 class="title">
+      {href ? <a href={href}>{title}</a> : title}
+    </h3>
+    {excerpt && <p class="excerpt">{excerpt}</p>}
+    {
+      (author || date || readingTime) && (
+        <div class="meta">
+          {author && <span class="author">{author}</span>}
+          {date && <span class="date">{date}</span>}
+          {readingTime && <span class="reading-time">{readingTime}</span>}
+        </div>
+      )
+    }
+  </div>
+</Card>
+
+<style>
+  .hg-BlogCard .media {
+    display: block;
+  }
+
+  .hg-BlogCard .body {
+    padding-top: var(--space-md);
+  }
+
+  .hg-BlogCard .title {
+    margin: 0 0 var(--space-sm);
+    color: var(--color-text-heading);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xl);
+  }
+
+  .hg-BlogCard .excerpt {
+    color: var(--color-text-body);
+    margin: 0 0 var(--space-sm);
+  }
+
+  .hg-BlogCard .meta {
+    color: var(--color-text-subtle);
+    display: flex;
+    gap: var(--space-sm);
+    font-size: var(--font-size-sm);
+  }
+
+  .variant-featured .title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .variant-list {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: var(--space-md);
+    align-items: start;
+  }
+
+  @media (width <= 48rem) {
+    .variant-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

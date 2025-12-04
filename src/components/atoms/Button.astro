@@ -1,0 +1,237 @@
+---
+/**
+ * Atom: Button
+ * Props follow prop-based naming with variant and size.
+ */
+interface Props {
+  label?: string;
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'ghost'
+    | 'link'
+    | 'link-plain'
+    | 'elevated';
+  size?: 'sm' | 'md' | 'lg' | 'wide';
+  disabled?: boolean;
+  type?: 'button' | 'submit' | 'reset';
+  href?: string;
+  target?: '_self' | '_blank' | '_parent' | '_top';
+  rel?: string;
+  responsive?: boolean;
+  class?: string;
+}
+
+const {
+  label = '',
+  variant = 'primary',
+  size = 'md',
+  disabled = false,
+  type = 'button',
+  href,
+  target,
+  rel,
+  responsive = false,
+  class: className = '',
+} = Astro.props as Props;
+
+// Determine if this should be a link or button
+const isLink = !!href;
+const commonClasses = [
+  'hg-Button',
+  `variant-${variant}`,
+  `size-${size}`,
+  { 'is-responsive': responsive },
+  className,
+];
+---
+
+{
+  isLink ? (
+    <a
+      href={disabled ? undefined : href}
+      target={target}
+      rel={rel}
+      class:list={commonClasses}
+      aria-disabled={disabled ? 'true' : undefined}
+    >
+      <slot>{label}</slot>
+    </a>
+  ) : (
+    <button type={type} disabled={disabled} class:list={commonClasses}>
+      <slot>{label}</slot>
+    </button>
+  )
+}
+
+<style>
+  .hg-Button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    border: var(--border-width-2xs);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-normal);
+    text-decoration: none; /* Remove default link underline */
+    transition:
+      background-color var(--transition-duration-fast)
+        var(--transition-timing-function-ease),
+      box-shadow var(--transition-duration-fast)
+        var(--transition-timing-function-ease),
+      color var(--transition-duration-fast)
+        var(--transition-timing-function-ease);
+  }
+
+  /* Size variants map to tokens for type and spacing */
+  .size-sm {
+    font-size: var(--font-size-sm);
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  .size-md {
+    font-size: var(--font-size-md);
+    padding: 0 var(--space-md);
+    min-height: var(
+      --size-button-height-md
+    ); /* normalize height to IconButton */
+  }
+
+  .size-lg {
+    font-size: var(--font-size-lg);
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  .size-wide {
+    font-size: var(--font-size-md);
+    padding: var(--space-sm) var(--space-lgx);
+  }
+
+  /* Visual variants */
+  .variant-primary {
+    color: var(--color-text-on-primary);
+    background-color: var(--color-interactive-primary);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .variant-primary:hover {
+    background-color: var(--color-interactive-primary-hover);
+  }
+
+  .variant-secondary {
+    color: var(--color-interactive-secondary-text);
+    background-color: transparent;
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-interactive-secondary-border);
+  }
+
+  .variant-secondary:hover {
+    border-color: var(--color-interactive-secondary-border-hover);
+    color: var(--color-interactive-secondary-text);
+  }
+
+  .variant-ghost {
+    color: var(--color-text-link);
+    background-color: transparent;
+  }
+
+  .variant-ghost:hover {
+    color: var(--color-text-link-hover);
+  }
+
+  .variant-link {
+    color: var(--color-text-link);
+    background-color: transparent;
+    border-radius: var(--border-width-2xs);
+    padding: var(--padding-2xs);
+    text-decoration: underline;
+    font-size: inherit; /* Allow text size inheritance */
+  }
+
+  .variant-link:hover {
+    color: var(--color-text-link-hover);
+    text-decoration: none;
+  }
+
+  /* Non-underlined link style */
+  .variant-link-plain {
+    color: var(--color-text-link);
+    background-color: transparent;
+    border-radius: var(--border-width-2xs);
+    padding: var(--padding-2xs);
+    text-decoration: none;
+    font-size: inherit;
+  }
+
+  .variant-link-plain:hover {
+    color: var(--color-text-link-hover);
+    text-decoration: none;
+  }
+
+  /* Elevated variant - rounded corners, shadow, and hover transform */
+  .variant-elevated {
+    min-width: var(--control-minwidth-button);
+    background-color: var(--color-interactive-primary);
+    color: var(--color-text-body);
+    border-radius: var(--radius-2xl);
+    height: var(--space-xl);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-md);
+    padding: var(--space-sm) var(--space-lg);
+    border: none;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-duration-base)
+      var(--transition-timing-function-ease);
+  }
+
+  .variant-elevated:hover {
+    background-color: var(--color-interactive-primary-hover);
+    transform: translateY(calc(-1 * var(--space-2xs)));
+  }
+
+  .hg-Button[disabled] {
+    background-color: var(--color-interactive-disabled);
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .variant-secondary[disabled] {
+    background-color: transparent;
+    border-color: var(--color-border-subtle);
+    color: var(--color-text-subtle);
+  }
+
+  .variant-ghost[disabled] {
+    background-color: transparent;
+    color: var(--color-text-subtle);
+  }
+
+  .variant-link[disabled] {
+    background-color: transparent;
+    color: var(--color-text-subtle);
+    text-decoration: none;
+  }
+
+  .variant-elevated[disabled] {
+    background-color: var(--color-interactive-disabled);
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Responsive adjustments */
+  @media (width <= 48rem) {
+    .is-responsive.size-md {
+      padding-left: var(--space-sm);
+      padding-right: var(--space-sm);
+    }
+
+    .is-responsive.size-lg {
+      padding-left: var(--space-md);
+      padding-right: var(--space-md);
+    }
+  }
+</style>

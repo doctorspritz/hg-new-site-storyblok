@@ -1,0 +1,107 @@
+---
+/**
+ * Molecule: Toggle
+ * Accessible on/off switch built from a checkbox.
+ */
+interface Props {
+  id?: string;
+  name?: string;
+  value?: string;
+  label?: string;
+  checked?: boolean;
+  disabled?: boolean;
+  required?: boolean;
+}
+
+const {
+  id,
+  name = 'toggle',
+  value = 'on',
+  label = '',
+  checked = false,
+  disabled = false,
+  required = false,
+} = Astro.props as Props;
+
+const computedId = id ?? `${name}-${value}`;
+---
+
+<label class:list={['hg-Toggle', { 'is-disabled': disabled }]} for={computedId}>
+  <input
+    id={computedId}
+    type="checkbox"
+    name={name}
+    value={value}
+    checked={checked}
+    disabled={disabled}
+    required={required}
+    role="switch"
+  />
+  <span class="track"><span class="thumb"></span></span>
+  {label && <span class="label-text">{label}</span>}
+</label>
+
+<style>
+  .hg-Toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    color: var(--color-text-body);
+  }
+
+  .hg-Toggle input {
+    position: absolute;
+    opacity: 0;
+    width: var(--dim-accessibility-hidden);
+    height: var(--dim-accessibility-hidden);
+    pointer-events: none;
+  }
+
+  .hg-Toggle.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  .track {
+    width: var(--space-lg);
+    height: var(--space-md);
+    background-color: var(--color-border-subtle);
+    border-radius: var(--radius-pill);
+    position: relative;
+    transition: background-color var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .thumb {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: var(--space-md);
+    height: var(--space-md);
+    background-color: var(--color-background-body);
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-sm);
+    transform: translate(0, -50%);
+    transition: transform var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  input:checked + .track {
+    background-color: var(--color-interactive-primary);
+  }
+
+  input:checked + .track .thumb {
+    transform: translate(calc(var(--space-lg) - var(--space-md)), -50%);
+  }
+
+  input:focus-visible + .track {
+    outline: var(--outline-width-md) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--border-width-md);
+  }
+
+  .label-text {
+    line-height: var(--line-height-normal);
+  }
+</style>

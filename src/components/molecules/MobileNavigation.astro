@@ -1,0 +1,878 @@
+---
+/**
+ * Molecule: MobileNavigation
+ * Mobile-optimized navigation with slide animations and touch gestures.
+ *
+ * Features:
+ * - Slide-in/slide-out animations
+ * - Touch gesture support
+ * - Multi-level navigation with breadcrumbs
+ * - Search integration
+ * - Smooth transitions
+ * - Accessibility support
+ */
+
+import Icon from '../atoms/Icon.astro';
+import Button from '../atoms/Button.astro';
+
+interface NavLink {
+  label: string;
+  url: string;
+  badge?: string;
+}
+
+interface NavSubmenu {
+  heading: string;
+  links: NavLink[];
+  backLabel?: string;
+}
+
+interface NavMenuItem {
+  label: string;
+  url?: string;
+  submenu?: NavSubmenu;
+  icon?: string;
+}
+
+interface Props {
+  /** Navigation menu items */
+  items: NavMenuItem[];
+  /** Show search functionality */
+  showSearch?: boolean;
+  /** Show CTA button */
+  showCTA?: boolean;
+  /** CTA button configuration */
+  cta?: {
+    label: string;
+    url: string;
+    variant?: 'primary' | 'secondary';
+  };
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  items = [],
+  showSearch = true,
+  showCTA = true,
+  cta = {
+    label: 'Get a Free Assessment',
+    url: '#assessment',
+    variant: 'primary',
+  },
+  class: className = '',
+} = Astro.props as Props;
+
+// Build CSS classes
+const navClasses = ['hg-mobile-nav', className].filter(Boolean);
+---
+
+<!-- Mobile Navigation Overlay -->
+<div class:list={navClasses}>
+  <!-- Navigation backdrop -->
+  <div class="mobile-nav-backdrop"></div>
+
+  <!-- Navigation panel -->
+  <div class="mobile-nav-panel">
+    <!-- Header -->
+    <div class="mobile-nav-header">
+      <button
+        class="mobile-nav-back"
+        type="button"
+        aria-label="Go back"
+        data-active="false"
+      >
+        <Icon name="chevron-left" size="sm" />
+      </button>
+
+      <div class="mobile-nav-title">Menu</div>
+
+      <button class="mobile-nav-close" type="button" aria-label="Close menu">
+        <Icon name="close" size="sm" />
+      </button>
+    </div>
+
+    <!-- Search (if enabled) -->
+    {
+      showSearch && (
+        <div class="mobile-nav-search">
+          <div class="mobile-search-container">
+            <Icon name="search" size="sm" class="mobile-search-icon" />
+            <input
+              type="search"
+              placeholder="Search..."
+              class="mobile-search-input"
+              aria-label="Search site"
+            />
+          </div>
+        </div>
+      )
+    }
+
+    <!-- Main navigation content -->
+    <div class="mobile-nav-content">
+      <!-- Primary menu level -->
+      <div class="mobile-nav-level mobile-nav-level-primary active">
+        <ul class="mobile-nav-list" role="menu">
+          {
+            items.map((item, index) => (
+              <li class="mobile-nav-item" role="none">
+                {item.submenu ? (
+                  <>
+                    <button
+                      class="mobile-nav-link mobile-nav-trigger"
+                      type="button"
+                      role="menuitem"
+                      data-submenu-trigger={`submenu-${index}`}
+                      data-submenu-title={item.submenu.heading}
+                      data-back-label={
+                        item.submenu.backLabel || `Back to ${item.label}`
+                      }
+                    >
+                      {item.icon && (
+                        <Icon
+                          name={item.icon}
+                          size="sm"
+                          class="mobile-nav-icon"
+                        />
+                      )}
+                      <span class="mobile-nav-text">{item.label}</span>
+                      <Icon
+                        name="chevron-right"
+                        size="sm"
+                        class="mobile-nav-arrow"
+                      />
+                    </button>
+
+                    <div
+                      class="mobile-nav-level mobile-nav-level-secondary"
+                      id={`submenu-${index}`}
+                      data-parent-label={item.label}
+                    >
+                      <ul class="mobile-nav-list" role="menu">
+                        {item.submenu.links.map((link) => (
+                          <li class="mobile-nav-item" role="none">
+                            <a
+                              href={link.url}
+                              class="mobile-nav-link"
+                              role="menuitem"
+                            >
+                              <span class="mobile-nav-text">{link.label}</span>
+                              {link.badge && (
+                                <span class="mobile-nav-badge">
+                                  {link.badge}
+                                </span>
+                              )}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </>
+                ) : (
+                  <a
+                    href={item.url || '#'}
+                    class="mobile-nav-link"
+                    role="menuitem"
+                  >
+                    {item.icon && (
+                      <Icon
+                        name={item.icon}
+                        size="sm"
+                        class="mobile-nav-icon"
+                      />
+                    )}
+                    <span class="mobile-nav-text">{item.label}</span>
+                  </a>
+                )}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    {
+      showCTA && (
+        <div class="mobile-nav-footer">
+          <Button href={cta.url} variant={cta.variant} size="lg">
+            {cta.label}
+          </Button>
+        </div>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  .hg-mobile-nav {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    visibility: hidden;
+    opacity: 0;
+    transition: all var(--transition-duration-base)
+      var(--transition-timing-function-ease);
+  }
+
+  .hg-mobile-nav.is-open {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  /* Backdrop */
+  .mobile-nav-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgb(0 0 0 / 50%);
+    backdrop-filter: blur(var(--blur-overlay-medium));
+    opacity: 0;
+    transition: opacity var(--transition-duration-base)
+      var(--transition-timing-function-ease);
+  }
+
+  .hg-mobile-nav.is-open .mobile-nav-backdrop {
+    opacity: 1;
+  }
+
+  /* Main panel */
+  .mobile-nav-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--size-mobile-nav-width);
+    height: 100%;
+    background: var(--color-background-body);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(-100%);
+    transition: transform var(--transition-duration-base)
+      var(--transition-timing-function-ease);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .hg-mobile-nav.is-open .mobile-nav-panel {
+    transform: translateX(0);
+  }
+
+  /* Header */
+  .mobile-nav-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg);
+    border-bottom: var(--border-width-sm) solid var(--color-border-subtle);
+    background: var(--color-surface);
+    position: relative;
+    z-index: 10;
+  }
+
+  .mobile-nav-back,
+  .mobile-nav-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--space-xl);
+    height: var(--space-xl);
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--color-text-body);
+    cursor: pointer;
+    transition: all var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .mobile-nav-back {
+    transition:
+      opacity var(--transition-duration-fast)
+        var(--transition-timing-function-ease),
+      transform var(--transition-duration-fast)
+        var(--transition-timing-function-ease);
+  }
+
+  .mobile-nav-back[data-active='false'] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .mobile-nav-back[data-active='true'] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mobile-nav-back:hover,
+  .mobile-nav-close:hover,
+  .mobile-nav-back:focus-visible,
+  .mobile-nav-close:focus-visible {
+    background-color: var(--color-interactive-primary-hover);
+    color: var(--color-text-heading);
+  }
+
+  .mobile-nav-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+    transition: opacity var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  /* Search */
+  .mobile-nav-search {
+    padding: var(--space-md) var(--space-lg);
+    background: var(--color-surface);
+    border-bottom: var(--border-width-sm) solid var(--color-border-subtle);
+  }
+
+  .mobile-search-container {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-background-body);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .mobile-search-container:focus-within {
+    border-color: var(--color-border-focus);
+  }
+
+  .mobile-search-icon {
+    color: var(--color-text-subtle);
+    flex-shrink: 0;
+  }
+
+  .mobile-search-input {
+    flex: 1;
+    padding: var(--space-xs) 0;
+    background: transparent;
+    border: none;
+    color: var(--color-text-body);
+    font-size: var(--font-size-md);
+  }
+
+  .mobile-search-input:focus {
+    outline: none;
+  }
+
+  .mobile-search-input::placeholder {
+    color: var(--color-text-subtle);
+  }
+
+  /* Content area */
+  .mobile-nav-content {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Navigation levels */
+  .mobile-nav-level {
+    position: absolute;
+    inset: 0;
+    padding: var(--space-md) 0;
+    transform: translateX(100%);
+    transition: transform var(--transition-duration-base)
+      var(--transition-timing-function-ease);
+    overflow-y: auto;
+  }
+
+  .mobile-nav-level.active {
+    transform: translateX(0);
+  }
+
+  .mobile-nav-level.previous {
+    transform: translateX(-100%);
+  }
+
+  .mobile-nav-level-primary.active {
+    transform: translateX(0);
+  }
+
+  /* Navigation list */
+  .mobile-nav-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mobile-nav-item {
+    margin-bottom: var(--space-xs);
+  }
+
+  .mobile-nav-item:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Navigation links */
+  .mobile-nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    color: var(--color-text-body);
+    text-decoration: none;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-regular);
+    background: transparent;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    transition: all var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+    position: relative;
+  }
+
+  .mobile-nav-link:hover,
+  .mobile-nav-link:focus-visible {
+    background-color: var(--color-interactive-primary-hover);
+    color: var(--color-text-heading);
+  }
+
+  .mobile-nav-link:active {
+    background-color: var(--color-interactive-selection-background);
+  }
+
+  .mobile-nav-icon {
+    color: var(--color-text-subtle);
+    flex-shrink: 0;
+  }
+
+  .mobile-nav-text {
+    flex: 1;
+    text-align: left;
+  }
+
+  .mobile-nav-arrow {
+    color: var(--color-text-subtle);
+    flex-shrink: 0;
+    transition: transform var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .mobile-nav-trigger:hover .mobile-nav-arrow,
+  .mobile-nav-trigger:focus-visible .mobile-nav-arrow {
+    transform: translateX(var(--transform-hover-small));
+  }
+
+  .mobile-nav-badge {
+    padding: var(--space-2xs) var(--space-xs);
+    background-color: var(--color-interactive-primary);
+    color: var(--color-text-on-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    border-radius: var(--radius-pill);
+    flex-shrink: 0;
+  }
+
+  /* Footer */
+  .mobile-nav-footer {
+    padding: var(--space-lg);
+    border-top: var(--border-width-sm) solid var(--color-border-subtle);
+    background: var(--color-surface);
+  }
+
+  .mobile-nav-footer :global(.hg-Button) {
+    width: 100%;
+  }
+
+  /* Animation classes for JavaScript */
+  .mobile-nav-level.slide-in-right {
+    animation: slide-in-right var(--transition-duration-base)
+      var(--transition-timing-function-ease) forwards;
+  }
+
+  .mobile-nav-level.slide-out-left {
+    animation: slide-out-left var(--transition-duration-base)
+      var(--transition-timing-function-ease) forwards;
+  }
+
+  .mobile-nav-level.slide-in-left {
+    animation: slide-in-left var(--transition-duration-base)
+      var(--transition-timing-function-ease) forwards;
+  }
+
+  .mobile-nav-level.slide-out-right {
+    animation: slide-out-right var(--transition-duration-base)
+      var(--transition-timing-function-ease) forwards;
+  }
+
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-out-left {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+    }
+
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-out-right {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (--bp-min-lg) {
+    .hg-mobile-nav {
+      display: none;
+    }
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-nav-panel,
+    .mobile-nav-level,
+    .mobile-nav-backdrop {
+      transition: none;
+    }
+
+    .mobile-nav-level.slide-in-right,
+    .mobile-nav-level.slide-out-left,
+    .mobile-nav-level.slide-in-left,
+    .mobile-nav-level.slide-out-right {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  class MobileNavigation {
+    private nav: HTMLElement | null = null;
+    private backdrop: HTMLElement | null = null;
+    private panel: HTMLElement | null = null;
+    private title: HTMLElement | null = null;
+    private backButton: HTMLElement | null = null;
+    private closeButton: HTMLElement | null = null;
+    private currentLevel: HTMLElement | null = null;
+    private levelStack: Array<{
+      element: HTMLElement;
+      title: string;
+      backLabel?: string;
+    }> = [];
+    private startX: number = 0;
+    private currentX: number = 0;
+    private isDragging: boolean = false;
+
+    constructor() {
+      this.init();
+    }
+
+    init() {
+      this.setupElements();
+      this.setupEventListeners();
+      this.setupTouchGestures();
+    }
+
+    setupElements() {
+      this.nav = document.querySelector('.hg-mobile-nav');
+      this.backdrop = document.querySelector('.mobile-nav-backdrop');
+      this.panel = document.querySelector('.mobile-nav-panel');
+      this.title = document.querySelector('.mobile-nav-title');
+      this.backButton = document.querySelector('.mobile-nav-back');
+      this.closeButton = document.querySelector('.mobile-nav-close');
+      this.currentLevel = document.querySelector('.mobile-nav-level-primary');
+    }
+
+    setupEventListeners() {
+      // Close button
+      this.closeButton?.addEventListener('click', () => this.close());
+
+      // Backdrop click
+      this.backdrop?.addEventListener('click', () => this.close());
+
+      // Back button
+      this.backButton?.addEventListener('click', () => this.goBack());
+
+      // Submenu triggers
+      const triggers = document.querySelectorAll('.mobile-nav-trigger');
+      triggers.forEach((trigger) => {
+        trigger.addEventListener('click', (e) => this.handleSubmenuClick(e));
+      });
+
+      // Escape key
+      document.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Escape' && this.isOpen()) {
+          this.close();
+        }
+      });
+
+      // Search input
+      const searchInput = document.querySelector(
+        '.mobile-search-input',
+      ) as HTMLInputElement;
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => this.handleSearch(e));
+      }
+    }
+
+    setupTouchGestures() {
+      if (!this.panel) return;
+
+      // Touch events for swipe-to-close
+      this.panel.addEventListener(
+        'touchstart',
+        (e) => this.handleTouchStart(e),
+        { passive: true },
+      );
+      this.panel.addEventListener('touchmove', (e) => this.handleTouchMove(e), {
+        passive: false,
+      });
+      this.panel.addEventListener('touchend', () => this.handleTouchEnd(), {
+        passive: true,
+      });
+    }
+
+    handleTouchStart(e: TouchEvent) {
+      this.startX = e.touches[0].clientX;
+      this.isDragging = true;
+    }
+
+    handleTouchMove(e: TouchEvent) {
+      if (!this.isDragging) return;
+
+      this.currentX = e.touches[0].clientX;
+      const diffX = this.startX - this.currentX;
+
+      // Only allow left swipe (close) and prevent overscroll
+      if (diffX > 0 && diffX < 100) {
+        e.preventDefault();
+        const progress = Math.min(diffX / 100, 1);
+        const translateX = -progress * 100;
+
+        if (this.panel) {
+          this.panel.style.transform = `translateX(${translateX}%)`;
+        }
+      }
+    }
+
+    handleTouchEnd() {
+      if (!this.isDragging) return;
+
+      this.isDragging = false;
+      const diffX = this.startX - this.currentX;
+
+      // Reset panel transform
+      if (this.panel) {
+        this.panel.style.transform = '';
+      }
+
+      // Close if swipe distance is significant
+      if (diffX > 50) {
+        this.close();
+      }
+    }
+
+    handleSubmenuClick(e: Event) {
+      const trigger = e.currentTarget as HTMLButtonElement;
+      const submenuId = trigger.dataset.submenuTrigger;
+      const submenuTitle = trigger.dataset.submenuTitle;
+      const backLabel = trigger.dataset.backLabel;
+
+      if (!submenuId || !submenuTitle) return;
+
+      const submenu = document.getElementById(submenuId);
+      if (!submenu) return;
+
+      this.navigateToSubmenu(submenu, submenuTitle, backLabel);
+    }
+
+    navigateToSubmenu(submenu: HTMLElement, title: string, backLabel?: string) {
+      if (!this.currentLevel) return;
+
+      // Add current level to stack
+      this.levelStack.push({
+        element: this.currentLevel,
+        title: this.title?.textContent || 'Menu',
+        backLabel,
+      });
+
+      // Update header
+      this.updateHeader(title, true);
+
+      // Animate levels
+      this.currentLevel.classList.add('slide-out-left');
+      submenu.classList.add('active', 'slide-in-right');
+
+      // Update current level reference
+      setTimeout(() => {
+        if (this.currentLevel) {
+          this.currentLevel.classList.remove('active', 'slide-out-left');
+        }
+        submenu.classList.remove('slide-in-right');
+        this.currentLevel = submenu;
+      }, 300);
+    }
+
+    goBack() {
+      if (this.levelStack.length === 0) return;
+
+      const previous = this.levelStack.pop();
+      if (!previous || !this.currentLevel) return;
+
+      // Update header
+      this.updateHeader(previous.title, this.levelStack.length > 0);
+
+      // Animate levels
+      this.currentLevel.classList.add('slide-out-right');
+      previous.element.classList.add('active', 'slide-in-left');
+
+      // Update current level reference
+      setTimeout(() => {
+        if (this.currentLevel) {
+          this.currentLevel.classList.remove('active', 'slide-out-right');
+        }
+        previous.element.classList.remove('slide-in-left');
+        this.currentLevel = previous.element;
+      }, 300);
+    }
+
+    updateHeader(title: string, showBack: boolean) {
+      if (this.title) {
+        this.title.textContent = title;
+      }
+
+      if (this.backButton) {
+        if (showBack) {
+          this.backButton.setAttribute('data-active', 'true');
+        } else {
+          this.backButton.setAttribute('data-active', 'false');
+        }
+      }
+    }
+
+    handleSearch(e: Event) {
+      const input = e.target as HTMLInputElement;
+      const query = input.value.toLowerCase();
+
+      // Simple search implementation - in real app, this would be more sophisticated
+      const links = document.querySelectorAll(
+        '.mobile-nav-link:not(.mobile-nav-trigger)',
+      );
+
+      links.forEach((link) => {
+        const text = link.textContent?.toLowerCase() || '';
+        const item = link.closest('.mobile-nav-item') as HTMLElement;
+
+        if (item) {
+          if (text.includes(query) || query === '') {
+            item.style.display = '';
+          } else {
+            item.style.display = 'none';
+          }
+        }
+      });
+    }
+
+    open() {
+      if (!this.nav) return;
+
+      this.nav.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+
+      // Focus management
+      const firstFocusableElement = this.nav.querySelector(
+        'button, input, a',
+      ) as HTMLElement;
+      firstFocusableElement?.focus();
+    }
+
+    close() {
+      if (!this.nav) return;
+
+      this.nav.classList.remove('is-open');
+      document.body.style.overflow = '';
+
+      // Reset to primary level
+      this.resetToMainLevel();
+    }
+
+    resetToMainLevel() {
+      // Clear level stack
+      this.levelStack = [];
+
+      // Reset all levels
+      const levels = document.querySelectorAll('.mobile-nav-level');
+      levels.forEach((level) => {
+        level.classList.remove(
+          'active',
+          'slide-in-left',
+          'slide-in-right',
+          'slide-out-left',
+          'slide-out-right',
+        );
+      });
+
+      // Activate primary level
+      const primaryLevel = document.querySelector('.mobile-nav-level-primary');
+      primaryLevel?.classList.add('active');
+      this.currentLevel = primaryLevel as HTMLElement;
+
+      // Reset header
+      this.updateHeader('Menu', false);
+
+      // Clear search
+      const searchInput = document.querySelector(
+        '.mobile-search-input',
+      ) as HTMLInputElement;
+      if (searchInput) {
+        searchInput.value = '';
+        this.handleSearch({ target: searchInput } as any);
+      }
+    }
+
+    isOpen(): boolean {
+      return this.nav?.classList.contains('is-open') || false;
+    }
+
+    toggle() {
+      if (this.isOpen()) {
+        this.close();
+      } else {
+        this.open();
+      }
+    }
+  }
+
+  // Export for external use
+  (window as any).MobileNavigation = MobileNavigation;
+
+  // Initialize mobile navigation when DOM is loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      new MobileNavigation();
+    });
+  } else {
+    new MobileNavigation();
+  }
+</script>

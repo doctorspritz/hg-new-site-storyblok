@@ -1,0 +1,184 @@
+---
+/**
+ * PurposeCard Component
+ * Hunter Galloway Design System - Molecular Component
+ * 
+ * A card component for loan purposes with icons, hover effects, and background images.
+ * Built to match the exact WordPress structure and styling.
+ */
+
+import type { PurposeCardProps } from './PurposeCard.types';
+import Button from '../../atoms/Button/Button.astro';
+import Icon from '../../atoms/Icon/Icon.astro';
+import { semantic } from '../../../tokens/semantic';
+
+interface Props extends PurposeCardProps {}
+
+const {
+  title,
+  description,
+  icon,
+  image,
+  href,
+  badge,
+  size = 'md',
+  variant = 'default',
+  class: additionalClasses = '',
+} = Astro.props;
+---
+
+<a href={href} class={`hg-purpose-card load-purpose__block purpose-block purpose-block--${variant} ${additionalClasses}`} data-purpose={badge ? 'first' : undefined}>
+  <!-- Badge (Most Popular) -->
+  {badge && (
+    <div class="purpose-block__badge">{badge}</div>
+  )}
+  
+  <!-- Card Content -->
+  <div class="purpose-block__content">
+    <div class="purpose-block__title">
+      <Icon name={icon} size="md" color="inherit" inline />
+      {title}
+    </div>
+    <div class="purpose-block__description">{description}</div>
+    <div class="purpose-block__action">
+      <Button variant="primary" size="md" ariaLabel={`Learn more about ${title}`}>Learn More</Button>
+    </div>
+  </div>
+  
+  <!-- Background Image -->
+  <div class="purpose-block__img">
+    <img src={image} alt={`${title} background`} width="100%" height="100%" loading="lazy">
+  </div>
+</a>
+
+<style define:vars={{
+  borderPrimary: semantic.color.border.primary,
+  brandPrimary: semantic.color.brand.primary,
+  brandPrimaryHover: semantic.color.brand.primaryHover,
+  textPrimary: semantic.color.text.primary,
+  textSecondary: semantic.color.text.secondary,
+  surfaceHighlight: semantic.color.surface.highlight,
+  surfaceSecondary: semantic.color.surface.secondary,
+  fontSize2xl: semantic.typography.size['2xl'],
+  fontSizeXl: semantic.typography.size.xl,
+  fontSizeMd: semantic.typography.size.md,
+  fontSizeSm: semantic.typography.size.sm,
+  fontWeightBold: semantic.typography.weight.heading,
+  fontWeightEmphasis: semantic.typography.weight.emphasis,
+  radiusLg: semantic.radius.lg,
+  radiusPill: semantic.radius.pill,
+  durationNormal: semantic.duration.normal,
+  shadowProminent: semantic.shadow.prominent,
+  space3xl: '2.75rem', // 44px
+  spaceXl: semantic.space.xl,
+  spaceLg: semantic.space.lg,
+  spaceMd: semantic.space.md,
+  spaceSm: semantic.space.sm,
+}}>
+/* PurposeCard component styles - Using design tokens */
+.hg-purpose-card {
+  position: relative;
+  flex: 1;
+  display: block;
+  padding: var(--space3xl) var(--spaceXl);
+  border-radius: var(--radiusLg);
+  max-width: 600px;
+  min-width: 400px;
+  border: 1px solid var(--borderPrimary);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: all var(--durationNormal) ease;
+}
+
+.hg-purpose-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadowProminent);
+  text-decoration: none;
+  color: inherit;
+}
+
+.purpose-block__badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: var(--spaceSm) var(--spaceMd);
+  border-radius: 0px var(--radiusLg);
+  background: rgba(253, 185, 72, 0.5);
+  color: var(--textPrimary);
+  text-align: center;
+  font-size: var(--fontSizeSm);
+  font-weight: var(--fontWeightEmphasis);
+  z-index: 3;
+}
+
+.purpose-block__content {
+  position: relative;
+  max-width: 370px;
+  z-index: 2;
+}
+
+.purpose-block__title {
+  display: flex;
+  align-items: center;
+  gap: var(--spaceSm);
+  color: var(--textPrimary);
+  font-size: var(--fontSize2xl);
+  font-weight: var(--fontWeightBold);
+  margin-bottom: var(--spaceSm);
+}
+
+.purpose-block__description {
+  margin-top: var(--spaceSm);
+  color: var(--textSecondary);
+  font-size: var(--fontSizeMd);
+  line-height: 2;
+  margin-bottom: var(--spaceMd);
+}
+
+.purpose-block__img {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 100%;
+  opacity: 0;
+  z-index: 1;
+  transition: opacity var(--durationNormal) ease;
+}
+
+.hg-purpose-card:hover .purpose-block__img {
+  opacity: 1;
+}
+
+.purpose-block__img img {
+  width: auto;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Variant styles */
+.purpose-block--peach {
+  background: var(--surfaceHighlight);
+}
+
+.purpose-block--default {
+  background: var(--surfaceSecondary);
+}
+
+/* Responsive design using design tokens */
+@media (max-width: 768px) {
+  .hg-purpose-card {
+    min-width: 100%;
+    max-width: 100%;
+    padding: var(--spaceXl) var(--spaceMd);
+  }
+  
+  .purpose-block__content {
+    max-width: 100%;
+  }
+  
+  .purpose-block__title {
+    font-size: var(--fontSizeXl);
+  }
+}
+</style>

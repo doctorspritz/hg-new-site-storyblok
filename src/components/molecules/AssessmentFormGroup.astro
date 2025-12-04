@@ -1,0 +1,596 @@
+---
+/**
+ * Molecule: AssessmentFormGroup
+ * Multi-step loan assessment form for Hunter Galloway mortgage broking.
+ * Combines stepper navigation, form fields, and interactive controls.
+ */
+import Stepper from './Stepper.astro';
+import RadioGroup from './RadioGroup.astro';
+import TextField from './TextField.astro';
+import SelectField from './SelectField.astro';
+import Button from '../atoms/Button.astro';
+import Heading from '../atoms/Heading.astro';
+import Paragraph from '../atoms/Paragraph.astro';
+
+interface AssessmentStep {
+  id: string;
+  title: string;
+  description?: string;
+}
+
+interface Props {
+  steps?: AssessmentStep[];
+  currentStep?: string;
+  variant?: 'default' | 'compact';
+  showProgress?: boolean;
+  class?: string;
+}
+
+const {
+  steps = [
+    {
+      id: 'purpose',
+      title: 'Loan Purpose',
+      description: 'What do you need the loan for?',
+    },
+    {
+      id: 'property',
+      title: 'Property Details',
+      description: 'Tell us about your property',
+    },
+    {
+      id: 'financial',
+      title: 'Financial Information',
+      description: 'Your income and expenses',
+    },
+    {
+      id: 'personal',
+      title: 'Personal Details',
+      description: 'Contact and employment details',
+    },
+    {
+      id: 'summary',
+      title: 'Review & Submit',
+      description: 'Check your details and submit',
+    },
+  ],
+  currentStep = 'purpose',
+  variant = 'default',
+  showProgress = true,
+  class: className,
+} = Astro.props;
+
+const isCompact = variant === 'compact';
+---
+
+<div
+  class:list={['hg-AssessmentFormGroup', `variant-${variant}`, className]}
+  data-assessment-form
+>
+  <header class="assessment-header">
+    <Heading level={2} size={isCompact ? 'lg' : 'xl'} color="default">
+      Get Your Loan Assessment
+    </Heading>
+    {
+      !isCompact && (
+        <Paragraph size="lg" color="subtle">
+          Take our quick assessment to see what loan options are available to
+          you. It only takes a few minutes.
+        </Paragraph>
+      )
+    }
+  </header>
+
+  <div class="assessment-stepper">
+    <Stepper
+      steps={steps.map((s) => ({ id: s.id, label: s.title }))}
+      current={currentStep}
+      showProgress={showProgress}
+      orientation="horizontal"
+    />
+  </div>
+
+  <main class="assessment-content" data-current-step={currentStep}>
+    <!-- Step 1: Loan Purpose -->
+    <div
+      class="assessment-step"
+      data-step="purpose"
+      data-active={currentStep === 'purpose'}
+    >
+      <div class="step-header">
+        <Heading level={3} size="md" color="default"
+          >What do you need the loan for?</Heading
+        >
+        <Paragraph color="subtle"
+          >Choose the option that best describes your loan purpose.</Paragraph
+        >
+      </div>
+
+      <div class="step-content">
+        <RadioGroup
+          name="loanPurpose"
+          options={[
+            { label: 'First Home Purchase', value: 'first-home' },
+            { label: 'Investment Property', value: 'investment' },
+            { label: 'Refinancing', value: 'refinance' },
+            { label: 'Construction', value: 'construction' },
+            { label: 'Commercial Property', value: 'commercial' },
+            { label: 'Other', value: 'other' },
+          ]}
+          orientation="vertical"
+          variant="button"
+        />
+      </div>
+    </div>
+
+    <!-- Step 2: Property Details -->
+    <div
+      class="assessment-step"
+      data-step="property"
+      data-active={currentStep === 'property'}
+    >
+      <div class="step-header">
+        <Heading level={3} size="md" color="default">Property Details</Heading>
+        <Paragraph color="subtle"
+          >Help us understand the property you're interested in.</Paragraph
+        >
+      </div>
+
+      <div class="step-content">
+        <div class="form-grid">
+          <SelectField
+            id="propertyType"
+            label="Property Type"
+            name="propertyType"
+            options={[
+              { label: 'House', value: 'house' },
+              { label: 'Unit/Apartment', value: 'unit' },
+              { label: 'Townhouse', value: 'townhouse' },
+              { label: 'Land', value: 'land' },
+              { label: 'Commercial', value: 'commercial' },
+            ]}
+            placeholder="Select property type"
+            required
+          />
+
+          <TextField
+            id="propertyValue"
+            label="Property Value"
+            name="propertyValue"
+            type="text"
+            placeholder="Enter amount"
+            helper="Estimated market value or purchase price"
+            prefixText="$"
+            required
+          />
+
+          <TextField
+            id="depositAmount"
+            label="Deposit Amount"
+            name="depositAmount"
+            type="text"
+            placeholder="Enter amount"
+            helper="How much deposit do you have?"
+            prefixText="$"
+            required
+          />
+
+          <TextField
+            id="postcode"
+            label="Postcode"
+            name="postcode"
+            type="text"
+            placeholder="e.g. 2000"
+            helper="Property location postcode"
+            required
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Financial Information -->
+    <div
+      class="assessment-step"
+      data-step="financial"
+      data-active={currentStep === 'financial'}
+    >
+      <div class="step-header">
+        <Heading level={3} size="md" color="default"
+          >Financial Information</Heading
+        >
+        <Paragraph color="subtle"
+          >Tell us about your income and financial commitments.</Paragraph
+        >
+      </div>
+
+      <div class="step-content">
+        <div class="form-grid">
+          <TextField
+            id="annualIncome"
+            label="Annual Income"
+            name="annualIncome"
+            type="text"
+            placeholder="Enter amount"
+            helper="Your total annual income before tax"
+            prefixText="$"
+            required
+          />
+
+          <TextField
+            id="monthlyExpenses"
+            label="Monthly Expenses"
+            name="monthlyExpenses"
+            type="text"
+            placeholder="Enter amount"
+            helper="Living expenses, credit cards, loans, etc."
+            prefixText="$"
+            required
+          />
+
+          <SelectField
+            id="employmentType"
+            label="Employment Type"
+            name="employmentType"
+            options={[
+              { label: 'Full-time Employee', value: 'full-time' },
+              { label: 'Part-time Employee', value: 'part-time' },
+              { label: 'Self-employed', value: 'self-employed' },
+              { label: 'Contractor', value: 'contractor' },
+              { label: 'Casual', value: 'casual' },
+              { label: 'Other', value: 'other' },
+            ]}
+            placeholder="Select employment type"
+            required
+          />
+
+          <TextField
+            id="timeInJob"
+            label="Time in Current Job"
+            name="timeInJob"
+            type="text"
+            placeholder="e.g. 2 years"
+            helper="How long have you been in your current role?"
+            required
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Personal Details -->
+    <div
+      class="assessment-step"
+      data-step="personal"
+      data-active={currentStep === 'personal'}
+    >
+      <div class="step-header">
+        <Heading level={3} size="md" color="default">Personal Details</Heading>
+        <Paragraph color="subtle"
+          >We need some basic information to complete your assessment.</Paragraph
+        >
+      </div>
+
+      <div class="step-content">
+        <div class="form-grid">
+          <TextField
+            id="firstName"
+            label="First Name"
+            name="firstName"
+            type="text"
+            placeholder="Enter your first name"
+            required
+          />
+
+          <TextField
+            id="lastName"
+            label="Last Name"
+            name="lastName"
+            type="text"
+            placeholder="Enter your last name"
+            required
+          />
+
+          <TextField
+            id="email"
+            label="Email"
+            name="email"
+            type="email"
+            placeholder="your.email@example.com"
+            required
+          />
+
+          <TextField
+            id="phone"
+            label="Phone"
+            name="phone"
+            type="tel"
+            placeholder="0400 000 000"
+            required
+          />
+
+          <SelectField
+            id="ageRange"
+            label="Age Range"
+            name="ageRange"
+            options={[
+              { label: '18-25', value: '18-25' },
+              { label: '26-35', value: '26-35' },
+              { label: '36-45', value: '36-45' },
+              { label: '46-55', value: '46-55' },
+              { label: '56-65', value: '56-65' },
+              { label: '65+', value: '65+' },
+            ]}
+            placeholder="Select age range"
+            required
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5: Summary -->
+    <div
+      class="assessment-step"
+      data-step="summary"
+      data-active={currentStep === 'summary'}
+    >
+      <div class="step-header">
+        <Heading level={3} size="md" color="default"
+          >Review Your Details</Heading
+        >
+        <Paragraph color="subtle"
+          >Please review your information before submitting your assessment.</Paragraph
+        >
+      </div>
+
+      <div class="step-content">
+        <div class="summary-content">
+          <div class="summary-section">
+            <Heading level={4} size="sm" color="default">Loan Purpose</Heading>
+            <Paragraph color="body"
+              >Your selected loan purpose will appear here</Paragraph
+            >
+          </div>
+
+          <div class="summary-section">
+            <Heading level={4} size="sm" color="default"
+              >Property & Financial</Heading
+            >
+            <Paragraph color="body"
+              >Property and financial details will be summarized here</Paragraph
+            >
+          </div>
+
+          <div class="summary-section">
+            <Heading level={4} size="sm" color="default"
+              >Contact Information</Heading
+            >
+            <Paragraph color="body"
+              >Your contact details will be displayed here</Paragraph
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="assessment-actions">
+    <div class="action-buttons">
+      <Button variant="secondary" size="lg" type="button"> Back </Button>
+
+      <Button variant="primary" size="lg" type="button">
+        <span data-step-text="purpose">Continue</span>
+        <span data-step-text="property">Continue</span>
+        <span data-step-text="financial">Continue</span>
+        <span data-step-text="personal">Continue</span>
+        <span data-step-text="summary">Submit Assessment</span>
+      </Button>
+    </div>
+
+    <div class="help-text">
+      <Paragraph size="sm" color="subtle">
+        Need help? Call us on <strong>1300 889 743</strong> or email <strong
+          >info@huntergalloway.com.au</strong
+        >
+      </Paragraph>
+    </div>
+  </footer>
+</div>
+
+<style>
+  .hg-AssessmentFormGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+    max-width: var(--size-container-content);
+    margin: 0 auto;
+    background: var(--color-background-body);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+  }
+
+  .variant-compact {
+    padding: var(--space-lg);
+    gap: var(--space-lg);
+  }
+
+  .assessment-header {
+    text-align: center;
+  }
+
+  .assessment-stepper {
+    margin: var(--space-lg) 0;
+  }
+
+  .assessment-content {
+    min-height: var(--size-hero-min-height-md);
+    position: relative;
+  }
+
+  .assessment-step {
+    display: none;
+    flex-direction: column;
+    gap: var(--space-lg);
+    scroll-margin-top: var(--space-xl);
+  }
+
+  .assessment-step[data-active='true'] {
+    display: flex;
+  }
+
+  .step-header {
+    text-align: center;
+  }
+
+  .step-content {
+    flex: 1;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  @media (width >= 768px) {
+    .form-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .summary-section {
+    padding: var(--space-md);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--color-background-accent);
+  }
+
+  .assessment-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    align-items: center;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    width: 100%;
+  }
+
+  .action-buttons .hg-Button {
+    min-width: var(--control-minwidth-button);
+  }
+
+  @media (width <= 767px) {
+    .action-buttons {
+      flex-direction: column-reverse;
+    }
+
+    .action-buttons .hg-Button {
+      width: 100%;
+    }
+  }
+
+  .help-text {
+    text-align: center;
+  }
+
+  /* Step-specific button text visibility */
+  .action-buttons .hg-Button:last-child [data-step-text] {
+    display: none;
+  }
+
+  .assessment-content[data-current-step='purpose']
+    .action-buttons
+    .hg-Button:last-child
+    [data-step-text='purpose'],
+  .assessment-content[data-current-step='property']
+    .action-buttons
+    .hg-Button:last-child
+    [data-step-text='property'],
+  .assessment-content[data-current-step='financial']
+    .action-buttons
+    .hg-Button:last-child
+    [data-step-text='financial'],
+  .assessment-content[data-current-step='personal']
+    .action-buttons
+    .hg-Button:last-child
+    [data-step-text='personal'],
+  .assessment-content[data-current-step='summary']
+    .action-buttons
+    .hg-Button:last-child
+    [data-step-text='summary'] {
+    display: inline;
+  }
+
+  /* Accessibility and interaction states */
+  .action-buttons .hg-Button:focus {
+    outline: var(--outline-width-md) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--space-2xs);
+  }
+
+  /* First step - hide back button */
+  .assessment-content[data-current-step='purpose']
+    .action-buttons
+    .hg-Button:first-child {
+    display: none;
+  }
+
+  /* Responsive adjustments */
+  @media (width <= 767px) {
+    .hg-AssessmentFormGroup {
+      padding: var(--space-lg);
+      margin: 0 var(--space-md);
+      border-radius: var(--radius-md);
+    }
+
+    .variant-compact {
+      padding: var(--space-md);
+      margin: 0;
+    }
+
+    .assessment-stepper {
+      margin: var(--space-md) 0;
+    }
+  }
+</style>
+
+<script>
+  // This script would be enhanced with actual form logic in a real implementation
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector(
+      '[data-assessment-form]',
+    ) as HTMLElement;
+    if (!form) return;
+
+    const buttons = form.querySelectorAll(
+      '.action-buttons .hg-Button',
+    ) as NodeListOf<HTMLButtonElement>;
+    const nextBtn = buttons[1]; // Second button is "next"
+    const backBtn = buttons[0]; // First button is "back"
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        // Handle step progression
+        console.log('Next step');
+      });
+    }
+
+    if (backBtn) {
+      backBtn.addEventListener('click', () => {
+        // Handle step regression
+        console.log('Previous step');
+      });
+    }
+  });
+</script>

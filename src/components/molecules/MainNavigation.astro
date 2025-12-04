@@ -1,0 +1,970 @@
+---
+/**
+ * Molecule: MainNavigation
+ * Main site navigation with desktop dropdown menus.
+ *
+ * Features:
+ * - Desktop mega menu dropdowns
+ * - Mobile hamburger navigation
+ * - Keyboard navigation support
+ * - Hover/focus states
+ * - Responsive behavior
+ * - Search toggle integration
+ */
+
+import Icon from '../atoms/Icon.astro';
+import Button from '../atoms/Button.astro';
+import DropdownNavLink from './DropdownNavLink.astro';
+import NavDropdown from '../organisms/NavDropdown.astro';
+import { mapLegacyDropdown } from '../navigation/types';
+import type { LegacyNavMenuItem as NavMenuItem } from '../navigation/types';
+
+interface Props {
+  /** Navigation menu items */
+  items: NavMenuItem[];
+  /** Show search toggle */
+  showSearch?: boolean;
+  /** Current page URL for active state */
+  currentUrl?: string;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  items = [],
+  showSearch = true,
+  currentUrl = '',
+  class: className = '',
+} = Astro.props as Props;
+
+// Build CSS classes
+const navClasses = ['hg-main-nav', className].filter(Boolean);
+---
+
+<nav class:list={navClasses}>
+  <!-- Mobile menu header -->
+  <div class="nav-mobile-header">
+    <button
+      class="nav-mobile-back"
+      type="button"
+      aria-label="Back to previous menu"
+      data-visible="false"
+    >
+      <Icon name="chevron-left" size="sm" />
+    </button>
+
+    <div class="nav-mobile-title">Menu</div>
+
+    <button
+      class="nav-mobile-close"
+      type="button"
+      aria-label="Close navigation menu"
+    >
+      <Icon name="close" size="sm" />
+    </button>
+  </div>
+
+  <!-- Main navigation list -->
+  <ul class="nav-list" role="menubar">
+    {
+      items.map((item, index) => (
+        <li class="nav-item" role="none">
+          {item.dropdown ? (
+            <div class="nav-dropdown-wrapper">
+              <DropdownNavLink
+                href="#"
+                text={item.label}
+                hasDropdown={true}
+                class="nav-dropdown-trigger"
+                aria-haspopup="true"
+                aria-expanded="false"
+                id={`dropdown-trigger-${index}`}
+                data-dropdown-target={`dropdown-${index}`}
+              />
+
+              {(() => {
+                const hasDropdown = !!item.dropdown;
+                const hasPromoCard = !!item.dropdown?.promo;
+                const hasPromoImage = !!item.dropdown?.promoImage;
+                const hasPromos = hasPromoCard || hasPromoImage;
+                const colCount = item.dropdown?.columns?.length ?? 0;
+                const isSimple = hasDropdown && colCount === 1 && !hasPromos;
+                const isMega = hasDropdown && colCount >= 2 && !hasPromos;
+                const isMegaAside =
+                  hasDropdown && colCount >= 1 && hasPromoCard;
+                const isContentTeaser =
+                  hasDropdown && colCount >= 1 && hasPromoImage;
+
+                if (isSimple) {
+                  const cfg = mapLegacyDropdown(item.dropdown!, 'simple');
+                  if (
+                    cfg.sections &&
+                    cfg.sections.length > 0 &&
+                    !cfg.sections[0].title
+                  ) {
+                    cfg.sections[0] = {
+                      ...cfg.sections[0],
+                      title: item.label,
+                    } as any;
+                  }
+                  return (
+                    <div
+                      class="nav-dropdown nav-dropdown--organism"
+                      id={`dropdown-${index}`}
+                      role="menu"
+                      aria-hidden="true"
+                    >
+                      <NavDropdown
+                        config={cfg}
+                        id={`dropdown-${index}-panel`}
+                        labelledBy={`dropdown-trigger-${index}`}
+                      />
+                    </div>
+                  );
+                }
+
+                if (isMega) {
+                  const cfg = mapLegacyDropdown(item.dropdown!, 'mega');
+                  return (
+                    <div
+                      class="nav-dropdown nav-dropdown--organism"
+                      id={`dropdown-${index}`}
+                      role="menu"
+                      aria-hidden="true"
+                    >
+                      <NavDropdown
+                        config={cfg}
+                        id={`dropdown-${index}-panel`}
+                        labelledBy={`dropdown-trigger-${index}`}
+                      />
+                    </div>
+                  );
+                }
+
+                if (isMegaAside) {
+                  const cfg = mapLegacyDropdown(item.dropdown!, 'mega-aside');
+                  return (
+                    <div
+                      class="nav-dropdown nav-dropdown--organism"
+                      id={`dropdown-${index}`}
+                      role="menu"
+                      aria-hidden="true"
+                    >
+                      <NavDropdown
+                        config={cfg}
+                        id={`dropdown-${index}-panel`}
+                        labelledBy={`dropdown-trigger-${index}`}
+                      />
+                    </div>
+                  );
+                }
+
+                if (isContentTeaser) {
+                  const cfg = mapLegacyDropdown(
+                    item.dropdown!,
+                    'content-teaser',
+                  );
+                  return (
+                    <div
+                      class="nav-dropdown nav-dropdown--organism"
+                      id={`dropdown-${index}`}
+                      role="menu"
+                      aria-hidden="true"
+                    >
+                      <NavDropdown
+                        config={cfg}
+                        id={`dropdown-${index}-panel`}
+                        labelledBy={`dropdown-trigger-${index}`}
+                      />
+                    </div>
+                  );
+                }
+
+                return (
+                  <div
+                    class="nav-dropdown"
+                    id={`dropdown-${index}`}
+                    role="menu"
+                    aria-hidden="true"
+                  >
+                    <div class="nav-dropdown-container">
+                      <div class="nav-dropdown-columns">
+                        {item.dropdown.columns.map((column) => (
+                          <div class="nav-dropdown-column">
+                            {column.heading && (
+                              <h3 class="nav-dropdown-heading">
+                                {column.heading}
+                              </h3>
+                            )}
+                            <ul class="nav-dropdown-list" role="none">
+                              {column.links.map((link) => (
+                                <li class="nav-dropdown-item" role="none">
+                                  <a
+                                    href={link.url}
+                                    class="nav-dropdown-link"
+                                    role="menuitem"
+                                  >
+                                    {link.label}
+                                    {link.badge && (
+                                      <span class="nav-dropdown-badge">
+                                        {link.badge}
+                                      </span>
+                                    )}
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                            {column.readMore && (
+                              <a
+                                href={column.readMore.url}
+                                class="nav-dropdown-more"
+                              >
+                                {column.readMore.label}
+                                <Icon name="arrow-right" size="xs" />
+                              </a>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      {item.dropdown.promo && (
+                        <div class="nav-dropdown-promo">
+                          <h3 class="nav-dropdown-promo-title">
+                            {item.dropdown.promo.title}
+                          </h3>
+                          <p class="nav-dropdown-promo-description">
+                            {item.dropdown.promo.description}
+                          </p>
+                          <Button
+                            href={item.dropdown.promo.cta.url}
+                            variant="primary"
+                            size="sm"
+                          >
+                            {item.dropdown.promo.cta.label}
+                          </Button>
+                        </div>
+                      )}
+
+                      {item.dropdown.promoImage && (
+                        <a
+                          href={item.dropdown.promoImage.url}
+                          class="nav-dropdown-image-card"
+                        >
+                          <img
+                            src={item.dropdown.promoImage.imageUrl}
+                            alt={item.dropdown.promoImage.title}
+                            class="nav-dropdown-image"
+                            loading="lazy"
+                          />
+                          <div class="nav-dropdown-image-overlay">
+                            <h4 class="nav-dropdown-image-title">
+                              {item.dropdown.promoImage.title}
+                            </h4>
+                          </div>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          ) : (
+            <DropdownNavLink
+              href={item.url || '#'}
+              text={item.label}
+              hasDropdown={false}
+              active={currentUrl === item.url}
+              class="nav-link"
+            />
+          )}
+        </li>
+      ))
+    }
+
+    <li class="nav-item nav-item-mobile" role="none">
+      <Button href="#assessment" variant="primary" size="md">
+        Get a Free Assessment
+      </Button>
+    </li>
+  </ul>
+
+  {
+    showSearch && (
+      <div class="nav-search">
+        <button
+          class="nav-search-toggle"
+          type="button"
+          aria-label="Toggle search"
+          data-search-toggle
+        >
+          <Icon name="search" size="sm" />
+        </button>
+
+        <div class="nav-search-form" data-expanded="false">
+          <Icon name="search" size="sm" class="nav-search-icon" />
+          <input
+            type="search"
+            placeholder="Search..."
+            class="nav-search-input"
+            aria-label="Search site"
+          />
+        </div>
+      </div>
+    )
+  }
+</nav>
+
+<style>
+  .hg-main-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    position: relative;
+  }
+
+  /* Mobile menu header (hidden on desktop) */
+  .nav-mobile-header {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-lg);
+    border-bottom: var(--border-width-sm) solid var(--color-border-subtle);
+    margin-bottom: var(--space-md);
+  }
+
+  .nav-mobile-back,
+  .nav-mobile-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--space-xl);
+    height: var(--space-xl);
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-body);
+    cursor: pointer;
+    transition: all var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .nav-mobile-back[data-visible='false'] {
+    display: none;
+  }
+
+  .nav-mobile-back:hover,
+  .nav-mobile-close:hover {
+    background-color: var(--color-interactive-primary-hover);
+    color: var(--color-text-heading);
+  }
+
+  .nav-mobile-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+  }
+
+  /* Main navigation list */
+  .nav-list {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm); /* tighter spacing between links */
+    flex-wrap: nowrap; /* keep items on one line */
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .nav-item {
+    position: relative;
+  }
+
+  /* Navigation links */
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    color: var(--color-text-body);
+    text-decoration: none;
+    font-weight: var(--font-weight-regular);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    font-size: var(--font-size-md);
+    position: relative;
+  }
+
+  /* Remove global nav underline; handled per-text in DropdownNavLink */
+
+  .nav-link:hover,
+  .nav-link:focus-visible {
+    background-color: var(--color-interactive-primary-hover);
+    color: var(--color-text-heading);
+  }
+
+  .nav-link:focus-visible {
+    outline: var(--outline-width-md) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--space-2xs);
+  }
+
+  /* Dropdown trigger styling */
+  .nav-dropdown-trigger {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    white-space: nowrap; /* prevent wrapping of label */
+  }
+
+  /* Reduce horizontal padding for nav links in this nav context */
+  .hg-main-nav :is(a.hg-Link).variant-navigation {
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
+  }
+
+  .nav-dropdown-trigger[aria-expanded='true'] {
+    background-color: var(--color-interactive-selection-background);
+    color: var(--color-interactive-primary);
+  }
+
+  .nav-dropdown-icon {
+    transition: transform var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .nav-dropdown-trigger[aria-expanded='true'] .nav-dropdown-icon {
+    transform: rotate(180deg);
+  }
+
+  /* Dropdown menu */
+  .nav-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    transform: translateY(calc(var(--transform-dropdown-offset) * -1));
+    min-width: var(--size-dropdown-menu-width-lg);
+    background: var(--color-background-body);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-duration-base)
+      var(--transition-timing-function-ease);
+  }
+
+  .nav-dropdown[aria-hidden='false'] {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  /* Neutralize wrapper visuals when rendering new organism inside */
+  .nav-dropdown.nav-dropdown--organism {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    min-width: 0;
+  }
+
+  .nav-dropdown-container {
+    display: flex;
+    gap: var(--space-lg);
+    padding: var(--space-lg);
+  }
+
+  .nav-dropdown-columns {
+    display: flex;
+    gap: var(--space-lg);
+    flex: 1;
+  }
+
+  .nav-dropdown-column {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .nav-dropdown-heading {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-subtle);
+    text-transform: uppercase;
+    letter-spacing: var(--space-2xs);
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .nav-dropdown-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .nav-dropdown-item {
+    margin-bottom: var(--space-2xs);
+  }
+
+  .nav-dropdown-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-xs) var(--space-sm);
+    color: var(--color-text-body);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .nav-dropdown-link:hover,
+  .nav-dropdown-link:focus-visible {
+    background-color: var(--color-interactive-primary-hover);
+    color: var(--color-text-heading);
+  }
+
+  .nav-dropdown-badge {
+    padding: var(--space-2xs) var(--space-xs);
+    background-color: var(--color-interactive-primary);
+    color: var(--color-text-on-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    border-radius: var(--radius-pill);
+  }
+
+  .nav-dropdown-more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-top: var(--space-sm);
+    padding: var(--space-xs) var(--space-sm);
+    color: var(--color-interactive-primary);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-regular);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .nav-dropdown-more:hover {
+    background-color: var(--color-interactive-selection-background);
+  }
+
+  /* Promo card styling */
+  .nav-dropdown-promo {
+    width: var(--size-form-width-sm);
+    padding: var(--space-lg);
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+  }
+
+  .nav-dropdown-promo-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .nav-dropdown-promo-description {
+    color: var(--color-text-body);
+    margin: 0 0 var(--space-md) 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Image card styling */
+  .nav-dropdown-image-card {
+    display: block;
+    width: var(--size-form-width-sm);
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    text-decoration: none;
+    transition: transform var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .nav-dropdown-image-card:hover {
+    transform: translateY(calc(var(--transform-hover-small) * -1));
+  }
+
+  .nav-dropdown-image {
+    width: 100%;
+    height: var(--size-image-height-md);
+    object-fit: cover;
+  }
+
+  .nav-dropdown-image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgb(0 0 0 / 70%));
+    padding: var(--space-lg) var(--space-md) var(--space-md);
+  }
+
+  .nav-dropdown-image-title {
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    margin: 0;
+  }
+
+  /* Search styling */
+  .nav-search {
+    position: relative;
+    margin-left: var(--space-md);
+  }
+
+  .nav-search-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--space-xl);
+    height: var(--space-xl);
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--color-text-body);
+    cursor: pointer;
+    transition: all var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+  }
+
+  .nav-search-toggle:hover,
+  .nav-search-toggle:focus-visible {
+    background-color: var(--color-interactive-primary-hover);
+    color: var(--color-text-heading);
+  }
+
+  .nav-search-form {
+    position: absolute;
+    inset: 100% 0 auto auto;
+    margin-top: var(--space-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-background-body);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    min-width: var(--size-search-form-min-width);
+  }
+
+  .nav-search-form[data-expanded='false'] {
+    display: none;
+  }
+
+  .nav-search-form[data-expanded='true'] {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .nav-search-icon {
+    color: var(--color-text-subtle);
+    flex-shrink: 0;
+  }
+
+  .nav-search-input {
+    flex: 1;
+    padding: var(--space-sm);
+    background: transparent;
+    border: none;
+    color: var(--color-text-body);
+    font-size: var(--font-size-md);
+  }
+
+  .nav-search-input:focus {
+    outline: none;
+  }
+
+  .nav-search-input::placeholder {
+    color: var(--color-text-subtle);
+  }
+
+  /* Mobile-only elements */
+  .nav-item-mobile {
+    display: none;
+  }
+
+  /* Mobile responsive styles */
+  @media (--bp-md) {
+    .hg-main-nav {
+      flex-direction: column;
+      align-items: stretch;
+      position: fixed;
+      inset: 0;
+      background: var(--color-background-body);
+      z-index: 9999;
+      transform: translateX(-100%);
+      transition: transform var(--transition-duration-base)
+        var(--transition-timing-function-ease);
+      overflow-y: auto;
+    }
+
+    .hg-main-nav.is-open {
+      transform: translateX(0);
+    }
+
+    .nav-mobile-header {
+      display: flex;
+    }
+
+    .nav-list {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding: 0 var(--space-lg);
+    }
+
+    .nav-item {
+      border-bottom: var(--border-width-sm) solid var(--color-border-subtle);
+    }
+
+    .nav-link {
+      display: flex;
+      justify-content: space-between;
+      padding: var(--space-md) 0;
+      border-radius: 0;
+    }
+
+    .nav-dropdown {
+      position: static;
+      min-width: 0;
+      background: var(--color-surface);
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      margin-top: var(--space-sm);
+      padding: var(--space-md);
+    }
+
+    .nav-dropdown-container {
+      flex-direction: column;
+      gap: var(--space-md);
+      padding: 0;
+    }
+
+    .nav-dropdown-columns {
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .nav-dropdown-promo,
+    .nav-dropdown-image-card {
+      width: 100%;
+    }
+
+    .nav-item-mobile {
+      display: block;
+      border-bottom: none;
+      padding: var(--space-lg);
+      margin-top: var(--space-lg);
+    }
+
+    .nav-search {
+      margin: var(--space-lg);
+      margin-top: 0;
+    }
+
+    .nav-search-form {
+      position: static;
+      margin-top: 0;
+      box-shadow: none;
+      border-radius: var(--radius-lg);
+    }
+  }
+</style>
+
+<script>
+  class MainNavigation {
+    constructor() {
+      this.init();
+    }
+
+    init() {
+      this.setupDropdowns();
+      this.setupSearch();
+      this.setupMobileMenu();
+      this.setupKeyboardNavigation();
+    }
+
+    setupDropdowns() {
+      const triggers = document.querySelectorAll('.nav-dropdown-trigger');
+
+      triggers.forEach((trigger) => {
+        const dropdown = trigger.nextElementSibling as HTMLElement;
+        let isOpen = false;
+        let timeoutId: number | null = null;
+
+        const openDropdown = () => {
+          if (timeoutId) clearTimeout(timeoutId);
+          isOpen = true;
+          trigger.setAttribute('aria-expanded', 'true');
+          if (dropdown) dropdown.setAttribute('aria-hidden', 'false');
+        };
+
+        const closeDropdown = () => {
+          timeoutId = setTimeout(() => {
+            isOpen = false;
+            trigger.setAttribute('aria-expanded', 'false');
+            if (dropdown) dropdown.setAttribute('aria-hidden', 'true');
+          }, 150) as unknown as number;
+        };
+
+        // Mouse events
+        trigger.addEventListener('mouseenter', openDropdown);
+        trigger.addEventListener('mouseleave', closeDropdown);
+        if (dropdown) {
+          dropdown.addEventListener('mouseenter', () => {
+            if (timeoutId) clearTimeout(timeoutId);
+          });
+          dropdown.addEventListener('mouseleave', closeDropdown);
+        }
+
+        // Click events
+        trigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (isOpen) {
+            closeDropdown();
+          } else {
+            openDropdown();
+          }
+        });
+
+        // Focus events
+        trigger.addEventListener('focus', openDropdown);
+      });
+
+      // Close dropdowns when clicking outside
+      document.addEventListener('click', (e) => {
+        const target = e.target as Element;
+        if (!target?.closest('.nav-dropdown-wrapper')) {
+          triggers.forEach((trigger) => {
+            trigger.setAttribute('aria-expanded', 'false');
+            const dropdown = trigger.nextElementSibling as HTMLElement;
+            if (dropdown) dropdown.setAttribute('aria-hidden', 'true');
+          });
+        }
+      });
+    }
+
+    setupSearch() {
+      const searchToggle = document.querySelector('.nav-search-toggle');
+      const searchForm = document.querySelector(
+        '.nav-search-form',
+      ) as HTMLElement;
+      const searchInput = document.querySelector(
+        '.nav-search-input',
+      ) as HTMLInputElement;
+
+      if (!searchToggle || !searchForm) return;
+
+      searchToggle.addEventListener('click', () => {
+        const isExpanded = searchForm.getAttribute('data-expanded') === 'true';
+
+        if (isExpanded) {
+          searchForm.setAttribute('data-expanded', 'false');
+        } else {
+          searchForm.setAttribute('data-expanded', 'true');
+          if (searchInput) searchInput.focus();
+        }
+      });
+
+      // Close search when clicking outside
+      document.addEventListener('click', (e) => {
+        const target = e.target as Element;
+        if (!target?.closest('.nav-search')) {
+          searchForm.setAttribute('data-expanded', 'false');
+        }
+      });
+    }
+
+    setupMobileMenu() {
+      const mobileClose = document.querySelector('.nav-mobile-close');
+      const nav = document.querySelector('.hg-main-nav') as HTMLElement;
+
+      if (!mobileClose || !nav) return;
+
+      mobileClose.addEventListener('click', () => {
+        nav.classList.remove('is-open');
+        document.body.style.overflow = '';
+      });
+
+      // Handle mobile dropdown toggles
+      const mobileDropdownTriggers = document.querySelectorAll(
+        '.nav-dropdown-trigger',
+      );
+
+      if (window.innerWidth <= 768) {
+        mobileDropdownTriggers.forEach((trigger) => {
+          trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            const dropdown = trigger.nextElementSibling as HTMLElement;
+            const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+
+            trigger.setAttribute('aria-expanded', String(!isOpen));
+            if (dropdown) dropdown.setAttribute('aria-hidden', String(isOpen));
+          });
+        });
+      }
+    }
+
+    setupKeyboardNavigation() {
+      const nav = document.querySelector('.hg-main-nav');
+
+      if (!nav) return;
+
+      nav.addEventListener('keydown', (e) => {
+        const keyEvent = e as KeyboardEvent;
+        if (keyEvent.key === 'Escape') {
+          // Close all dropdowns
+          const triggers = nav.querySelectorAll('.nav-dropdown-trigger');
+          triggers.forEach((trigger) => {
+            trigger.setAttribute('aria-expanded', 'false');
+            const dropdown = trigger.nextElementSibling as HTMLElement;
+            if (dropdown) dropdown.setAttribute('aria-hidden', 'true');
+          });
+
+          // Close mobile menu
+          const navElement = nav as HTMLElement;
+          navElement.classList.remove('is-open');
+          document.body.style.overflow = '';
+
+          // Close search
+          const searchForm = nav.querySelector(
+            '.nav-search-form',
+          ) as HTMLElement;
+          if (searchForm) {
+            searchForm.setAttribute('data-expanded', 'false');
+          }
+        }
+      });
+    }
+  }
+
+  // Initialize navigation when DOM is loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      new MainNavigation();
+    });
+  } else {
+    new MainNavigation();
+  }
+</script>

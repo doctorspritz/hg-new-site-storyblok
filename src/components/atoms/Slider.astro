@@ -1,0 +1,358 @@
+---
+/**
+ * Atom: Slider
+ * Accessible range input for numeric selection with enhanced visual features.
+ */
+import Label from './Label.astro';
+import SliderCaption from './SliderCaption.astro';
+
+export interface Props {
+  id?: string;
+  name?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  value?: number;
+  disabled?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+  showValue?: boolean;
+  label?: string;
+  showProgress?: boolean;
+  showCaption?: boolean;
+  captionFormat?: 'value' | 'percentage' | 'currency';
+  currency?: string;
+  variant?: 'default' | 'filled';
+  class?: string;
+}
+
+const {
+  id,
+  name,
+  min = 0,
+  max = 100,
+  step = 1,
+  value = min,
+  disabled = false,
+  size = 'md',
+  showValue = false,
+  label,
+  showProgress = false,
+  showCaption = false,
+  captionFormat = 'value',
+  currency = '$',
+  variant = 'default',
+  class: className = '',
+} = Astro.props as Props;
+
+const sliderId =
+  id ?? name ?? `slider-${Math.random().toString(36).slice(2, 8)}`;
+const labelId = label ? `${sliderId}-label` : undefined;
+
+// Calculate percentage for progress and caption positioning
+const percentage = ((value - min) / (max - min)) * 100;
+
+// Format caption text based on format type
+let captionText = '';
+if (showCaption) {
+  switch (captionFormat) {
+    case 'percentage':
+      captionText = `${Math.round(percentage)}%`;
+      break;
+    case 'currency':
+      captionText = `${currency}${value}`;
+      break;
+    default:
+      captionText = `${value}`;
+  }
+}
+---
+
+<div
+  class:list={[
+    'hg-Slider-container',
+    `size-${size}`,
+    `variant-${variant}`,
+    { 'is-disabled': disabled },
+    className,
+  ]}
+  data-caption-format={showCaption ? captionFormat : undefined}
+  data-currency={showCaption && captionFormat === 'currency'
+    ? currency
+    : undefined}
+>
+  {
+    label && (
+      <Label forId={sliderId}>
+        <span id={labelId}>{label}</span>
+      </Label>
+    )
+  }
+
+  <div class="hg-Slider" data-variant={variant}>
+    {
+      showProgress && (
+        <div
+          class="slider-progress"
+          style={`--progress-percentage: ${percentage}%`}
+        />
+      )
+    }
+
+    <input
+      type="range"
+      id={sliderId}
+      name={name}
+      min={min}
+      max={max}
+      step={step}
+      value={value}
+      disabled={disabled}
+      aria-labelledby={label ? labelId : undefined}
+      class="slider"
+    />
+
+    {
+      showCaption && (
+        <div
+          class="slider-caption-container"
+          style={`--caption-position: ${percentage}%`}
+        >
+          <SliderCaption text={captionText} size={size} />
+        </div>
+      )
+    }
+  </div>
+
+  {showValue && <span class="value">{value}</span>}
+</div>
+
+<style>
+  .hg-Slider-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .hg-Slider {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  /* Progress bar styling */
+  .slider-progress {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: var(--space-xs);
+    width: var(--progress-percentage);
+    background-color: var(--color-interactive-primary);
+    border-radius: var(--radius-pill);
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 1;
+    transition: width var(--transition-duration-base)
+      var(--transition-timing-function-ease);
+  }
+
+  /* Filled variant adjustments for progress bar */
+  .hg-Slider[data-variant='filled'] .slider-progress {
+    width: calc(var(--progress-percentage) - var(--space-ml));
+    max-width: calc(100% - var(--space-ml));
+  }
+
+  .hg-Slider .slider {
+    flex: 1 1 auto;
+    width: 100%;
+    accent-color: var(--color-interactive-primary);
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Enhanced styling for filled variant */
+  .hg-Slider[data-variant='filled'] .slider {
+    background: transparent;
+    appearance: none;
+    height: var(--space-xs);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-border-subtle);
+    outline: none;
+  }
+
+  .hg-Slider[data-variant='filled'] .slider::-webkit-slider-thumb {
+    appearance: none;
+    width: var(--space-ml);
+    height: var(--space-ml);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-interactive-primary);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-background-body);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+  }
+
+  .hg-Slider[data-variant='filled'] .slider::-moz-range-thumb {
+    width: var(--space-ml);
+    height: var(--space-ml);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-interactive-primary);
+    border: var(--border-width-sm) var(--border-style-solid)
+      var(--color-background-body);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+  }
+
+  .hg-Slider .slider:hover {
+    cursor: pointer;
+  }
+
+  .hg-Slider .slider:focus {
+    outline: var(--border-width-sm) var(--border-style-solid)
+      var(--color-border-focus);
+  }
+
+  .hg-Slider .slider:disabled {
+    accent-color: var(--color-interactive-disabled);
+    cursor: not-allowed;
+  }
+
+  /* Caption container positioning */
+  .slider-caption-container {
+    position: absolute;
+    top: calc(-1 * var(--space-xl) - var(--space-sm));
+    left: var(--caption-position);
+    transform: translateX(-50%);
+    transition: left var(--transition-duration-base)
+      var(--transition-timing-function-ease);
+    z-index: 3;
+  }
+
+  /* Handle edge cases for caption positioning */
+  .slider-caption-container[style*='--caption-position: 0%'] {
+    transform: translateX(0);
+  }
+
+  .slider-caption-container[style*='--caption-position: 100%'] {
+    transform: translateX(-100%);
+  }
+
+  /* Size variants */
+  .hg-Slider-container.size-sm .slider {
+    height: var(--space-xs);
+  }
+
+  .hg-Slider-container.size-md .slider {
+    height: var(--space-sm);
+  }
+
+  .hg-Slider-container.size-lg .slider {
+    height: var(--space-md);
+  }
+
+  .hg-Slider-container .value {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-subtle);
+  }
+</style>
+
+<script>
+  // Enhanced slider functionality to keep progress and caption in sync
+  function initializeSliders() {
+    const sliders = document.querySelectorAll(
+      '.hg-Slider-container .slider',
+    ) as NodeListOf<HTMLInputElement>;
+
+    sliders.forEach((slider) => {
+      const container = slider.closest('.hg-Slider-container') as HTMLElement;
+      if (!container) return;
+
+      const progressBar = container.querySelector(
+        '.slider-progress',
+      ) as HTMLElement;
+      const captionContainer = container.querySelector(
+        '.slider-caption-container',
+      ) as HTMLElement;
+      const captionText = captionContainer?.querySelector(
+        '.hg-slider-caption',
+      ) as HTMLElement;
+      const valueDisplay = container.querySelector('.value') as HTMLElement;
+
+      // Get slider properties
+      const min = parseFloat(slider.min);
+      const max = parseFloat(slider.max);
+      const variant =
+        slider.closest('.hg-Slider')?.getAttribute('data-variant') || 'default';
+
+      // Get caption formatting info from data attributes
+      const captionFormat = container.dataset.captionFormat || 'value';
+      const currency = container.dataset.currency || '$';
+
+      function updateSlider() {
+        const value = parseFloat(slider.value);
+        const percentage = ((value - min) / (max - min)) * 100;
+
+        // Update progress bar
+        if (progressBar) {
+          progressBar.style.setProperty(
+            '--progress-percentage',
+            `${percentage}%`,
+          );
+        }
+
+        // Update caption position and text
+        if (captionContainer) {
+          captionContainer.style.setProperty(
+            '--caption-position',
+            `${percentage}%`,
+          );
+
+          // Handle edge case transforms
+          captionContainer.style.transform =
+            percentage <= 0
+              ? 'translateX(0)'
+              : percentage >= 100
+                ? 'translateX(-100%)'
+                : 'translateX(-50%)';
+
+          // Update caption text
+          if (captionText) {
+            let newText = '';
+            switch (captionFormat) {
+              case 'percentage':
+                newText = `${Math.round(percentage)}%`;
+                break;
+              case 'currency':
+                newText = `${currency}${value}`;
+                break;
+              default:
+                newText = `${value}`;
+            }
+            captionText.textContent = newText;
+          }
+        }
+
+        // Update value display if present
+        if (valueDisplay) {
+          valueDisplay.textContent = `${value}`;
+        }
+      }
+
+      // Initialize on load
+      updateSlider();
+
+      // Update on input
+      slider.addEventListener('input', updateSlider);
+
+      // Update on change (for accessibility)
+      slider.addEventListener('change', updateSlider);
+    });
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeSliders);
+  } else {
+    initializeSliders();
+  }
+</script>

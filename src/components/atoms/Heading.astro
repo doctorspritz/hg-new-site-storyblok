@@ -1,0 +1,236 @@
+---
+/**
+ * Heading Atom
+ * Hunter Galloway Design System - Atomic Component
+ *
+ * A flexible heading component that separates semantic level from visual appearance.
+ * Uses design tokens for all typography values.
+ */
+
+export interface Props {
+  /** Semantic heading level (determines the HTML tag) */
+  level: 1 | 2 | 3 | 4 | 5 | 6;
+  /** Optional id attribute for anchorability and a11y hooks */
+  id?: string;
+  /** Visual size (independent of semantic level) */
+  size?:
+    | 'sm'
+    | 'md'
+    | 'lg'
+    | 'xl'
+    | '2xl'
+    | '3xl'
+    | '4xl'
+    | '5xl'
+    | 'fluid-2xl'
+    | 'fluid-3xl'
+    | 'fluid-4xl'
+    | 'fluid-5xl';
+  /** Color variant */
+  color?: 'default' | 'subtle' | 'inverse' | 'primary';
+  /** Text alignment */
+  align?: 'left' | 'center' | 'right';
+  /** Additional CSS classes */
+  class?: string;
+  /** Optional bottom margin using spacing tokens */
+  marginBottom?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  /** Maximum width constraint using content tokens */
+  maxWidth?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'content' | 'full';
+  /** Center block element horizontally */
+  centerBlock?: boolean;
+}
+
+const {
+  level,
+  id,
+  size,
+  color = 'default',
+  align,
+  class: className = '',
+  marginBottom = 'none',
+  maxWidth = 'none',
+  centerBlock = false,
+} = Astro.props;
+
+// Map semantic level to default visual size if size not specified
+// Based on WordPress typography scale: h1(60px), h2(30px), h3(27px), h4(23px), h5(20px), h6(16px)
+const defaultSizes = {
+  1: '5xl', // 60px - main banner titles
+  2: '3xl', // 30px - section titles
+  3: '2xl', // 27px - h3
+  4: 'xl', // 23px - h4
+  5: 'lg', // 20px - h5
+  6: 'md', // 16px - h6
+} as const;
+
+const visualSize = size || defaultSizes[level];
+const Tag = `h${level}` as keyof HTMLElementTagNameMap;
+
+// Build CSS classes
+const headingClasses = [
+  'hg-heading',
+  `hg-heading--${visualSize}`,
+  `hg-heading--${color}`,
+  align && `hg-heading--align-${align}`,
+  marginBottom && marginBottom !== 'none' && `hg-heading--mb-${marginBottom}`,
+  maxWidth && maxWidth !== 'none' && `hg-heading--max-${maxWidth}`,
+  centerBlock && `hg-heading--center-block`,
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<Tag id={id} class={headingClasses}>
+  <slot />
+</Tag>
+
+<style>
+  .hg-heading {
+    font-family: var(--font-family-base);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-normal);
+    margin: 0; /* Reset browser defaults */
+  }
+
+  /* Size variants using design tokens */
+  .hg-heading--sm {
+    font-size: var(--font-size-sm); /* 14px */
+  }
+
+  .hg-heading--md {
+    font-size: var(--font-size-md); /* 16px - h6 */
+  }
+
+  .hg-heading--lg {
+    font-size: var(--font-size-lg); /* 20px - h5 */
+  }
+
+  .hg-heading--xl {
+    font-size: var(--font-size-xl); /* 23px - h4 */
+  }
+
+  .hg-heading--2xl {
+    font-size: var(--font-size-2xl); /* 27px - h3 */
+  }
+
+  .hg-heading--3xl {
+    font-size: var(--font-size-3xl); /* 30px - h2, section titles */
+  }
+
+  .hg-heading--4xl {
+    font-size: var(--font-size-4xl); /* 40px - widget titles */
+  }
+
+  .hg-heading--5xl {
+    font-size: var(--font-size-5xl); /* 60px - main banner titles */
+  }
+
+  /* Fluid sizes */
+  .hg-heading--fluid-2xl {
+    font-size: var(--font-size-fluid-2xl);
+  }
+
+  .hg-heading--fluid-3xl {
+    font-size: var(--font-size-fluid-3xl);
+  }
+
+  .hg-heading--fluid-4xl {
+    font-size: var(--font-size-fluid-4xl);
+  }
+
+  .hg-heading--fluid-5xl {
+    font-size: var(--font-size-fluid-5xl);
+  }
+
+  /* Color variants using design tokens */
+  .hg-heading--default {
+    color: var(--color-text-heading);
+  }
+
+  .hg-heading--subtle {
+    color: var(--color-text-subtle);
+  }
+
+  .hg-heading--inverse {
+    color: var(--color-text-inverse);
+  }
+
+  .hg-heading--primary {
+    color: var(--color-interactive-primary);
+  }
+
+  /* Alignment variants */
+  .hg-heading--align-left {
+    text-align: left;
+  }
+
+  .hg-heading--align-center {
+    text-align: center;
+  }
+
+  .hg-heading--align-right {
+    text-align: right;
+  }
+
+  /* Spacing utilities: bottom margin tokens */
+  .hg-heading--mb-xs {
+    margin-bottom: var(--space-xs);
+  }
+
+  .hg-heading--mb-sm {
+    margin-bottom: var(--space-sm);
+  }
+
+  .hg-heading--mb-md {
+    margin-bottom: var(--space-md);
+  }
+
+  .hg-heading--mb-lg {
+    margin-bottom: var(--space-lg);
+  }
+
+  .hg-heading--mb-xl {
+    margin-bottom: var(--space-xl);
+  }
+
+  .hg-heading--mb-2xl {
+    margin-bottom: var(--space-2xl);
+  }
+
+  /* Max-width variants using content-specific tokens */
+
+  /* Available container tokens: --size-container-content, --size-container-wide, --size-container-narrow */
+
+  /* Future extension could use: max-width: var(--size-container-wide); for wider layouts */
+  .hg-heading--max-sm {
+    max-width: var(--size-content-max-width-sm);
+  }
+
+  .hg-heading--max-md {
+    max-width: var(--size-content-max-width-md);
+  }
+
+  .hg-heading--max-lg {
+    max-width: var(--size-content-max-width-lg);
+  }
+
+  .hg-heading--max-xl {
+    max-width: var(--size-content-max-width-xl);
+  }
+
+  .hg-heading--max-content {
+    max-width: var(--size-container-content);
+  }
+
+  .hg-heading--max-full {
+    max-width: 100%;
+  }
+
+  /* Block centering */
+  .hg-heading--center-block {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+</style>

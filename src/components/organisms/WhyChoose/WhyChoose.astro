@@ -1,0 +1,264 @@
+---
+/**
+ * WhyChoose Organism
+ * Hunter Galloway Design System - Organism Component
+ * 
+ * A comprehensive trust-building organism that matches WordPress why_choose_widget
+ * Used across 7+ pages for displaying benefits and trust indicators.
+ * 
+ * Follows tokenized design system - no hard-coded colors or values.
+ */
+
+import type { WhyChooseProps } from './WhyChoose.types';
+import { semantic } from '../../../tokens/semantic';
+import WhyChooseItem from '../../molecules/WhyChooseItem/WhyChooseItem.astro';
+import Button from '../../atoms/Button/Button.astro';
+
+// Extend the archived props with the fields this file actually uses
+interface Props extends WhyChooseProps {
+  items?: Array<{ icon: string; title: string; description?: string }>;
+  buttonOnClick?: string;
+}
+
+const {
+  title,
+  items = [],
+  buttonText,
+  buttonHref = '#',
+  buttonOnClick,
+  variant = 'default',
+  class: additionalClasses = '',
+} = Astro.props as Props;
+
+// Build CSS classes based on props
+const organismClasses = [
+  'why-choose',
+  'why-choose-widget',
+  'widget',
+  `why-choose--${variant}`,
+  additionalClasses,
+].filter(Boolean).join(' ');
+
+// Determine item variant based on WhyChoose variant
+const itemVariant = variant === 'compact' ? 'compact' : 'default';
+---
+
+<section class={organismClasses}>
+  <div class="container">
+    <div class="inner-widget">
+      {/* Header Section */}
+      <div class="why-choose-title">
+        <Fragment set:html={title} />
+      </div>
+
+      {/* Items Section */}
+      <div class="why-choose-blocks">
+        <div class="why-choose-blocks-inner flex">
+          {items.map((item) => (
+            <WhyChooseItem
+              icon={item.icon}
+              title={item.title}
+              description={item.description}
+              variant={itemVariant}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Call to Action Section */}
+      {buttonText && (
+        <div class="btn-wrap">
+          <Button
+            href={buttonHref}
+            variant="primary"
+            size="lg"
+            onclick={buttonOnClick}
+            class="rc_open B-trigger"
+          >
+            {buttonText}
+          </Button>
+        </div>
+      )}
+    </div>
+  </div>
+</section>
+
+<style define:vars={{
+  /* Color tokens */
+  textPrimary: semantic.color.text.primary,
+  textSecondary: semantic.color.text.secondary,
+  surfacePrimary: semantic.color.surface.primary,
+  brandYellow: semantic.color.brand.primary,
+  
+  /* Typography tokens */
+  fontSizeXxxl: '40px', // WordPress exact
+  fontSizeXxl: '30px', // Mobile title
+  fontWeightHeavy: '900',
+  lineHeightTight: '110%',
+  
+  /* Spacing tokens */
+  spacingXs: semantic.space.xs,
+  spacingSm: semantic.space.sm,
+  spacingMd: semantic.space.md,
+  spacingLg: semantic.space.lg,
+  spacingXl: semantic.space.xl,
+  containerMaxWidth: '1200px',
+}}>
+/* WhyChoose Organism - Tokenized styles only */
+.why-choose-organism {
+  padding: var(--space3xl) 0;
+  transition: background-color var(--durationNormal) ease;
+}
+
+/* Background variants using tokens */
+.why-choose-organism--bg-light {
+  background: var(--surfaceSecondary);
+}
+
+.why-choose-organism--bg-dark {
+  background: var(--surfaceDark);
+}
+
+.why-choose-organism--bg-accent {
+  background: var(--surfaceAccent);
+}
+
+/* Inner container */
+.why-choose-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space2xl);
+}
+
+/* Header section */
+.why-choose-header {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.why-choose-title {
+  font-size: var(--fontSize5xl);
+  font-weight: var(--fontWeightDisplay);
+  line-height: var(--lineHeightTight);
+  color: var(--textPrimary);
+  margin: 0 0 var(--spaceLg) 0;
+}
+
+.why-choose-organism--bg-dark .why-choose-title {
+  color: var(--textInverse);
+}
+
+.why-choose-subtitle {
+  font-size: var(--fontSizeLg);
+  line-height: var(--lineHeightBody);
+  color: var(--textSecondary);
+  margin: 0;
+}
+
+.why-choose-organism--bg-dark .why-choose-subtitle {
+  color: var(--textInverse);
+  opacity: 0.9;
+}
+
+/* Statistics section */
+.why-choose-stats {
+  margin: var(--spaceXl) 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spaceLg);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Benefits section */
+.why-choose-benefits {
+  margin: var(--spaceXl) 0;
+}
+
+.benefits-grid {
+  display: grid;
+  gap: var(--spaceLg);
+}
+
+.benefits-grid--cols-3 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.benefits-grid--cols-2 {
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* CTA section */
+.why-choose-cta {
+  text-align: center;
+  margin-top: var(--space2xl);
+}
+
+/* Variant: with-stats - adds more spacing */
+.why-choose-organism--with-stats .why-choose-inner {
+  gap: var(--space3xl);
+}
+
+/* Variant: compact - tighter spacing */
+.why-choose-organism--compact {
+  padding: var(--space2xl) 0;
+}
+
+.why-choose-organism--compact .why-choose-inner {
+  gap: var(--spaceXl);
+}
+
+.why-choose-organism--compact .why-choose-title {
+  font-size: var(--fontSize3xl);
+  margin-bottom: var(--spaceMd);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .why-choose-organism {
+    padding: var(--space2xl) 0;
+  }
+  
+  .why-choose-title {
+    font-size: var(--fontSize3xl);
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .benefits-grid--cols-3,
+  .benefits-grid--cols-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .why-choose-inner {
+    gap: var(--spaceXl);
+  }
+}
+
+/* Accessibility - focus states */
+.why-choose-organism :focus-visible {
+  outline: 2px solid var(--brandPrimary);
+  outline-offset: 2px;
+  border-radius: var(--radiusSm);
+}
+
+/* Print styles */
+@media print {
+  .why-choose-organism {
+    background: none !important;
+    color: black !important;
+  }
+  
+  .why-choose-cta {
+    display: none;
+  }
+}
+</style>

@@ -1,0 +1,324 @@
+---
+/**
+ * Organism: BorrowingCapacityForm
+ * A focused borrowing capacity calculator form with dark container styling.
+ * Features two-column layout with specific fields matching design requirements.
+ */
+
+import Container from '../atoms/Container.astro';
+import Heading from '../atoms/Heading.astro';
+import InputField from '../atoms/InputField.astro';
+import RadioGroup from '../molecules/RadioGroup.astro';
+import Select from '../atoms/Select.astro';
+import Button from '../atoms/Button.astro';
+import Icon from '../atoms/Icon.astro';
+
+export interface Props {
+  /** Additional CSS classes */
+  class?: string;
+  /** Form title */
+  title?: string;
+  /** Form submit handler */
+  action?: string;
+  /** Submit button text */
+  submitText?: string;
+}
+
+const {
+  class: className = '',
+  title = 'Calculate my borrowing capacity',
+  action,
+  submitText = 'Calculate my borrowing capacity',
+} = Astro.props;
+
+// Marital status options
+const maritalStatusOptions = [
+  { label: 'Couple', value: 'couple' },
+  { label: 'Single Person', value: 'single' },
+];
+
+// First home owner options
+const firstHomeOwnerOptions = [
+  { label: 'Yes', value: 'yes' },
+  { label: 'No', value: 'no' },
+];
+
+// Dependants options
+const dependantsOptions = [
+  { label: "I don't have dependants", value: '0' },
+  { label: '1', value: '1' },
+  { label: '2', value: '2' },
+  { label: '3+', value: '3+' },
+];
+
+// Australian states for dropdown
+const stateOptions = [
+  { label: 'New South Wales', value: 'NSW' },
+  { label: 'Victoria', value: 'VIC' },
+  { label: 'Queensland', value: 'QLD' },
+  { label: 'Western Australia', value: 'WA' },
+  { label: 'South Australia', value: 'SA' },
+  { label: 'Tasmania', value: 'TAS' },
+  { label: 'Northern Territory', value: 'NT' },
+  { label: 'Australian Capital Territory', value: 'ACT' },
+];
+---
+
+<Container maxWidth="lg" class:list={['hg-BorrowingCapacityForm', className]}>
+  <div class="form-wrapper">
+    <Heading
+      level={2}
+      size="2xl"
+      color="inverse"
+      align="center"
+      marginBottom="lg"
+    >
+      {title}
+    </Heading>
+
+    <form
+      class="form"
+      method="post"
+      action={action}
+      novalidate
+      aria-label="Borrowing capacity calculator"
+    >
+      <div class="form-columns">
+        <!-- Left Column -->
+        <div class="form-column">
+          <!-- Marital Status -->
+          <div class="field-group">
+            <RadioGroup
+              name="maritalStatus"
+              label="Are you applying as a couple or a single person?"
+              options={maritalStatusOptions}
+              variant="button"
+              orientation="horizontal"
+              required
+            />
+          </div>
+
+          <!-- Annual Income -->
+          <div class="field-group">
+            <InputField
+              name="annualIncome"
+              label="What's your total annual income before tax?"
+              type="number"
+              placeholder="e.g. 50,000"
+              prefixText="$"
+              helper="If you're applying as a couple, include your partner's income too. Include all types of income: bonuses, rental income, overtime etc."
+              required
+              min="0"
+              step="1000"
+              size="md"
+            />
+          </div>
+
+          <!-- Deposit -->
+          <div class="field-group">
+            <InputField
+              name="deposit"
+              label="How much is your deposit?"
+              type="number"
+              placeholder="e.g. 40,000"
+              prefixText="$"
+              helper="The amount you have saved for a deposit."
+              min="0"
+              step="5000"
+              size="md"
+            />
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="form-column">
+          <!-- First Home Owner -->
+          <div class="field-group">
+            <RadioGroup
+              name="firstHomeOwner"
+              label="Are you a first home owner?"
+              options={firstHomeOwnerOptions}
+              variant="button"
+              orientation="horizontal"
+              required
+            />
+          </div>
+
+          <!-- Dependants -->
+          <div class="field-group">
+            <RadioGroup
+              name="dependants"
+              label="How many dependants do you have?"
+              options={dependantsOptions}
+              variant="button"
+              orientation="horizontal"
+              helper="A dependant is anyone under the age of 18 who relies on you financially."
+            />
+          </div>
+
+          <!-- State -->
+          <div class="field-group">
+            <label class="field-label" for="state"
+              >What state are you buying in?</label
+            >
+            <Select
+              id="state"
+              name="state"
+              placeholder="Select a State"
+              options={stateOptions}
+              required
+              size="md"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="submit-wrapper">
+        <Button type="submit" variant="primary" size="lg" class="submit-button">
+          {submitText}
+          <Icon name="arrow-right" size="sm" />
+        </Button>
+      </div>
+    </form>
+  </div>
+</Container>
+
+<style>
+  .hg-BorrowingCapacityForm {
+    padding: var(--space-xl) 0;
+  }
+
+  .form-wrapper {
+    background-color: var(--color-background-brand-dark);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    max-width: var(--size-container-content);
+    margin: 0 auto;
+  }
+
+  .form {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .form-columns {
+    display: grid;
+    gap: var(--space-lg);
+    grid-template-columns: 1fr;
+  }
+
+  @media (--bp-min-md) {
+    .form-columns {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+  }
+
+  /* Force two columns on wider screens */
+  @media (--bp-min-lgx) {
+    .form-columns {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+  }
+
+  .form-column {
+    display: grid;
+    gap: var(--space-lg);
+  }
+
+  .field-group {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .field-label {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-xs);
+  }
+
+  .submit-wrapper {
+    display: flex;
+    justify-content: center;
+    padding-top: var(--space-lg);
+  }
+
+  .submit-button {
+    background-color: var(--color-interactive-primary);
+    color: var(--color-text-on-primary);
+    border-radius: var(--radius-pill);
+    padding: var(--space-md) var(--space-lg);
+    font-weight: var(--font-weight-bold);
+    transition: all var(--transition-duration-fast)
+      var(--transition-timing-function-ease);
+    box-shadow: var(--shadow-md);
+  }
+
+  .submit-button:hover {
+    background-color: var(--color-interactive-primary-hover);
+    transform: translateY(calc(-1 * var(--space-2xs)));
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Override RadioGroup styling for dark theme */
+  .form-wrapper :global(.hg-RadioGroup .group-label) {
+    color: var(--color-text-inverse);
+  }
+
+  .form-wrapper :global(.hg-RadioGroup .helper) {
+    color: var(--color-text-inverse);
+    opacity: 0.8;
+  }
+
+  /* Override InputField styling for dark theme */
+  .form-wrapper :global(.hg-InputField .label) {
+    color: var(--color-text-inverse);
+  }
+
+  .form-wrapper :global(.hg-InputField .input),
+  .form-wrapper :global(.hg-InputField .control) {
+    background-color: var(--color-surface);
+    border-color: var(--color-border-subtle);
+  }
+
+  .form-wrapper :global(.hg-InputField .input:focus),
+  .form-wrapper :global(.hg-InputField .control:focus-within) {
+    border-color: var(--color-interactive-primary);
+  }
+
+  /* Override Select styling for dark theme */
+  .form-wrapper :global(.hg-Select .select) {
+    background-color: var(--color-surface);
+    border-color: var(--color-border-subtle);
+    color: var(--color-text-body);
+  }
+
+  .form-wrapper :global(.hg-Select .select:focus) {
+    border-color: var(--color-interactive-primary);
+  }
+
+  /* Mobile responsive adjustments */
+  @media (--bp-md) {
+    .form-wrapper {
+      padding: var(--space-lg);
+      margin: 0 var(--space-md);
+      border-radius: var(--radius-md);
+    }
+
+    .form-columns {
+      gap: var(--space-md);
+    }
+
+    .form-column {
+      gap: var(--space-md);
+    }
+
+    .submit-button {
+      width: 100%;
+      padding: var(--space-md);
+    }
+  }
+</style>

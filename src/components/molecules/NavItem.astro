@@ -1,0 +1,152 @@
+---
+/**
+ * Molecule: NavItem
+ * Navigation item combining Link with optional Icon and Badge.
+ *
+ * Layout: [icon] text [badge]
+ * States: active, hover, focus-visible, disabled
+ * Accessibility: aria-current for active, disabled not clickable
+ */
+import Icon from '../atoms/Icon.astro';
+import Badge from '../atoms/Badge.astro';
+
+interface Props {
+  /** Link destination */
+  href: string;
+  /** Link text content */
+  text: string;
+  /** Optional leading icon name */
+  icon?: string;
+  /** Optional trailing badge text */
+  badgeText?: string;
+  /** Active state (current page/section) */
+  active?: boolean;
+  /** Disabled state */
+  disabled?: boolean;
+  /** External link behavior */
+  external?: boolean;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  href,
+  text,
+  icon,
+  badgeText,
+  active = false,
+  disabled = false,
+  external = false,
+  class: className = '',
+} = Astro.props as Props;
+
+// Build CSS classes
+const navItemClasses = [
+  'hg-nav-item',
+  { 'is-active': active },
+  { 'is-disabled': disabled },
+  className,
+].filter(Boolean);
+
+// Link attributes
+const linkAttributes: any = {
+  'aria-current': active ? 'page' : undefined,
+  'aria-disabled': disabled ? true : undefined,
+  tabindex: disabled ? -1 : undefined,
+  href: disabled ? undefined : href,
+  target: external ? '_blank' : undefined,
+  rel: external ? 'noopener noreferrer' : undefined,
+};
+---
+
+<a class:list={navItemClasses} {...linkAttributes}>
+  {icon && <Icon name={icon} size="sm" color="inherit" class="nav-item-icon" />}
+  <span class="nav-item-text">{text}</span>
+  {
+    badgeText && (
+      <Badge
+        text={badgeText}
+        size="sm"
+        variant="primary"
+        class="nav-item-badge"
+      />
+    )
+  }
+</a>
+
+<style>
+  .hg-nav-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    color: var(--color-text-body);
+    text-decoration: none;
+    font-weight: var(--font-weight-regular);
+    transition:
+      background-color var(--transition-duration-fast)
+        var(--transition-timing-function-ease),
+      color var(--transition-duration-fast)
+        var(--transition-timing-function-ease),
+      border-color var(--transition-duration-fast)
+        var(--transition-timing-function-ease);
+    cursor: pointer;
+  }
+
+  /* Focus state */
+  .hg-nav-item:focus-visible {
+    outline: var(--outline-width-md) var(--border-style-solid)
+      var(--color-border-focus);
+    outline-offset: var(--border-width-sm);
+  }
+
+  /* Hover state */
+  .hg-nav-item:hover:not(.is-disabled) {
+    background-color: var(--color-interactive-primary-hover);
+    color: var(--color-text-heading);
+  }
+
+  /* Active state */
+  .hg-nav-item.is-active {
+    background-color: var(--color-interactive-selection-background);
+    color: var(--color-interactive-primary);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .hg-nav-item.is-active:hover {
+    background-color: var(--color-interactive-selection-background);
+    color: var(--color-interactive-primary);
+  }
+
+  /* Disabled state */
+  .hg-nav-item.is-disabled {
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Icon styling */
+  .nav-item-icon {
+    flex-shrink: 0;
+  }
+
+  /* Text styling */
+  .nav-item-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Badge styling */
+  .nav-item-badge {
+    flex-shrink: 0;
+    margin-left: var(--space-xs);
+  }
+
+  /* Active state icon color override */
+  .hg-nav-item.is-active .nav-item-icon {
+    color: var(--color-interactive-primary);
+  }
+</style>

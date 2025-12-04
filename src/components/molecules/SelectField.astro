@@ -1,0 +1,116 @@
+---
+/**
+ * Molecule: SelectField
+ * Label + select control with helper/error text.
+ */
+import Select from '../atoms/Select.astro';
+interface Option {
+  label: string;
+  value: string;
+  disabled?: boolean;
+}
+
+interface Props {
+  id?: string;
+  name?: string;
+  value?: string;
+  options?: Option[];
+  placeholder?: string;
+  label?: string;
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'border' | 'no-border';
+  disabled?: boolean;
+  required?: boolean;
+  invalid?: boolean;
+  error?: string;
+  helper?: string;
+}
+
+const {
+  id,
+  name,
+  value,
+  options = [],
+  placeholder,
+  label,
+  size = 'md',
+  variant = 'border',
+  disabled = false,
+  required = false,
+  invalid = false,
+  error,
+  helper,
+} = Astro.props as Props;
+
+const computedId = id ?? name ?? 'select';
+const describedBy =
+  [helper ? `${computedId}-helper` : null, error ? `${computedId}-error` : null]
+    .filter(Boolean)
+    .join(' ') || undefined;
+---
+
+<div
+  class:list={[
+    'hg-SelectField',
+    `size-${size}`,
+    { 'is-disabled': disabled, 'is-invalid': invalid || !!error },
+  ]}
+>
+  {
+    label && (
+      <label for={computedId} class="label">
+        {label}
+        {required ? ' *' : ''}
+      </label>
+    )
+  }
+  <Select
+    id={computedId}
+    name={name}
+    options={options}
+    placeholder={placeholder}
+    value={value}
+    size={size}
+    variant={variant}
+    disabled={disabled}
+    required={required}
+    invalid={invalid || !!error}
+    aria-describedby={describedBy}
+  />
+  {
+    helper && (
+      <div id={`${computedId}-helper`} class="helper">
+        {helper}
+      </div>
+    )
+  }
+  {
+    error && (
+      <div id={`${computedId}-error`} class="error" role="alert">
+        {error}
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .hg-SelectField {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .label {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-heading);
+  }
+
+  .error {
+    color: var(--color-feedback-error);
+    font-size: var(--font-size-sm);
+  }
+
+  .helper {
+    color: var(--color-text-subtle);
+    font-size: var(--font-size-sm);
+  }
+</style>

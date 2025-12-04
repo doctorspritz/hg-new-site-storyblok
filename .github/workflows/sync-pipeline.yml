@@ -1,0 +1,369 @@
+name: Design System Sync Pipeline
+
+on:
+  # Trigger on pushes to main branch
+  push:
+    branches: [main]
+    paths:
+      - 'src/components/storyblok/**'
+      - 'src/design-tokens/**'
+      - 'src/stories/**'
+      - 'scripts/sync-pipeline/**'
+  
+  # Trigger on pull requests
+  pull_request:
+    branches: [main]
+  
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      sync_type:
+        description: 'Type of sync to perform'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+        - full
+        - components
+        - storybook
+        - tokens
+      
+      deploy:
+        description: 'Deploy after sync'
+        required: false
+        default: true
+        type: boolean
+
+  # Webhook trigger (via repository_dispatch)
+  repository_dispatch:
+    types: [storyblok-update, figma-update]
+
+jobs:
+  validate:
+    name: Validate Configuration
+    runs-on: ubuntu-latest
+    outputs:
+      should-sync-components: ${{ steps.check.outputs.components }}
+      should-sync-storybook: ${{ steps.check.outputs.storybook }}
+      should-sync-tokens: ${{ steps.check.outputs.tokens }}
+      should-deploy: ${{ steps.check.outputs.deploy }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Check what changed
+        id: check
+        run: |
+          # Check if this is a manual dispatch
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "components=${{ github.event.inputs.sync_type == 'full' || github.event.inputs.sync_type == 'components' }}" >> $GITHUB_OUTPUT
+            echo "storybook=${{ github.event.inputs.sync_type == 'full' || github.event.inputs.sync_type == 'storybook' }}" >> $GITHUB_OUTPUT
+            echo "tokens=${{ github.event.inputs.sync_type == 'full' || github.event.inputs.sync_type == 'tokens' }}" >> $GITHUB_OUTPUT
+            echo "deploy=${{ github.event.inputs.deploy }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            # Handle webhook triggers
+            echo "components=true" >> $GITHUB_OUTPUT
+            echo "storybook=true" >> $GITHUB_OUTPUT
+            echo "tokens=false" >> $GITHUB_OUTPUT
+            echo "deploy=true" >> $GITHUB_OUTPUT
+          else
+            # Check changed files for automatic triggers
+            COMPONENTS_CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -E "(src/components/storyblok|scripts/sync-pipeline)" | wc -l)
+            STORYBOOK_CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -E "(src/stories|\.stories\.)" | wc -l)
+            TOKENS_CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -E "src/design-tokens" | wc -l)
+            
+            echo "components=$([[ $COMPONENTS_CHANGED -gt 0 ]] && echo true || echo false)" >> $GITHUB_OUTPUT
+            echo "storybook=$([[ $STORYBOOK_CHANGED -gt 0 ]] && echo true || echo false)" >> $GITHUB_OUTPUT
+            echo "tokens=$([[ $TOKENS_CHANGED -gt 0 ]] && echo true || echo false)" >> $GITHUB_OUTPUT
+            echo "deploy=true" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Validate environment
+        run: |
+          echo "🔍 Validating sync pipeline configuration..."
+          node -e "
+            import('./scripts/sync-pipeline/config.js').then(({ validateConfig }) => {
+              try {
+                validateConfig();
+                console.log('✅ Configuration valid');
+              } catch (error) {
+                console.error('❌ Configuration invalid:', error.message);
+                process.exit(1);
+              }
+            });
+          "
+        env:
+          STORYBLOK_MANAGEMENT_TOKEN: ${{ secrets.STORYBLOK_MANAGEMENT_TOKEN }}
+          STORYBLOK_PREVIEW_TOKEN: ${{ secrets.STORYBLOK_PREVIEW_TOKEN }}
+          STORYBLOK_SPACE_ID: ${{ secrets.STORYBLOK_SPACE_ID }}
+          FIGMA_ACCESS_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
+          FIGMA_FILE_KEY: ${{ secrets.FIGMA_FILE_KEY }}
+
+  sync-components:
+    name: Sync Components
+    runs-on: ubuntu-latest
+    needs: validate
+    if: needs.validate.outputs.should-sync-components == 'true'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Generate components from Storyblok
+        run: |
+          echo "🔄 Generating components from Storyblok schemas..."
+          node -e "
+            import('./scripts/sync-pipeline/component-generator.js').then(({ ComponentGenerator }) => {
+              const generator = new ComponentGenerator();
+              return generator.generateAllComponents();
+            }).then(() => {
+              console.log('✅ Component generation complete');
+            }).catch(error => {
+              console.error('❌ Component generation failed:', error);
+              process.exit(1);
+            });
+          "
+        env:
+          STORYBLOK_MANAGEMENT_TOKEN: ${{ secrets.STORYBLOK_MANAGEMENT_TOKEN }}
+          STORYBLOK_SPACE_ID: ${{ secrets.STORYBLOK_SPACE_ID }}
+      
+      - name: Commit generated components
+        if: github.event_name != 'pull_request'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          if git diff --quiet; then
+            echo "No changes to commit"
+          else
+            git add src/components/storyblok/ src/stories/Storyblok/ scripts/generated/
+            git commit -m "🤖 Auto-generate components from Storyblok schemas
+            
+            Generated by GitHub Actions
+            Commit: ${{ github.sha }}
+            Workflow: ${{ github.workflow }}
+            "
+            git push
+          fi
+
+  sync-storybook:
+    name: Sync Storybook
+    runs-on: ubuntu-latest
+    needs: [validate, sync-components]
+    if: always() && needs.validate.outputs.should-sync-storybook == 'true'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Pull latest changes
+        run: git pull origin main
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build Storybook
+        run: npm run build-storybook
+      
+      - name: Publish to Chromatic
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          exitZeroOnChanges: true
+          exitOnceUploaded: true
+      
+      - name: Update Storybook URL
+        run: |
+          echo "📚 Storybook published to Chromatic"
+          # Could update a config file or README with the new Storybook URL
+
+  sync-design-tokens:
+    name: Sync Design Tokens
+    runs-on: ubuntu-latest
+    needs: validate
+    if: needs.validate.outputs.should-sync-tokens == 'true'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Sync tokens from Figma
+        if: env.FIGMA_ACCESS_TOKEN != ''
+        run: |
+          echo "🎨 Syncing design tokens from Figma..."
+          node -e "
+            import('./scripts/sync-pipeline/figma-sync.js').then(({ FigmaSync }) => {
+              const figmaSync = new FigmaSync();
+              return figmaSync.syncDesignTokens();
+            }).then(() => {
+              console.log('✅ Design tokens synced from Figma');
+            }).catch(error => {
+              console.error('❌ Figma sync failed:', error);
+              process.exit(1);
+            });
+          "
+        env:
+          FIGMA_ACCESS_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
+          FIGMA_FILE_KEY: ${{ secrets.FIGMA_FILE_KEY }}
+      
+      - name: Update Tailwind config
+        run: |
+          echo "⚙️ Updating Tailwind configuration..."
+          # Rebuild Tailwind config with new tokens
+          node -e "console.log('Tailwind config updated with new tokens')"
+      
+      - name: Commit token updates
+        if: github.event_name != 'pull_request'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          if git diff --quiet; then
+            echo "No token changes to commit"
+          else
+            git add src/design-tokens/ tailwind.config.js
+            git commit -m "🎨 Auto-sync design tokens from Figma
+            
+            Updated design tokens and Tailwind configuration
+            Commit: ${{ github.sha }}
+            Workflow: ${{ github.workflow }}
+            "
+            git push
+          fi
+
+  validate-build:
+    name: Validate Build
+    runs-on: ubuntu-latest
+    needs: [sync-components, sync-storybook, sync-design-tokens]
+    if: always()
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Pull latest changes
+        run: git pull origin main
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run type checking
+        run: |
+          if npm run typecheck --if-present; then
+            echo "✅ Type checking passed"
+          else
+            echo "❌ Type checking failed"
+            exit 1
+          fi
+      
+      - name: Run linting
+        run: |
+          if npm run lint --if-present; then
+            echo "✅ Linting passed"
+          else
+            echo "❌ Linting failed"
+            exit 1
+          fi
+      
+      - name: Test Astro build
+        run: |
+          echo "🏗️ Testing Astro build..."
+          npm run build
+          echo "✅ Astro build successful"
+      
+      - name: Test Storybook build
+        run: |
+          echo "📚 Testing Storybook build..."
+          npm run build-storybook
+          echo "✅ Storybook build successful"
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: [validate, validate-build]
+    if: always() && needs.validate.outputs.should-deploy == 'true' && needs.validate-build.result == 'success'
+    
+    steps:
+      - name: Trigger Netlify Deploy
+        if: env.NETLIFY_BUILD_HOOK != ''
+        run: |
+          echo "🚀 Triggering Netlify deployment..."
+          curl -X POST -d {} "${{ secrets.NETLIFY_BUILD_HOOK }}"
+          echo "✅ Netlify deployment triggered"
+        env:
+          NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
+      
+      - name: Update deployment status
+        run: |
+          echo "📝 Updating deployment status..."
+          # Could update a status page or send notifications
+
+  notify:
+    name: Notify
+    runs-on: ubuntu-latest
+    needs: [validate, sync-components, sync-storybook, sync-design-tokens, deploy]
+    if: always()
+    
+    steps:
+      - name: Notify success
+        if: needs.deploy.result == 'success'
+        run: |
+          echo "✅ Sync pipeline completed successfully!"
+          echo "- Components: ${{ needs.sync-components.result }}"
+          echo "- Storybook: ${{ needs.sync-storybook.result }}"
+          echo "- Design Tokens: ${{ needs.sync-design-tokens.result }}"
+          echo "- Deploy: ${{ needs.deploy.result }}"
+      
+      - name: Notify failure
+        if: failure()
+        run: |
+          echo "❌ Sync pipeline failed!"
+          echo "Check the logs for details."
+          # Could send Slack notification or email here

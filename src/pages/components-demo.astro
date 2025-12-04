@@ -1,0 +1,502 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import HeroWPParity from "../components/organisms/HeroWPParity.astro";
+import RiskWidget from "../components/organisms/RiskWidget.astro";
+import ReputationWidget from "../components/organisms/ReputationWidget.astro";
+import Button from "../components/atoms/Button/Button.astro";
+import Input from "../components/atoms/Input/Input.astro";
+import Heading from "../components/atoms/Heading.astro";
+import BorrowingCalculator from "../components/organisms/BorrowingCalculator.astro";
+import MortgageVsRentSection from "../components/organisms/MortgageVsRentSection.astro";
+import RentCalculatorSection from "../components/organisms/RentCalculatorSection.astro";
+import BorrowingCapacityForm from "../components/organisms/BorrowingCapacityForm.astro";
+import AssessmentForm from "../components/organisms/AssessmentForm/AssessmentForm.astro";
+import AwardsSection from "../components/organisms/AwardsSection.astro";
+import BanksSection from "../components/organisms/BanksSection.astro";
+import BlogSection from "../components/organisms/BlogSection.astro";
+import FAQSection from "../components/organisms/FAQSection.astro";
+import LoanPurposeSection from "../components/organisms/LoanPurposeSection.astro";
+import ReviewsSection from "../components/organisms/ReviewsSection.astro";
+import WhyChoose from "../components/organisms/WhyChoose.astro";
+import PropertyMap from "../components/organisms/PropertyMap.astro";
+import Statistics from "../components/organisms/Statistics.astro";
+import WPHero from "../components/organisms/WPHero.astro";
+
+const SITE_TITLE = "Components Demo | Hunter Galloway";
+const SITE_DESCRIPTION =
+    "A demo page showcasing the specific design components requested";
+
+const heroData = {
+    label: "Find out your chances of getting a loan",
+    title: "Mortgage Broker Brisbane",
+    subtitle:
+        "Improve your chances of getting a loan with an award winning mortgage broker. We have one of the highest loan approval rates in the country.",
+    features: [
+        {
+            text: "Market-leading loan approval rate in Australia of 97%",
+            tooltip:
+                "Approximately 40% of home loan applications were rejected in December 2018...",
+            highlightText: "Market-leading",
+        },
+        {
+            text: "Variety of options due to direct access to 30+ Australian banks & lenders",
+        },
+        {
+            text: "#1 rated Mortgage Broker in Brisbane",
+            tooltip:
+                "The highest rated and most reviewed Mortgage Broker in Brisbane...",
+            highlightText: "#1 rated",
+        },
+    ],
+    cta: { label: "Get a Free Assessment", href: "#" },
+    note: "We promise to get back to you within 4 business hours",
+    bgDesktop:
+        "https://conversionratestore.github.io/projects/hantergalloway/img/bg_banner_new.jpg",
+    bgMobile:
+        "https://hgstagingsite.wpengine.com/wp-content/uploads/2024/10/hero_img_mb.jpg",
+};
+
+// Mock data for widgets since we don't have the JSON files
+const riskCopy = {
+    title: "Our reputation and achievements",
+    intro: "Market average rejection rate is 40%, our rejection rate is 3%",
+    tooltip:
+        "Approximately 40% of home loan applications were rejected in December 2018 based on a survey of 52,000 households completed by DigitalFinance Analytics DFA. In 2017 to 2018 Hunter Galloway submitted 342 home loan applications and had 8 applications rejected, giving a 2.33% rejection rate.",
+    tooltip_link_text: "Read more",
+    tooltip_link_href: "#",
+    items: [
+        {
+            title: "Market Leading",
+            paragraphs: ["Loan approval rate in Australia of 97%"],
+            icon: "star",
+        },
+        {
+            title: "Variety of Options",
+            paragraphs: ["Direct access to 30+ Australian banks & lenders"],
+            icon: "bank",
+        },
+        {
+            title: "#1 Rated",
+            paragraphs: ["Mortgage Broker in Brisbane"],
+            icon: "award",
+        },
+    ],
+    image: {
+        src: "/images/img_new/what-you-see-when-you-look-up-full-length-shot-affectionate-family-four-holding-cardboard-roof-their-heads-while-sitting-living-room-home.jpg",
+        alt: "Happy family",
+    },
+};
+
+const reputationCopy = {
+    title: "2024 Mortgage Broker of the Year",
+    marketText:
+        "Market average rejection rate is 40%, our rejection rate is 3%",
+    marketLinkText: "Source",
+    marketLinkHref: "#",
+    prize: "2024 Mortgage Broker of the Year",
+    awards: [
+        { src: "/images/img_new/2019_001.png", alt: "Award 1" },
+        { src: "/images/img_new/2019_002.png", alt: "Award 2" },
+        {
+            src: "/images/awards/2024-qld-nt-broker-of-the-year.png",
+            alt: "Award 3",
+        },
+        {
+            src: "/images/awards/qld-nt-brokerage-under-5-brokers.png",
+            alt: "Award 4",
+        },
+        {
+            src: "/images/awards/Mortgage-Broker-Brisbane-Hunter-Galloway-Award-2024.webp",
+            alt: "Award 5",
+        },
+        {
+            src: "/images/img_new/best-mortgage-broker-2019.png",
+            alt: "Award 6",
+        },
+    ],
+};
+
+const awardsData = [
+    {
+        src: "/images/awards/2024-qld-nt-broker-of-the-year.png",
+        alt: "Award 1",
+    },
+    {
+        src: "/images/awards/qld-nt-brokerage-under-5-brokers.png",
+        alt: "Award 2",
+    },
+];
+
+const banksData = [
+    { src: "/images/logos/cba.png", alt: "CBA" },
+    { src: "/images/logos/anz.png", alt: "ANZ" },
+    { src: "/images/logos/nab.png", alt: "NAB" },
+    { src: "/images/logos/westpac.png", alt: "Westpac" },
+];
+
+const loanPurposeData = [
+    {
+        title: "Home Loans",
+        description: "We help you find the right home loan.",
+        href: "#",
+        imageSrc:
+            "/images/what-you-see-when-you-look-up-full-length-shot-affectionate-family-four-holding-cardboard-roof-their-heads-while-sitting-living-room-home.jpg",
+        imageAlt: "Home Loans",
+        buttonText: "Learn More",
+    },
+    {
+        title: "Refinancing",
+        description: "Get a better deal on your existing home loan.",
+        href: "#",
+        imageSrc:
+            "/images/what-you-see-when-you-look-up-full-length-shot-affectionate-family-four-holding-cardboard-roof-their-heads-while-sitting-living-room-home.jpg",
+        imageAlt: "Refinancing",
+        buttonText: "Learn More",
+    },
+];
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    </head>
+    <body>
+        <SiteHeader />
+        <main>
+            <div class="bg-gray-100 py-8 text-center">
+                <h1 class="text-4xl font-bold mb-4">Component Library Demo</h1>
+                <p class="text-xl text-gray-600">
+                    Showcasing the specific design components requested
+                </p>
+            </div>
+
+            <div class="py-8 border-b">
+                <h2
+                    class="text-2xl font-bold text-center mb-4 text-gray-400 uppercase tracking-widest"
+                >
+                    Hero Component (WP Parity)
+                </h2>
+                <HeroWPParity
+                    label={heroData.label}
+                    title={heroData.title}
+                    subtitle={heroData.subtitle}
+                    features={heroData.features}
+                    cta={heroData.cta}
+                    note={heroData.note}
+                    bgDesktop={heroData.bgDesktop}
+                    bgMobile={heroData.bgMobile}
+                />
+            </div>
+
+            <div class="py-8 border-b">
+                <h2
+                    class="text-2xl font-bold text-center mb-4 text-gray-400 uppercase tracking-widest"
+                >
+                    Risk Widget
+                </h2>
+                <RiskWidget copy={riskCopy} />
+            </div>
+
+            <div class="py-8 border-b">
+                <h2
+                    class="text-2xl font-bold text-center mb-4 text-gray-400 uppercase tracking-widest"
+                >
+                    Reputation Widget
+                </h2>
+                <ReputationWidget copy={reputationCopy} />
+            </div>
+
+            <div class="py-8 border-b bg-white">
+                <h2
+                    class="text-2xl font-bold text-center mb-8 text-gray-400 uppercase tracking-widest"
+                >
+                    Atomic Components
+                </h2>
+                <div class="container mx-auto px-4 max-w-4xl space-y-12">
+                    <!-- Buttons -->
+                    <div class="space-y-4">
+                        <Heading level={3} size="xl">Buttons</Heading>
+                        <div class="flex flex-wrap gap-4 items-center">
+                            <Button text="Primary Button" variant="primary" />
+                            <Button
+                                text="Secondary Button"
+                                variant="secondary"
+                            />
+                            <Button text="Outline Button" variant="outline" />
+                            <Button text="Ghost Button" variant="ghost" />
+                            <Button text="Small" size="sm" />
+                            <Button text="Large" size="lg" />
+                        </div>
+                    </div>
+
+                    <!-- Inputs -->
+                    <div class="space-y-4">
+                        <Heading level={3} size="xl">Inputs</Heading>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label
+                                    class="block text-sm font-medium text-gray-700"
+                                    >Default Input</label
+                                >
+                                <Input placeholder="Enter text..." />
+                            </div>
+                            <div class="space-y-2">
+                                <label
+                                    class="block text-sm font-medium text-gray-700"
+                                    >Filled Input</label
+                                >
+                                <Input
+                                    variant="filled"
+                                    placeholder="Filled variant"
+                                />
+                            </div>
+                            <div class="space-y-2">
+                                <label
+                                    class="block text-sm font-medium text-gray-700"
+                                    >Error State</label
+                                >
+                                <Input state="error" value="Invalid input" />
+                            </div>
+                            <div class="space-y-2">
+                                <label
+                                    class="block text-sm font-medium text-gray-700"
+                                    >Success State</label
+                                >
+                                <Input state="success" value="Valid input" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Typography -->
+                    <div class="space-y-4">
+                        <Heading level={3} size="xl">Typography</Heading>
+                        <div class="space-y-4 border p-6 rounded-lg">
+                            <Heading level={1} size="4xl"
+                                >Heading 1 (4xl)</Heading
+                            >
+                            <Heading level={2} size="3xl"
+                                >Heading 2 (3xl)</Heading
+                            >
+                            <Heading level={3} size="2xl"
+                                >Heading 3 (2xl)</Heading
+                            >
+                            <Heading level={4} size="xl">Heading 4 (xl)</Heading
+                            >
+                            <Heading level={5} size="lg">Heading 5 (lg)</Heading
+                            >
+                            <Heading level={6} size="md">Heading 6 (md)</Heading
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="py-8 border-b bg-white">
+                <h2
+                    class="text-2xl font-bold text-center mb-8 text-gray-400 uppercase tracking-widest"
+                >
+                    Calculators & Forms
+                </h2>
+                <div class="space-y-16">
+                    <!-- Borrowing Calculator -->
+                    <div class="py-8 bg-gray-50">
+                        <Heading
+                            level={3}
+                            size="xl"
+                            align="center"
+                            marginBottom="lg">Borrowing Calculator</Heading
+                        >
+                        <BorrowingCalculator showResults={true} />
+                    </div>
+
+                    <!-- Mortgage vs Rent -->
+                    <div class="py-8">
+                        <Heading
+                            level={3}
+                            size="xl"
+                            align="center"
+                            marginBottom="lg">Mortgage vs Rent</Heading
+                        >
+                        <MortgageVsRentSection
+                            variant="centered"
+                            background="gray"
+                        />
+                    </div>
+
+                    <!-- Rent Calculator -->
+                    <div class="py-8 bg-gray-50">
+                        <Heading
+                            level={3}
+                            size="xl"
+                            align="center"
+                            marginBottom="lg">Rent Calculator</Heading
+                        >
+                        <RentCalculatorSection />
+                    </div>
+
+                    <!-- Borrowing Capacity Form -->
+                    <div class="py-8">
+                        <Heading
+                            level={3}
+                            size="xl"
+                            align="center"
+                            marginBottom="lg">Borrowing Capacity Form</Heading
+                        >
+                        <BorrowingCapacityForm />
+                    </div>
+
+                    <!-- Assessment Form -->
+                    <div class="py-8 bg-gray-50">
+                        <Heading
+                            level={3}
+                            size="xl"
+                            align="center"
+                            marginBottom="lg">Assessment Form</Heading
+                        >
+                        <AssessmentForm />
+                    </div>
+                </div>
+            </div>
+
+            <div class="py-8 border-b bg-white">
+                <h2
+                    class="text-2xl font-bold text-center mb-8 text-gray-400 uppercase tracking-widest"
+                >
+                    Content Sections
+                </h2>
+                <div class="space-y-16">
+                    <!-- Awards Section -->
+                    <div class="py-8">
+                        <Heading
+                            level={3}
+                            size="xl"
+                            align="center"
+                            marginBottom="lg">Awards Section</Heading
+                        >
+                        <AwardsSection awards={awardsData} />
+                    </div>
+
+                    <!-- Banks Section -->
+                    <div class="py-8 bg-gray-50">
+                        <Heading
+                            level={3}
+                            size="xl"
+                            align="center"
+                            marginBottom="lg">Banks Section</Heading
+                        >
+                        <BanksSection banks={banksData} />
+                    </div>
+
+                    <!-- Blog Section -->
+                    <div class="py-8">
+                        <Heading
+                            level={3}
+                            size="xl"
+                            align="center"
+                            marginBottom="lg">Blog Section</Heading
+                        >
+                        <BlogSection />
+                    </div>
+
+                    <!-- FAQ Section -->
+                    <div class="py-8 bg-gray-50">
+                        <Heading
+                            level={3}
+                            size="xl"
+                            align="center"
+                            marginBottom="lg">FAQ Section</Heading
+                        >
+                        <FAQSection />
+                    </div>
+
+                    <!-- Loan Purpose Section -->
+                    <div class="py-8">
+                        <Heading
+                            level={3}
+                            size="xl"
+                            align="center"
+                            marginBottom="lg">Loan Purpose Section</Heading
+                        >
+                        <LoanPurposeSection
+                            title="How can we help?"
+                            purposeCards={loanPurposeData}
+                        />
+                    </div>
+
+                    <!-- Reviews Section -->
+                    <div class="py-8 bg-gray-50">
+                        <Heading
+                            level={3}
+                            size="xl"
+                            align="center"
+                            marginBottom="lg">Reviews Section</Heading
+                        >
+                        <ReviewsSection />
+                    </div>
+
+                    <!-- Why Choose Section -->
+                    <div class="py-8">
+                        <Heading
+                            level={3}
+                            size="xl"
+                            align="center"
+                            marginBottom="lg">Why Choose Section</Heading
+                        >
+                        <WhyChoose />
+                    </div>
+                </div>
+            </div>
+
+            <div class="py-8 border-b bg-white">
+                <h2
+                    class="text-2xl font-bold text-center mb-8 text-gray-400 uppercase tracking-widest"
+                >
+                    Widgets
+                </h2>
+                <div class="space-y-16">
+                    <!-- Property Map -->
+                    <div class="py-8">
+                        <Heading
+                            level={3}
+                            size="xl"
+                            align="center"
+                            marginBottom="lg">Property Map</Heading
+                        >
+                        <PropertyMap />
+                    </div>
+
+                    <!-- Statistics -->
+                    <div class="py-8 bg-gray-50">
+                        <Heading
+                            level={3}
+                            size="xl"
+                            align="center"
+                            marginBottom="lg">Statistics</Heading
+                        >
+                        <Statistics />
+                    </div>
+
+                    <!-- WP Hero -->
+                    <div class="py-8">
+                        <Heading
+                            level={3}
+                            size="xl"
+                            align="center"
+                            marginBottom="lg">WP Hero</Heading
+                        >
+                        <WPHero
+                            title="Award Winning Mortgage Broker"
+                            subtitle="We help you get the best loan."
+                            cta={{ label: "Get Started", href: "#" }}
+                            background="https://conversionratestore.github.io/projects/hantergalloway/img/bg_banner_new.jpg"
+                        />
+                    </div>
+                </div>
+            </div>
+        </main>
+        <SiteFooter />
+    </body>
+</html>
+```

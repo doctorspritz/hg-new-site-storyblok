@@ -1,0 +1,62 @@
+---
+/**
+ * Molecule: SortSelect
+ * Labelled select control for choosing sort order.
+ * Emits `sort:change` custom event on value change.
+ */
+import FormField from './FormField.astro';
+import Select from '../atoms/Select.astro';
+
+interface Option {
+  label: string;
+  value: string;
+  disabled?: boolean;
+}
+
+interface Props {
+  id?: string;
+  label: string;
+  options?: Option[];
+  value?: string;
+  disabled?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const {
+  id = 'sort-select',
+  label,
+  options = [],
+  value,
+  disabled = false,
+  size = 'md',
+} = Astro.props;
+---
+
+<FormField id={id} label={label}>
+  <Select
+    id={id}
+    options={options}
+    value={value}
+    size={size}
+    disabled={disabled}
+    variant="border"
+  />
+</FormField>
+
+<script>
+  document.addEventListener('change', (e) => {
+    const target = e.target as HTMLElement;
+    const select = target?.closest('.hg-Select');
+    if (!select) return;
+
+    const selectElement = select.querySelector('select');
+    if (!selectElement) return;
+
+    select.dispatchEvent(
+      new CustomEvent('sort:change', {
+        detail: { value: selectElement.value },
+        bubbles: true,
+      }),
+    );
+  });
+</script>

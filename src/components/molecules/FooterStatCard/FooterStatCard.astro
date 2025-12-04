@@ -1,0 +1,64 @@
+---
+/**
+ * FooterStatCard Component
+ * Hunter Galloway Design System - Molecular Component
+ * 
+ * A specialized stat card component designed for the footer context.
+ * Uses semantic tokens and atomic design principles.
+ */
+
+import type { FooterStatCardProps } from './FooterStatCard.types';
+import { semantic } from '../../../tokens/semantic';
+
+interface Props extends FooterStatCardProps {}
+
+const {
+  number,
+  description,
+  class: additionalClasses = '',
+} = Astro.props;
+---
+
+<div class={`footer-stat-card ${additionalClasses}`}>
+  <div class="footer-stat-number">{number}</div>
+  <div class="footer-stat-description">{description}</div>
+</div>
+
+<style define:vars={{
+  textInverse: semantic.color.text.inverse,
+  fontSize5xl: semantic.typography.size['5xl'],
+  fontSizeSm: semantic.typography.size.sm,
+  fontWeightDisplay: semantic.typography.weight.display,
+  fontWeightNormal: semantic.typography.weight.body,
+  lineHeightTight: semantic.typography.lineHeight.tight,
+  spaceXs: semantic.space.xs,
+}}>
+.footer-stat-card {
+  text-align: left;
+  flex: 1;
+}
+
+.footer-stat-number {
+  color: var(--textInverse);
+  font-size: var(--fontSize5xl); /* 40px from WordPress CSS */
+  font-weight: var(--fontWeightDisplay); /* 800 from WordPress CSS */
+  line-height: var(--lineHeightTight); /* 48px from WordPress CSS */
+  margin-bottom: var(--spaceXs);
+}
+
+.footer-stat-description {
+  color: var(--textInverse);
+  font-size: var(--fontSizeSm); /* 13px from WordPress CSS */
+  font-weight: var(--fontWeightNormal);
+  line-height: 1.35; /* 135% from WordPress CSS */
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 767px) {
+  .footer-stat-card {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+}
+</style>

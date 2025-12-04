@@ -1,0 +1,230 @@
+---
+/**
+ * HeroWidget Organism
+ * Combines multiple molecules to create a hero section
+ */
+
+import Container from '../../atoms/Container/Container.astro';
+import BenefitItem from '../../molecules/BenefitItem/BenefitItem.astro';
+import ExperienceBadge from '../../molecules/ExperienceBadge/ExperienceBadge.astro';
+import ReviewBadge from '../../molecules/ReviewBadge/ReviewBadge.astro';
+import { component } from '../../../tokens/component';
+
+interface BenefitItemData {
+  text: string;
+  tooltip?: string;
+}
+
+interface CTAConfig {
+  text: string;
+  href: string;
+}
+
+interface ImageConfig {
+  desktop: string;
+  mobile: string;
+  alt: string;
+}
+
+interface ReviewsConfig {
+  logoSrc?: string;
+  text: string;
+}
+
+interface Props {
+  titleHtml: string;
+  benefits: BenefitItemData[];
+  cta: CTAConfig;
+  image: ImageConfig;
+  yearsExperience?: string;
+  reviews?: ReviewsConfig;
+}
+
+const {
+  titleHtml,
+  benefits,
+  cta,
+  image,
+  yearsExperience = '14',
+  reviews = { logoSrc: '/images/img_new/google.svg', text: 'Based on<br/>2000+ reviews' },
+} = Astro.props;
+---
+
+<section class="hero-widget" id="home-hero">
+  <Container>
+    <div class="hero-widget__layout">
+      <!-- Content Column -->
+      <div class="hero-widget__content">
+        <!-- Title -->
+        <div class="hero-widget__title">
+          <h1 set:html={titleHtml}></h1>
+        </div>
+
+        <!-- Benefits List -->
+        <div class="hero-widget__benefits">
+          {benefits.map((item) => (
+            <BenefitItem text={item.text} tooltip={item.tooltip} />
+          ))}
+        </div>
+
+        <!-- CTA Button -->
+        <div class="hero-widget__cta">
+          <a href={cta.href} class="hero-widget__button">
+            {cta.text}
+          </a>
+        </div>
+
+        <!-- Features Row -->
+        <div class="hero-widget__features">
+          <ExperienceBadge years={yearsExperience} />
+          <ReviewBadge logoSrc={reviews.logoSrc} text={reviews.text} />
+        </div>
+      </div>
+
+      <!-- Image Column -->
+      <div class="hero-widget__image">
+        <img src={image.desktop} alt={image.alt} loading="eager" />
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style define:vars={{
+  // Layout
+  containerMaxWidth: component.heroWidget.layout.containerMaxWidth,
+  contentMaxWidth: component.heroWidget.layout.contentMaxWidth,
+  mediaWidth: component.heroWidget.layout.mediaWidth,
+  minHeight: component.heroWidget.layout.minHeight,
+  
+  // Spacing
+  paddingExact: component.heroWidget.spacing.paddingExact,
+  paddingBottomTitle: component.heroWidget.spacing.paddingBottomTitle,
+  paddingBottomBenefits: component.heroWidget.spacing.paddingBottomBenefits,
+  paddingTopFeatures: component.heroWidget.spacing.paddingTopFeatures,
+  
+  // Gaps
+  gapExact: component.heroWidget.gaps.gapExact,
+  gapSmallExact: component.heroWidget.gaps.gapSmallExact,
+  gapMediumExact: component.heroWidget.gaps.gapMediumExact,
+  
+  // Button dimensions
+  buttonMinHeight: component.heroWidget.dimensions.button.minHeightExact,
+  buttonBorderRadius: component.heroWidget.dimensions.button.borderRadius,
+  buttonPaddingHorizontal: component.heroWidget.dimensions.button.paddingHorizontal,
+  
+  // Media dimensions
+  mediaWidth: component.heroWidget.dimensions.media.widthExact,
+  mediaBorderRadius: component.heroWidget.dimensions.media.borderRadius,
+  
+  // Colors
+  colorGrey27: component.heroWidget.colors.grey27,
+  colorGrey15: component.heroWidget.colors.grey15,
+  colorOrange64: component.heroWidget.colors.orange64,
+  
+  // Typography
+  titleFontSize: component.heroWidget.typography.title.fontSizeExact,
+  titleLineHeight: component.heroWidget.typography.title.lineHeightExact,
+  titleWeightExtrabold: component.heroWidget.typography.title.weightExtrabold,
+  
+  buttonFontSize: component.heroWidget.typography.button.fontSizeExact,
+  buttonLineHeight: component.heroWidget.typography.button.lineHeightExact,
+  buttonWeightSemibold: component.heroWidget.typography.button.weightSemibold,
+  
+  // Responsive
+  responsiveBreakpoint: component.heroWidget.responsive.breakpoint,
+  mobileGap: component.heroWidget.responsive.mobileGap,
+}}>
+
+.hero-widget {
+  padding: var(--paddingExact);
+  background: white;
+}
+
+.hero-widget__layout {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gapExact);
+  min-height: var(--minHeight);
+}
+
+.hero-widget__content {
+  flex: 1;
+  max-width: var(--contentMaxWidth);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gapSmallExact);
+}
+
+.hero-widget__title h1 {
+  font-family: 'Open Sans', sans-serif;
+  font-size: var(--titleFontSize);
+  line-height: var(--titleLineHeight);
+  color: var(--colorGrey27);
+  margin: 0;
+  padding-bottom: var(--paddingBottomTitle);
+}
+
+/* Bold text styling is now handled via inline styles in the HTML */
+
+.hero-widget__benefits {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gapSmallExact);
+  padding-bottom: var(--paddingBottomBenefits);
+}
+
+.hero-widget__cta {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.hero-widget__button {
+  background: var(--colorOrange64);
+  color: var(--colorGrey15);
+  font-size: var(--buttonFontSize);
+  font-weight: var(--buttonWeightSemibold);
+  line-height: var(--buttonLineHeight);
+  padding: 0 var(--buttonPaddingHorizontal);
+  border-radius: var(--buttonBorderRadius);
+  text-decoration: none;
+  display: inline-block;
+  min-height: var(--buttonMinHeight);
+  text-align: center;
+  box-shadow: 0 6px 12px rgba(43,43,43,.15);
+  transition: all .35s ease;
+}
+
+.hero-widget__button:hover { background: #E5A43F; transform: translateY(-2px); box-shadow: 0 8px 16px rgba(43,43,43,.2); }
+
+.hero-widget__features {
+  display: flex;
+  gap: var(--gapExact);
+  padding-top: var(--paddingTopFeatures);
+}
+
+.hero-widget__image {
+  flex-shrink: 0;
+  width: var(--mediaWidth);
+  max-width: var(--mediaWidth);
+}
+
+.hero-widget__image img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--mediaBorderRadius);
+}
+
+/* Responsive */
+@media (max-width: var(--responsiveBreakpoint)) {
+  .hero-widget__layout {
+    flex-direction: column;
+    gap: var(--mobileGap);
+  }
+  
+  .hero-widget__image {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+</style>
+

@@ -1,0 +1,71 @@
+---
+/**
+ * Organism: FAQSection (stub)
+ * Wraps Accordion with a default set of FAQ items.
+ */
+import Container from '../atoms/Container.astro';
+import Heading from '../atoms/Heading.astro';
+import Accordion from '../molecules/Accordion.astro';
+
+interface Props {
+  heading?: string;
+  items?: { id: string; title: string; content: string }[];
+  class?: string;
+}
+
+const {
+  heading = 'Frequently asked questions',
+  items = [
+    {
+      id: 'getting-started',
+      title: 'How do I get started with a home loan?',
+      content:
+        'Book a free assessment and our team will guide you through pre-approval, documents, and matching you with the right lender.',
+    },
+    {
+      id: 'how-long',
+      title: 'How long does approval take?',
+      content:
+        'Timeframes vary by lender. Many pre-approvals complete in a few days once documents are supplied.',
+    },
+    {
+      id: 'deposit',
+      title: 'How much deposit do I need?',
+      content:
+        'It depends on your situation and lender policy. Speak with us to understand lenders and deposit options for your case.',
+    },
+  ],
+  class: className = '',
+} = Astro.props as Props;
+---
+
+<section class:list={['hg-faq', className]}>
+  <Container>
+    <Heading level={2} size="fluid-3xl" align="center" class="title">
+      {heading}
+    </Heading>
+    <div class="content">
+      <Accordion
+        items={items}
+        allowMultiple={false}
+        defaultOpenIds={[items[0].id]}
+      />
+    </div>
+  </Container>
+</section>
+
+<style>
+  .hg-faq {
+    padding: var(--space-xl) 0;
+    background: var(--color-background-body);
+  }
+
+  .title {
+    margin-bottom: var(--space-lg);
+  }
+
+  .content {
+    max-width: var(--size-container-narrow);
+    margin: 0 auto;
+  }
+</style>

@@ -1,0 +1,66 @@
+---
+/**
+ * Molecule: TeaserCard
+ * Media teaser with image and overlay title link.
+ */
+import Link from '../../atoms/Link.astro';
+
+interface Props {
+  image: { src: string; alt: string };
+  title: string;
+  href: string;
+  class?: string;
+}
+
+const { image, title, href, class: className = '' } = Astro.props as Props;
+---
+
+<Link
+  href={href}
+  class:list={['hg-teaser-card', className].filter(Boolean)}
+  underline="none"
+  variant="default"
+>
+  <img src={image.src} alt={image.alt} loading="lazy" class="image" />
+  <div class="overlay">
+    <h4 class="title">{title}</h4>
+  </div>
+</Link>
+
+<style>
+  .hg-teaser-card {
+    position: relative;
+    display: block;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    /* Use tokenized overlay to satisfy guardrails */
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      var(--color-overlay-subtle)
+    );
+    color: var(--color-text-inverse);
+    padding: var(--space-md);
+  }
+
+  .title {
+    margin: 0;
+    color: var(--color-text-inverse);
+    font-weight: var(--font-weight-bold);
+  }
+</style>

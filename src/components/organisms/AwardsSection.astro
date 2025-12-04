@@ -1,0 +1,100 @@
+---
+/**
+ * Awards Section Organism
+ * Hunter Galloway Design System - Organism Component
+ *
+ * A section displaying awards in a responsive grid layout.
+ * Combines Container atom and AwardItem molecules.
+ */
+
+import Container from '../atoms/Container.astro';
+import AwardItem from '../molecules/AwardItem.astro';
+
+export interface AwardSpec {
+  /** Award image source URL */
+  src: string;
+  /** Alt text for the award image */
+  alt: string;
+  /** Tooltip text displayed on hover */
+  tooltip?: string;
+  /** Unique identifier for the award */
+  id?: string | number;
+}
+
+export interface Props {
+  /** Array of award specifications */
+  awards: AwardSpec[];
+  /** Background variant */
+  background?: 'white' | 'gray' | 'transparent';
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const { awards, background = 'white', class: className = '' } = Astro.props;
+
+const sectionClasses = [
+  'hg-awards-section',
+  `hg-awards-section--bg-${background}`,
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<section class={sectionClasses}>
+  <Container maxWidth="wide" padding="lg">
+    <div class="hg-awards-section-grid">
+      {
+        awards.map((award) => (
+          <AwardItem
+            src={award.src}
+            alt={award.alt}
+            tooltip={award.tooltip}
+            id={award.id}
+          />
+        ))
+      }
+    </div>
+  </Container>
+</section>
+
+<style>
+  .hg-awards-section {
+    padding: var(--space-xl) 0;
+  }
+
+  /* Background variants */
+  .hg-awards-section--bg-white {
+    background-color: var(--color-background-body);
+  }
+
+  .hg-awards-section--bg-gray {
+    background-color: var(--color-background-secondary);
+  }
+
+  .hg-awards-section--bg-transparent {
+    background-color: transparent;
+  }
+
+  .hg-awards-section-grid {
+    /* Use flex to center the last line when wrapping */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: var(--awards-justify);
+    align-items: center;
+    gap: var(--awards-gap-y) var(--awards-gap-x);
+  }
+
+  /* Ensure AwardItem does not stretch in flex context */
+  .hg-awards-section-grid > .hg-award-item {
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  @media (--bp-md) {
+    /* Reduce padding on mobile */
+    .hg-awards-section {
+      padding: var(--space-lg) 0;
+    }
+  }
+</style>

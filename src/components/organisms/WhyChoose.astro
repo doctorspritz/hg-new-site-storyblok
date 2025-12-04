@@ -1,0 +1,167 @@
+---
+/**
+ * Organism: WhyChoose
+ * Hunter Galloway Design System - Organism Component
+ *
+ * Displays company statistics and value propositions in a clean, simple layout.
+ * Combines Heading atom with multiple StatItem atoms.
+ *
+ * Classification as Organism:
+ * - Combines multiple atoms (StatItem) and atoms (Heading)
+ * - Represents a complete, meaningful interface section
+ * - Contains related data that works together as a cohesive unit
+ * - Reusable pattern for showcasing company credentials
+ */
+
+import Heading from '../atoms/Heading.astro';
+import StatItem from '../atoms/StatItem.astro';
+
+export interface StatItemData {
+  value: string;
+  label: string;
+  variant?: 'default' | 'plain';
+}
+
+export interface Props {
+  /** Main heading text */
+  heading?: string;
+  /** Array of statistics to display */
+  stats?: StatItemData[];
+  /** Section ID for navigation/tracking */
+  id?: string;
+  /** Additional CSS classes */
+  class?: string;
+  /** Spacing below heading using spacing tokens */
+  headingGap?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+}
+
+const {
+  heading = 'Why Hunter Galloway is the ultimate choice',
+  stats = [
+    { value: '97%', label: 'Loan approval rate' },
+    { value: '14', label: 'years of experience' },
+    { value: '2,000+', label: 'Happy customers' },
+    { value: '30+', label: 'Banks and lenders we have direct access to' },
+  ],
+  id = 'why_choose',
+  class: className = '',
+  headingGap = '2xl',
+} = Astro.props;
+
+const sectionClasses = ['hg-why-choose', className].filter(Boolean).join(' ');
+---
+
+<section id={id} class={sectionClasses}>
+  <div class="hg-why-choose-container">
+    <Heading
+      level={2}
+      size="fluid-4xl"
+      align="center"
+      marginBottom={headingGap}
+      class="hg-why-choose-heading"
+    >
+      {heading}
+    </Heading>
+
+    <div class="hg-why-choose-grid">
+      {
+        stats.map((stat) => {
+          const v = stat.variant ?? 'plain';
+          return v === 'plain' ? (
+            <div class="why-stat">
+              <StatItem
+                variant="plain"
+                valueSize="4xl"
+                labelSize="md"
+                value={stat.value}
+                label={stat.label}
+              />
+            </div>
+          ) : (
+            <div class="why-stat as-flow">
+              <StatItem
+                variant={v}
+                valueSize="4xl"
+                labelSize="md"
+                value={stat.value}
+                label={stat.label}
+              />
+            </div>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .hg-why-choose {
+    padding: var(--space-xl) 0;
+    background-color: var(--color-background-body);
+  }
+
+  .hg-why-choose-container {
+    max-width: var(--size-container-wide);
+    margin: 0 auto;
+    padding: 0 var(--space-md);
+  }
+
+  .hg-why-choose-heading {
+    color: var(--color-text-heading);
+  }
+
+  /* Grid layout for consistent tile sizing */
+  .hg-why-choose-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-lg);
+    align-items: stretch;
+    margin-top: var(--space-xl);
+  }
+
+  /* Tile styling */
+  .why-stat {
+    background: var(--color-background-light-blue);
+    border: var(--border-width-2xs) var(--border-style-solid) transparent;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-lg) var(--space-lg);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* When using StatItem default variant, render as simple flow without tile */
+  .why-stat.as-flow {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  /* StatItem is rendered with variant="plain"; no additional overrides needed */
+
+  /* StatItem is rendered with variant="plain"; no additional overrides needed */
+
+  /* Breakpoints: 2 columns on md, 1 column on sm */
+  @media (--bp-md) {
+    .hg-why-choose-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-md);
+    }
+  }
+
+  @media (--bp-sm) {
+    .hg-why-choose-container {
+      padding: 0 var(--space-sm);
+    }
+
+    .hg-why-choose-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-md);
+    }
+  }
+</style>

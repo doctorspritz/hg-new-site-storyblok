@@ -1,0 +1,172 @@
+---
+/**
+ * Molecule: CTACard
+ * A simple call-to-action card composed from Card, Heading, Paragraph and Button atoms.
+ * Structure: heading (left), action button + small helper text (right).
+ */
+import Card from './Card.astro';
+import Heading from '../../atoms/Heading.astro';
+import Paragraph from '../../atoms/Paragraph.astro';
+import Button from '../../atoms/Button.astro';
+
+export interface Props {
+  /** CTA heading */
+  title: string;
+  /** Optional supporting description shown under the heading */
+  description?: string;
+  /** Button label */
+  buttonLabel: string;
+  /** Button href */
+  buttonHref: string;
+  /** Small helper text under the button (e.g., "or video call") */
+  helperText?: string;
+  /** Density controls internal padding/height */
+  density?: 'normal' | 'compact';
+  /** Card color variant */
+  colorVariant?:
+    | 'white'
+    | 'pale-blue'
+    | 'pale-yellow'
+    | 'default'
+    | 'gray'
+    | 'dark';
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  title,
+  description,
+  buttonLabel,
+  buttonHref,
+  helperText,
+  density = 'normal',
+  colorVariant = 'white',
+  class: className = '',
+} = Astro.props as Props;
+
+const isDark = colorVariant === 'dark';
+---
+
+<Card
+  class:list={['hg-CTACard', `density-${density}`, className]}
+  variant="bordered"
+  colorVariant={colorVariant}
+>
+  <div class="cta-content">
+    <div class="cta-text">
+      <Heading
+        level={3}
+        size="3xl"
+        color={isDark ? 'inverse' : 'default'}
+        class="cta-title"
+      >
+        {title}
+      </Heading>
+      {
+        description && (
+          <Paragraph
+            size="md"
+            color={isDark ? 'inverse' : 'body'}
+            class="cta-description"
+          >
+            {description}
+          </Paragraph>
+        )
+      }
+    </div>
+
+    <div class="cta-actions">
+      <Button href={buttonHref} variant="primary" size="lg" class="cta-button">
+        {buttonLabel}
+      </Button>
+      {
+        helperText && (
+          <Paragraph
+            size="sm"
+            color={isDark ? 'inverse' : 'subtle'}
+            class="cta-helper"
+          >
+            {helperText}
+          </Paragraph>
+        )
+      }
+    </div>
+  </div>
+</Card>
+
+<style>
+  .hg-CTACard {
+    border-color: var(--color-border-subtle);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .cta-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    padding: var(--space-lg);
+  }
+
+  /* Compact density: reduce vertical padding to decrease height */
+  .hg-CTACard.density-compact .cta-content {
+    /* compact spacing: tighter vertical and wider horizontal */
+    padding-block: var(--space-ml);
+    padding-inline: var(--space-lgx);
+  }
+
+  .cta-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Title styling is handled by Heading atom */
+
+  .cta-description {
+    max-width: var(--size-content-max-width-lg);
+  }
+
+  .cta-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .cta-helper {
+    line-height: var(--line-height-tight);
+  }
+
+  /* Dark variant: ensure a visible dark-gray border and softer helper */
+  .hg-CTACard.variant-bordered.color-dark {
+    border-color: var(--color-border-dark-cta);
+  }
+
+  .hg-CTACard.color-dark .cta-helper {
+    opacity: 0.85;
+  }
+
+  /* Override card background and radius to match design tokens and live site */
+  :global(.hg-CTACard.color-dark) {
+    background-color: var(--color-background-brand-dark);
+    border-radius: var(--radius-md);
+  }
+
+  /* Responsive: stack content on small screens */
+  @media (--bp-md) {
+    .cta-content {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-md);
+      padding: var(--space-md);
+    }
+
+    .cta-actions {
+      align-items: flex-start;
+    }
+  }
+</style>

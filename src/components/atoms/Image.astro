@@ -1,0 +1,142 @@
+---
+/**
+ * Image Atom
+ * Hunter Galloway Design System - Atomic Component
+ *
+ * A self-contained image atom for consistent image display.
+ * No slots, focused on single responsibility.
+ * Uses design tokens for all styling values.
+ */
+
+export interface Props {
+  /** Image source URL */
+  src: string;
+  /** Alt text for accessibility */
+  alt: string;
+  /** Image width */
+  width?: string | number;
+  /** Image height */
+  height?: string | number;
+  /** Size variant for consistent sizing */
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  /** Loading strategy */
+  loading?: 'lazy' | 'eager';
+  /** Object fit behavior */
+  objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+  /** Border radius variant */
+  radius?: 'none' | 'sm' | 'md' | 'lg' | 'full';
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  size,
+  loading = 'lazy',
+  objectFit = 'cover',
+  radius = 'sm',
+  class: className = '',
+} = Astro.props;
+
+// Size mapping using design tokens
+const sizeMap = {
+  xs: { width: 'var(--size-icon-sm)', height: 'var(--size-icon-sm)' },
+  sm: { width: 'var(--size-icon-md)', height: 'var(--size-icon-md)' },
+  md: {
+    width: 'var(--size-image-height-sm)',
+    height: 'var(--size-image-height-sm)',
+  },
+  lg: {
+    width: 'var(--size-image-height-md)',
+    height: 'var(--size-image-height-md)',
+  },
+  xl: { width: 'var(--size-icon-lg)', height: 'var(--size-icon-lg)' },
+};
+
+// Use size prop if provided, otherwise fall back to width/height props
+const finalWidth = size ? sizeMap[size].width : width;
+const finalHeight = size ? sizeMap[size].height : height;
+
+// Build CSS classes
+const imageClasses = [
+  'hg-image',
+  `hg-image--radius-${radius}`,
+  `hg-image--fit-${objectFit}`,
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<img
+  src={src}
+  alt={alt}
+  width={finalWidth}
+  height={finalHeight}
+  loading={loading}
+  class={imageClasses}
+  style={size
+    ? `--image-width: ${sizeMap[size].width}; --image-height: ${sizeMap[size].height};`
+    : ''}
+/>
+
+<style>
+  .hg-image {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Border radius variants using design tokens */
+  .hg-image--radius-none {
+    border-radius: 0;
+  }
+
+  .hg-image--radius-sm {
+    border-radius: var(--radius-sm);
+  }
+
+  .hg-image--radius-md {
+    border-radius: var(--radius-md);
+  }
+
+  .hg-image--radius-lg {
+    border-radius: var(--radius-lg);
+  }
+
+  .hg-image--radius-pill {
+    border-radius: var(--radius-pill);
+  }
+
+  /* Object fit variants */
+  .hg-image--fit-cover {
+    object-fit: cover;
+  }
+
+  .hg-image--fit-contain {
+    object-fit: contain;
+  }
+
+  .hg-image--fit-fill {
+    object-fit: fill;
+  }
+
+  .hg-image--fit-none {
+    object-fit: none;
+  }
+
+  .hg-image--fit-scale-down {
+    object-fit: scale-down;
+  }
+
+  /* Size variants using CSS custom properties */
+  .hg-image[style*='--image-width'] {
+    width: var(--image-width);
+    height: var(--image-height);
+    max-width: var(--image-width);
+    max-height: var(--image-height);
+  }
+</style>
